@@ -158,18 +158,3 @@ npm run build
 
 This project is licensed under the MIT License.
 
-## 👨‍💻 Author
-
-**Eyal M**
-- GitHub: [@eyalm](https://github.com/eyalm)
-- Project: [Android Final Project](https://github.com/omrimercado/android2FinalProj)
-
-## 🙏 Acknowledgments
-
-- Built with [Create React App](https://create-react-app.dev/)
-- Inspired by modern social networking platforms
-- Hebrew language support and RTL design
-
----
-
-**Happy Coding! 🚀**
