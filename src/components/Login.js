@@ -1,113 +1,90 @@
 import React, { useState } from 'react';
 import './Login.css';
 
-const Login = ({ onSwitchToRegister }) => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+function Login({ onClose, onSwitchToRegister }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberPassword, setRememberPassword] = useState(false);
 
-  const [errors, setErrors] = useState({});
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-
-    // Validate email
-    if (!formData.email.trim()) {
-      newErrors.email = 'אימייל הוא שדה חובה';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'כתובת אימייל לא תקינה';
-    }
-
-    // Validate password
-    if (!formData.password) {
-      newErrors.password = 'סיסמא היא שדה חובה';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'הסיסמא חייבת להכיל לפחות 6 תווים';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
-    
-    if (validateForm()) {
-      // Here you would typically send the data to your backend
-      console.log('Login data:', formData);
-      alert('התחברת בהצלחה!');
-    }
+    // TODO: Implement login logic
+    console.log('Login:', { email, password, rememberPassword });
+  };
+
+  const handleGoogleSignIn = () => {
+    // TODO: Implement Google sign in
+    console.log('Google Sign In');
   };
 
   return (
-    <div className="login-container">
-      <div className="login-form-wrapper">
-        <h2 className="login-title">כניסה</h2>
-        <form onSubmit={handleSubmit} className="login-form">
+    <div className="login-overlay" onClick={onClose}>
+      <div className="login-modal" onClick={(e) => e.stopPropagation()}>
+        <button className="close-button" onClick={onClose}>×</button>
+        
+        <h1 className="login-title">Sign in</h1>
+        
+        <form className="login-form" onSubmit={handleLogin}>
           <div className="form-group">
-            <label htmlFor="email" className="form-label">אימייל *</label>
             <input
               type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className={`form-input ${errors.email ? 'error' : ''}`}
-              placeholder="example@email.com"
+              className="form-input"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
-            {errors.email && <span className="error-message">{errors.email}</span>}
           </div>
 
           <div className="form-group">
-            <label htmlFor="password" className="form-label">סיסמא *</label>
             <input
               type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className={`form-input ${errors.password ? 'error' : ''}`}
-              placeholder="הכנס את הסיסמא שלך"
+              className="form-input"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
             />
-            {errors.password && <span className="error-message">{errors.password}</span>}
           </div>
 
-          <div className="form-options">
-            <label className="remember-me">
-              <input type="checkbox" />
-              <span className="checkmark"></span>
-              זכור אותי
+          <div className="remember-group">
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={rememberPassword}
+                onChange={(e) => setRememberPassword(e.target.checked)}
+              />
+              <span className="checkbox-text">Remember password</span>
             </label>
-            <a href="#" className="forgot-password">שכחת סיסמא?</a>
           </div>
 
           <button type="submit" className="login-button">
-            כניסה
+            LOGIN
           </button>
-
-          <div className="login-footer">
-            <p>אין לך חשבון? <button type="button" onClick={onSwitchToRegister} className="register-link">הרשם כאן</button></p>
-          </div>
         </form>
+
+        <div className="divider">
+          <span className="divider-line"></span>
+        </div>
+
+        <button className="google-button" onClick={handleGoogleSignIn}>
+          <span className="google-icon">G</span>
+          SIGN IN WITH GOOGLE
+        </button>
+
+        <div className="signup-link">
+          Don't have an account? 
+          <button 
+            className="signup-button" 
+            onClick={onSwitchToRegister}
+          >
+            Sign up
+          </button>
+        </div>
       </div>
     </div>
   );
-};
+}
 
 export default Login;
+
