@@ -85,6 +85,7 @@ function HomePage({ onLoginSuccess }) {
         <Login 
           onClose={() => setShowLogin(false)}
           onSwitchToRegister={handleSwitchToRegister}
+          onLoginSuccess={onLoginSuccess}
         />
       )}
 

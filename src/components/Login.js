@@ -1,15 +1,28 @@
 import React, { useState } from 'react';
+import { authenticateUser } from '../utils/mockData';
 import './Login.css';
 
-function Login({ onClose, onSwitchToRegister }) {
+function Login({ onClose, onSwitchToRegister, onLoginSuccess }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberPassword, setRememberPassword] = useState(false);
+  const [error, setError] = useState('');
 
   const handleLogin = (e) => {
     e.preventDefault();
-    // TODO: Implement login logic
-    console.log('Login:', { email, password, rememberPassword });
+    setError('');
+    
+    const result = authenticateUser(email, password);
+    
+    if (result.success) {
+      console.log('Login successful:', result.user);
+      if (onLoginSuccess) {
+        onLoginSuccess(result.user);
+      }
+      onClose();
+    } else {
+      setError(result.message);
+    }
   };
 
   const handleGoogleSignIn = () => {
@@ -23,6 +36,14 @@ function Login({ onClose, onSwitchToRegister }) {
         <button className="close-button" onClick={onClose}>×</button>
         
         <h1 className="login-title">Sign in</h1>
+        
+        {error && <div className="error-message">{error}</div>}
+        
+        <div className="demo-credentials">
+          <p><strong>Demo Users:</strong></p>
+          <p>📧 test@test.com | 🔑 test</p>
+          <p>📧 john@example.com | 🔑 123456</p>
+        </div>
         
         <form className="login-form" onSubmit={handleLogin}>
           <div className="form-group">

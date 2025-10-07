@@ -1,0 +1,94 @@
+/* New Post Section */
+.new-post-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.new-post-box {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.user-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.new-post-input {
+  flex: 1;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 50px;
+  font-size: 1rem;
+  background: #f0f2f5;
+  transition: all 0.3s ease;
+}
+
+.new-post-input:focus {
+  outline: none;
+  background: white;
+  border-color: #5b7ce6;
+}
+
+.new-post-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.post-button {
+  background: #5b7ce6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+}
+
+.post-button:hover {
+  background: #4a6bd5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(91, 124, 230, 0.4);
+}
+
+.post-button:active {
+  transform: translateY(0);
+}
+
+.post-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .new-post-box {
+    gap: 0.75rem;
+  }
+
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .new-post-input {
+    padding: 0.875rem;
+    font-size: 0.95rem;
+  }
+
+  .post-button {
+    padding: 0.625rem 1.5rem;
+    font-size: 0.95rem;
+  }
+}
