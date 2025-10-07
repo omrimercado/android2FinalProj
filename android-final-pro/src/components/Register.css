@@ -1,0 +1,237 @@
+/* Overlay */
+.register-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Modal */
+.register-modal {
+  background: white;
+  border-radius: 20px;
+  padding: 3rem 3rem 2.5rem;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Close Button */
+.register-modal .close-button {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  color: #999;
+  cursor: pointer;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border-radius: 50%;
+}
+
+.register-modal .close-button:hover {
+  background: #f5f5f5;
+  color: #333;
+}
+
+/* Title */
+.register-title {
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 2.5rem 0;
+  letter-spacing: -0.5px;
+}
+
+/* Form */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.register-form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.register-form .form-input {
+  padding: 1rem 1.25rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: #fafafa;
+}
+
+.register-form .form-input:focus {
+  outline: none;
+  border-color: #5b7ce6;
+  background: white;
+}
+
+.register-form .form-input::placeholder {
+  color: #999;
+  font-size: 1rem;
+}
+
+/* Register Button */
+.register-button {
+  background: #5b7ce6;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+  margin-top: 0.5rem;
+}
+
+.register-button:hover {
+  background: #4a6bd5;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(91, 124, 230, 0.4);
+}
+
+.register-button:active {
+  transform: translateY(0);
+}
+
+/* Divider */
+.register-modal .divider {
+  margin: 2rem 0 1.5rem;
+  position: relative;
+}
+
+.register-modal .divider-line {
+  display: block;
+  height: 1px;
+  background: #e0e0e0;
+}
+
+/* Google Button */
+.register-modal .google-button {
+  background: #d85040;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  letter-spacing: 1px;
+}
+
+.register-modal .google-button:hover {
+  background: #c74030;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(216, 80, 64, 0.4);
+}
+
+.register-modal .google-button:active {
+  transform: translateY(0);
+}
+
+.register-modal .google-icon {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* Login Link */
+.login-link {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.login-button-link {
+  background: transparent;
+  border: none;
+  color: #5b7ce6;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.95rem;
+  margin-right: 0.25rem;
+  transition: all 0.3s ease;
+}
+
+.login-button-link:hover {
+  color: #4a6bd5;
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .register-modal {
+    padding: 2.5rem 2rem 2rem;
+    border-radius: 15px;
+  }
+
+  .register-title {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .register-form .form-input {
+    padding: 0.875rem 1rem;
+  }
+
+  .register-button,
+  .register-modal .google-button {
+    padding: 0.875rem;
+  }
+}
+
+/* RTL Support (optional) */
+[dir="rtl"] .register-modal .close-button {
+  right: auto;
+  left: 1.5rem;
+}
+
