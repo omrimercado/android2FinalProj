@@ -107,7 +107,7 @@ export const verifyToken = async (req, res, next) => {
 
 export const logout = async (req, res, next) => {
   try {
-
+      // TODO: Implement email sending functionality
     res.status(200).json({
       success: true,
       message: 'Logout successful',
@@ -132,7 +132,6 @@ export const forgotPassword = async (req, res, next) => {
     }
 
     // TODO: Implement email sending functionality
-    // For now, just return success
     res.status(200).json({
       success: true,
       message: 'Password reset email sent',

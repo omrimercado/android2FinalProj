@@ -14,6 +14,21 @@ services:
     networks:
       - social-media-network
 
+  mongo-express:
+    image: mongo-express:latest
+    container_name: social-media-mongo-express
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_URL=mongodb://mongodb:27017/
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=admin123
+    depends_on:
+      - mongodb
+    networks:
+      - social-media-network
+
   server:
     build:
       context: ./server
