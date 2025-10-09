@@ -1,6 +1,6 @@
 # Android Final Project - Professional Social Platform
 
-A modern React-based social platform inspired by professional networking features, built with Create React App.
+A modern full-stack social platform with React frontend and Node.js/Express/MongoDB backend following MVC architecture.
 
 ## 🚀 Features
 
@@ -17,31 +17,46 @@ A modern React-based social platform inspired by professional networking feature
 - **Interactive Elements** - Hover effects, transitions, and micro-interactions
 
 ### 🔧 Technical Features
-- **React Hooks** - Modern React with functional components
-- **State Management** - Local state management with useState
-- **Form Validation** - Client-side validation for all forms
-- **Component Architecture** - Modular, reusable components
-- **CSS Styling** - Custom CSS with modern design patterns
+- **React Frontend** - Modern React with functional components and hooks
+- **Node.js Backend** - Express server with MVC architecture
+- **MongoDB Database** - NoSQL database for data persistence
+- **REST API** - RESTful API endpoints for client-server communication
+- **JWT Authentication** - Secure token-based authentication
+- **Form Validation** - Client-side and server-side validation
 
 ## 📁 Project Structure
 
 ```
-src/
-├── components/
-│   ├── Feed.js & Feed.css          # Main feed page
-│   ├── GroupsSearch.js & GroupsSearch.css  # Groups discovery
-│   ├── Profile.js & Profile.css    # User profile
-│   ├── Login.js & Login.css        # Login page
-│   └── Register.js & Register.css  # Registration page
-├── App.js                          # Main app component with routing
-├── App.css                         # Global styles and navigation
-└── index.js                        # App entry point
+android2FinalProj/
+├── client/                         # React frontend
+│   ├── public/
+│   ├── src/
+│   │   ├── components/            # Reusable UI components
+│   │   ├── pages/                 # Page-level components
+│   │   ├── hooks/                 # Custom React hooks
+│   │   ├── services/              # API service layer
+│   │   └── App.js                 # Main app component
+│   └── package.json               # Client dependencies
+│
+├── server/                         # Node.js backend
+│   ├── models/                    # MongoDB schemas (Model)
+│   ├── controllers/               # Business logic (Controller)
+│   ├── routes/                    # API routes (Router)
+│   ├── middleware/                # Auth, validation middleware
+│   ├── config/                    # Database and env configuration
+│   ├── server.js                  # Server entry point
+│   └── package.json               # Server dependencies
+│
+├── README.md
+├── CLAUDE.md
+└── API_SETUP.md
 ```
 
 ## 🛠️ Installation & Setup
 
 ### Prerequisites
-- Node.js (v14 or higher)
+- Node.js (v16 or higher)
+- MongoDB (local or Atlas)
 - npm or yarn
 
 ### Installation Steps
@@ -52,33 +67,58 @@ src/
    cd android2FinalProj
    ```
 
-2. **Install dependencies**
+2. **Install client dependencies**
    ```bash
+   cd client
    npm install
    ```
 
-3. **Start the development server**
+3. **Install server dependencies**
    ```bash
+   cd ../server
+   npm install
+   ```
+
+4. **Set up environment variables**
+   Create a `.env` file in the `server/` directory:
+   ```
+   PORT=5000
+   MONGODB_URI=mongodb://localhost:27017/social-media
+   JWT_SECRET=your_jwt_secret_key
+   ```
+
+5. **Start MongoDB**
+   ```bash
+   # If using local MongoDB
+   mongod
+   ```
+
+6. **Start the backend server**
+   ```bash
+   cd server
+   npm run dev
+   ```
+
+7. **Start the frontend (in a new terminal)**
+   ```bash
+   cd client
    npm start
    ```
 
-4. **Open your browser**
-   Navigate to [http://localhost:3000](http://localhost:3000)
+8. **Open your browser**
+   - Frontend: [http://localhost:3000](http://localhost:3000)
+   - Backend API: [http://localhost:5000](http://localhost:5000)
 
 ## 🎯 Available Scripts
 
-### `npm start`
-Runs the app in development mode with hot reloading.
+### Client (React)
+- `npm start` - Runs the app in development mode
+- `npm test` - Launches the test runner
+- `npm run build` - Builds the app for production
 
-### `npm test`
-Launches the test runner in interactive watch mode.
-
-### `npm run build`
-Builds the app for production to the `build` folder.
-
-### `npm run eject`
-**Note: This is a one-way operation!**
-Ejects from Create React App to get full control over the build process.
+### Server (Node.js)
+- `npm start` - Runs the server in production mode
+- `npm run dev` - Runs the server with nodemon (auto-restart)
 
 ## 📱 Pages Overview
 
