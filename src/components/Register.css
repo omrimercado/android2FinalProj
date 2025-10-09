@@ -1,5 +1,5 @@
 /* Overlay */
-.login-overlay {
+.register-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -23,7 +23,7 @@
 }
 
 /* Modal */
-.login-modal {
+.register-modal {
   background: white;
   border-radius: 20px;
   padding: 3rem 3rem 2.5rem;
@@ -32,6 +32,8 @@
   position: relative;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   animation: slideUp 0.3s ease;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 @keyframes slideUp {
@@ -46,7 +48,7 @@
 }
 
 /* Close Button */
-.close-button {
+.register-modal .close-button {
   position: absolute;
   top: 1.5rem;
   right: 1.5rem;
@@ -64,13 +66,13 @@
   border-radius: 50%;
 }
 
-.close-button:hover {
+.register-modal .close-button:hover {
   background: #f5f5f5;
   color: #333;
 }
 
 /* Title */
-.login-title {
+.register-title {
   text-align: center;
   font-size: 2.5rem;
   font-weight: 600;
@@ -80,18 +82,18 @@
 }
 
 /* Form */
-.login-form {
+.register-form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-.form-group {
+.register-form .form-group {
   display: flex;
   flex-direction: column;
 }
 
-.form-input {
+.register-form .form-input {
   padding: 1rem 1.25rem;
   border: 2px solid #e0e0e0;
   border-radius: 12px;
@@ -100,45 +102,19 @@
   background: #fafafa;
 }
 
-.form-input:focus {
+.register-form .form-input:focus {
   outline: none;
   border-color: #5b7ce6;
   background: white;
 }
 
-.form-input::placeholder {
+.register-form .form-input::placeholder {
   color: #999;
   font-size: 1rem;
 }
 
-/* Remember Password */
-.remember-group {
-  margin: -0.5rem 0 0.5rem 0;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  user-select: none;
-  gap: 0.75rem;
-}
-
-.checkbox-label input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  margin: 0;
-  cursor: pointer;
-  accent-color: #5b7ce6;
-}
-
-.checkbox-text {
-  color: #666;
-  font-size: 0.95rem;
-}
-
-/* Login Button */
-.login-button {
+/* Register Button */
+.register-button {
   background: #5b7ce6;
   color: white;
   border: none;
@@ -152,35 +128,35 @@
   margin-top: 0.5rem;
 }
 
-.login-button:hover {
+.register-button:hover {
   background: #4a6bd5;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(91, 124, 230, 0.4);
 }
 
-.login-button:active {
+.register-button:active {
   transform: translateY(0);
 }
 
 /* Divider */
-.divider {
+.register-modal .divider {
   margin: 2rem 0 1.5rem;
   position: relative;
 }
 
-.divider-line {
+.register-modal .divider-line {
   display: block;
   height: 1px;
   background: #e0e0e0;
 }
 
 /* Google Button */
-.google-button {
+.register-modal .google-button {
   background: #d85040;
   color: white;
   border: none;
   border-radius: 12px;
-  padding: 1rem 2rem;
+  padding: 1rem;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -190,34 +166,32 @@
   justify-content: center;
   gap: 0.75rem;
   letter-spacing: 1px;
-  margin: 0 auto;
-  max-width: fit-content;
 }
 
-.google-button:hover {
+.register-modal .google-button:hover {
   background: #c74030;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(216, 80, 64, 0.4);
 }
 
-.google-button:active {
+.register-modal .google-button:active {
   transform: translateY(0);
 }
 
-.google-icon {
+.register-modal .google-icon {
   font-size: 1.5rem;
   font-weight: 700;
 }
 
-/* Sign Up Link */
-.signup-link {
+/* Login Link */
+.login-link {
   text-align: center;
   margin-top: 1.5rem;
   color: #666;
   font-size: 0.95rem;
 }
 
-.signup-button {
+.login-button-link {
   background: transparent;
   border: none;
   color: #5b7ce6;
@@ -228,41 +202,36 @@
   transition: all 0.3s ease;
 }
 
-.signup-button:hover {
+.login-button-link:hover {
   color: #4a6bd5;
   text-decoration: underline;
 }
 
 /* Responsive */
 @media (max-width: 600px) {
-  .login-modal {
+  .register-modal {
     padding: 2.5rem 2rem 2rem;
     border-radius: 15px;
   }
 
-  .login-title {
+  .register-title {
     font-size: 2rem;
     margin-bottom: 2rem;
   }
 
-  .form-input {
+  .register-form .form-input {
     padding: 0.875rem 1rem;
   }
 
-  .login-button,
-  .google-button {
+  .register-button,
+  .register-modal .google-button {
     padding: 0.875rem;
   }
 }
 
 /* RTL Support (optional) */
-[dir="rtl"] .close-button {
+[dir="rtl"] .register-modal .close-button {
   right: auto;
   left: 1.5rem;
-}
-
-[dir="rtl"] .checkbox-label input[type="checkbox"] {
-  margin-left: 0;
-  margin-right: 0.5rem;
 }
 
