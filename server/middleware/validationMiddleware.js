@@ -1,6 +1,5 @@
 import { body, validationResult } from 'express-validator';
 
-// Validation for registration
 export const validateRegister = [
   body('name')
     .trim()
@@ -29,8 +28,7 @@ export const validateRegister = [
     .isISO8601()
     .withMessage('Please provide a valid date'),
 
-  // Middleware to check validation results
-  (req, res, next) => {
+    (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
@@ -43,7 +41,6 @@ export const validateRegister = [
   },
 ];
 
-// Validation for login
 export const validateLogin = [
   body('email')
     .trim()
@@ -57,7 +54,6 @@ export const validateLogin = [
     .notEmpty()
     .withMessage('Password is required'),
 
-  // Middleware to check validation results
   (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

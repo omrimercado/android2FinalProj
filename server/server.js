@@ -5,29 +5,22 @@ import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import { errorHandler, notFound } from './middleware/errorMiddleware.js';
 
-// Load environment variables
 dotenv.config();
 
-// Connect to MongoDB
 connectDB();
 
-// Initialize Express app
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes
 app.use('/api/auth', authRoutes);
 
-// Basic test route
 app.get('/', (req, res) => {
   res.json({ message: 'Social Media API Server is running' });
 });
 
-// Error handling middleware
 app.use(notFound);
 app.use(errorHandler);
 

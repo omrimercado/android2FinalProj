@@ -14,12 +14,10 @@ import {
 
 const router = express.Router();
 
-// Public routes
 router.post('/register', validateRegister, register);
 router.post('/login', validateLogin, login);
 router.post('/forgot-password', forgotPassword);
 
-// Protected routes
 router.post('/verify-token', protect, verifyToken);
 router.post('/logout', protect, logout);
 

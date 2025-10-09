@@ -1,13 +1,9 @@
-import User from '../models/User.js';
+import { User } from '../models/User.js';
 
-// @desc    Register a new user
-// @route   POST /api/auth/register
-// @access  Public
 export const register = async (req, res, next) => {
   try {
     const { name, email, password, birthDate } = req.body;
 
-    // Check if user already exists
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({
@@ -17,7 +13,6 @@ export const register = async (req, res, next) => {
       });
     }
 
-    // Create user
     const user = await User.create({
       name,
       email,
@@ -25,7 +20,6 @@ export const register = async (req, res, next) => {
       birthDate,
     });
 
-    // Generate token
     const token = user.generateToken();
 
     res.status(201).json({
@@ -46,14 +40,10 @@ export const register = async (req, res, next) => {
   }
 };
 
-// @desc    Login user
-// @route   POST /api/auth/login
-// @access  Public
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    // Find user by email and include password field
     const user = await User.findOne({ email }).select('+password');
 
     if (!user) {
@@ -64,7 +54,6 @@ export const login = async (req, res, next) => {
       });
     }
 
-    // Check if password matches
     const isPasswordMatch = await user.comparePassword(password);
 
     if (!isPasswordMatch) {
@@ -75,7 +64,6 @@ export const login = async (req, res, next) => {
       });
     }
 
-    // Generate token
     const token = user.generateToken();
 
     res.status(200).json({
@@ -96,12 +84,8 @@ export const login = async (req, res, next) => {
   }
 };
 
-// @desc    Verify token
-// @route   POST /api/auth/verify-token
-// @access  Private
 export const verifyToken = async (req, res, next) => {
   try {
-    // User is already attached to req by protect middleware
     const user = req.user;
 
     res.status(200).json({
@@ -121,14 +105,8 @@ export const verifyToken = async (req, res, next) => {
   }
 };
 
-// @desc    Logout user
-// @route   POST /api/auth/logout
-// @access  Private
 export const logout = async (req, res, next) => {
   try {
-    // In a stateless JWT system, logout is primarily handled client-side
-    // by removing the token from localStorage
-    // This endpoint can be used for logging purposes or token blacklisting
 
     res.status(200).json({
       success: true,
@@ -139,14 +117,10 @@ export const logout = async (req, res, next) => {
   }
 };
 
-// @desc    Forgot password
-// @route   POST /api/auth/forgot-password
-// @access  Public
 export const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
 
-    // Find user by email
     const user = await User.findOne({ email });
 
     if (!user) {
