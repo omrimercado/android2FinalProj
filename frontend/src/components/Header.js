@@ -1,7 +1,28 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Header.css';
 
 function Header({ currentPage, onNavigate, onLogout, isLoggedIn = false }) {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout();
+    }
+    navigate('/');
+  };
+
+  const handleNavigate = (page) => {
+    if (page === 'feed') {
+      navigate('/feed');
+    } else if (page === 'profile') {
+      navigate('/profile');
+    } else if (page === 'groups') {
+      // TODO: Add groups page
+      console.log('Groups page not implemented yet');
+    }
+  };
+
   return (
     <header className="header">
       <div className={`header-container ${!isLoggedIn ? 'header-logo-only' : ''}`}>
@@ -17,21 +38,21 @@ function Header({ currentPage, onNavigate, onLogout, isLoggedIn = false }) {
             <nav className="header-nav">
               <button 
                 className={`nav-link ${currentPage === 'feed' ? 'active' : ''}`}
-                onClick={() => onNavigate('feed')}
+                onClick={() => handleNavigate('feed')}
               >
                 Feed
               </button>
               
               <button 
                 className={`nav-link ${currentPage === 'groups' ? 'active' : ''}`}
-                onClick={() => onNavigate('groups')}
+                onClick={() => handleNavigate('groups')}
               >
                 Groups
               </button>
               
               <button 
                 className={`nav-link ${currentPage === 'profile' ? 'active' : ''}`}
-                onClick={() => onNavigate('profile')}
+                onClick={() => handleNavigate('profile')}
               >
                 My Profile
               </button>
@@ -39,7 +60,7 @@ function Header({ currentPage, onNavigate, onLogout, isLoggedIn = false }) {
             
             {/* Logout Button */}
             <div className="header-actions">
-              <button className="auth-button" onClick={onLogout}>
+              <button className="auth-button" onClick={handleLogout}>
                 Logout →
               </button>
             </div>

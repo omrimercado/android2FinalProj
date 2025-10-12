@@ -19,7 +19,7 @@ services:
     container_name: social-media-mongo-express
     restart: unless-stopped
     ports:
-      - "8081:8081"
+      - "8082:8081"
     environment:
       - ME_CONFIG_MONGODB_URL=mongodb://mongodb:27017/
       - ME_CONFIG_BASICAUTH_USERNAME=admin
