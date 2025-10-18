@@ -4,10 +4,12 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci --only=production || npm install
 
 COPY . .
 
+# Expose port 3001 for both HTTP API and WebSocket
 EXPOSE 3001
 
-CMD ["npm", "run", "dev"]
+# Use npm start for production, or override with npm run dev for development
+CMD ["npm", "start"]

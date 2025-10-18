@@ -24,6 +24,9 @@
   .postcard-username {
     font-weight: bold;
   }
+  .postcard-group {
+    font-weight:bolder;
+  }
   
   .postcard-handle {
     font-size: 0.875rem;

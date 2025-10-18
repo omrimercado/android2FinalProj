@@ -7,6 +7,7 @@ export default function PostCard({ post }) {
       <div className="postcard-header">
         <img src={post.avatar} alt="avatar" className="postcard-avatar" />
         <div>
+          <div className="postcard-group">{post.group}</div>
           <div className="postcard-username">{post.username}</div>
           <div className="postcard-handle">@{post.handle} · {post.time}</div>
           <p className="postcard-text">{post.text}</p>

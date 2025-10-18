@@ -18,8 +18,8 @@ function Header({ currentPage, onNavigate, onLogout, isLoggedIn = false }) {
     } else if (page === 'profile') {
       navigate('/profile');
     } else if (page === 'groups') {
-      // TODO: Add groups page
-      console.log('Groups page not implemented yet');
+      navigate('/groups');
+      
     }
   };
 

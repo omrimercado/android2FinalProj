@@ -3,12 +3,14 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import SearchBar from '../components/SearchBar';
 import NewPost from '../components/NewPost';
+import ChatWindow from '../components/ChatWindow';
 import { mockPosts, mockUsers } from '../utils/mockData';
 import './FeedPage.css';
 
 export default function FeedPage({ user, currentPage, onNavigate, onLogout }) {
   const [posts, setPosts] = useState(mockPosts);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedChatUser, setSelectedChatUser] = useState(null);
 
   const handleSearch = (term) => {
     setSearchTerm(term);
@@ -28,6 +30,16 @@ export default function FeedPage({ user, currentPage, onNavigate, onLogout }) {
     return post.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
            postUser?.name.toLowerCase().includes(searchTerm.toLowerCase());
   });
+
+  const handleAvatarClick = (postUser) => {
+    if (postUser.id !== user.id) {
+      setSelectedChatUser(postUser);
+    }
+  };
+
+  const handleCloseChatWindow = () => {
+    setSelectedChatUser(null);
+  };
 
   return (
     <div className="feed-page">
@@ -58,7 +70,14 @@ export default function FeedPage({ user, currentPage, onNavigate, onLogout }) {
               return (
                 <div key={post.id} className="post-card">
                   <div className="post-header">
-                    <img src={postUser?.avatar} alt={postUser?.name} className="post-avatar" />
+                    <img 
+                      src={postUser?.avatar} 
+                      alt={postUser?.name} 
+                      className="post-avatar" 
+                      onClick={() => handleAvatarClick(postUser)}
+                      style={{ cursor: postUser?.id !== user.id ? 'pointer' : 'default' }}
+                      title={postUser?.id !== user.id ? `שלח הודעה ל-${postUser?.name}` : ''}
+                    />
                     <div className="post-info">
                       <h4 className="post-author">{postUser?.name}</h4>
                       <span className="post-time">{new Date(post.timestamp).toLocaleString()}</span>
@@ -87,6 +106,15 @@ export default function FeedPage({ user, currentPage, onNavigate, onLogout }) {
       </div>
 
       <Footer />
+
+      {/* חלונית צ'אט */}
+      {selectedChatUser && (
+        <ChatWindow 
+          user={user}
+          targetUser={selectedChatUser}
+          onClose={handleCloseChatWindow}
+        />
+      )}
     </div>
   );
 }

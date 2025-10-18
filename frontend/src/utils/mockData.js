@@ -54,6 +54,7 @@ export const mockPosts = [
     likes: 24,
     comments: 5,
     timestamp: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+    group: 'React Developers Israel',
   },
   {
     id: 2,
@@ -63,6 +64,7 @@ export const mockPosts = [
     likes: 45,
     comments: 12,
     timestamp: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
+    group: 'Tech Entrepreneurs',
   },
   {
     id: 3,
@@ -72,6 +74,7 @@ export const mockPosts = [
     likes: 18,
     comments: 8,
     timestamp: new Date(Date.now() - 10800000).toISOString(), // 3 hours ago
+    group: 'UI/UX Designers',
   },
 ];
 

@@ -6,70 +6,112 @@ A modern full-stack social platform with React frontend and Node.js/Express/Mong
 
 ### 📱 Core Pages
 - **Feed Page** - Professional posts with likes, comments, and sharing
-- **Groups Search** - Discover and follow professional groups by category
+- **Groups Page** - Create, join, and manage professional groups
 - **User Profile** - Personal profile with posts, followed groups, and personal info
+- **Real-time Chat** - WebSocket-based personal messaging between users
 - **Login/Register** - Secure authentication with form validation
 
 ### 🎨 Design Features
 - **Modern UI/UX** - Clean, professional design with smooth animations
 - **Responsive Design** - Optimized for desktop, tablet, and mobile devices
-- **RTL Support** - Full Hebrew language support
 - **Interactive Elements** - Hover effects, transitions, and micro-interactions
+- **Real-time Updates** - Live chat with WebSocket connection
 
 ### 🔧 Technical Features
 - **React Frontend** - Modern React with functional components and hooks
 - **Node.js Backend** - Express server with MVC architecture
 - **MongoDB Database** - NoSQL database for data persistence
 - **REST API** - RESTful API endpoints for client-server communication
+- **WebSocket** - Real-time chat communication
 - **JWT Authentication** - Secure token-based authentication
 - **Form Validation** - Client-side and server-side validation
+- **Docker Support** - Full Docker containerization for all services
 
 ## 📁 Project Structure
 
 ```
-android2FinalProj/
-├── client/                         # React frontend
+Android2FinalPro/
+├── frontend/                       # React frontend
 │   ├── public/
 │   ├── src/
 │   │   ├── components/            # Reusable UI components
+│   │   │   ├── ChatWindow.jsx    # Real-time chat component
+│   │   │   ├── NewGroup.jsx      # Group creation modal
+│   │   │   └── ...
 │   │   ├── pages/                 # Page-level components
+│   │   │   ├── FeedPage.jsx      # Main feed
+│   │   │   ├── GroupsPage.jsx    # Groups management
+│   │   │   ├── MyProfilePage.jsx # User profile
+│   │   │   └── ...
 │   │   ├── hooks/                 # Custom React hooks
 │   │   ├── services/              # API service layer
+│   │   │   ├── api.js            # REST API service
+│   │   │   ├── chatApi.js        # Chat & WebSocket service
+│   │   │   └── index.js          # Service exports
 │   │   └── App.js                 # Main app component
+│   ├── Dockerfile                 # Frontend Docker config
 │   └── package.json               # Client dependencies
 │
 ├── server/                         # Node.js backend
 │   ├── models/                    # MongoDB schemas (Model)
+│   │   ├── User.js               # User model
+│   │   └── Message.js            # Chat message model
 │   ├── controllers/               # Business logic (Controller)
+│   │   ├── authController.js     # Authentication
+│   │   └── chatController.js     # Chat & messaging
 │   ├── routes/                    # API routes (Router)
+│   │   ├── authRoutes.js         # Auth endpoints
+│   │   └── chatRoutes.js         # Chat endpoints
 │   ├── middleware/                # Auth, validation middleware
 │   ├── config/                    # Database and env configuration
-│   ├── server.js                  # Server entry point
+│   ├── server.js                  # Server entry point (HTTP + WebSocket)
+│   ├── Dockerfile                 # Backend Docker config
 │   └── package.json               # Server dependencies
 │
+├── docker-compose.yml              # Docker orchestration
+├── DOCKER_SETUP.md                 # Docker access points
 ├── README.md
-├── CLAUDE.md
 └── API_SETUP.md
 ```
 
 ## 🛠️ Installation & Setup
 
-### Prerequisites
+### Option 1: Docker (Recommended) 🐳
+
+**Prerequisites:** Docker and Docker Compose installed
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/Android2FinalPro.git
+   cd Android2FinalPro
+   ```
+
+2. **Start all services**
+   ```bash
+   docker-compose up --build
+   ```
+
+
+See [DOCKER_SETUP.md](DOCKER_SETUP.md) for all service URLs.
+
+---
+
+### Option 2: Manual Setup
+
+**Prerequisites:**
 - Node.js (v16 or higher)
 - MongoDB (local or Atlas)
 - npm or yarn
 
-### Installation Steps
-
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/omrimercado/android2FinalProj.git
-   cd android2FinalProj
+   git clone https://github.com/yourusername/Android2FinalPro.git
+   cd Android2FinalPro
    ```
 
-2. **Install client dependencies**
+2. **Install frontend dependencies**
    ```bash
-   cd client
+   cd frontend
    npm install
    ```
 
@@ -80,11 +122,19 @@ android2FinalProj/
    ```
 
 4. **Set up environment variables**
-   Create a `.env` file in the `server/` directory:
+   
+   Create `.env` in `server/` directory:
    ```
-   PORT=5000
+   PORT=3001
    MONGODB_URI=mongodb://localhost:27017/social-media
-   JWT_SECRET=your_jwt_secret_key
+   JWT_SECRET=your_jwt_secret_key_change_in_production
+   JWT_EXPIRE=24h
+   ```
+   
+   Create `.env` in `frontend/` directory:
+   ```
+   REACT_APP_API_URL=http://localhost:3001/api
+   REACT_APP_WS_URL=ws://localhost:3001/chat
    ```
 
 5. **Start MongoDB**
@@ -101,17 +151,24 @@ android2FinalProj/
 
 7. **Start the frontend (in a new terminal)**
    ```bash
-   cd client
+   cd frontend
    npm start
    ```
 
-8. **Open your browser**
-   - Frontend: [http://localhost:3000](http://localhost:3000)
-   - Backend API: [http://localhost:5000](http://localhost:5000)
+8. **Access the application**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:3001/api
+   - WebSocket: ws://localhost:3001/chat
 
 ## 🎯 Available Scripts
 
-### Client (React)
+### Docker Commands
+- `docker-compose up --build` - Start all services (MongoDB, Backend, Frontend)
+- `docker-compose down` - Stop all services
+- `docker-compose logs -f` - View all logs
+- `docker-compose restart server` - Restart specific service
+
+### Frontend (React)
 - `npm start` - Runs the app in development mode
 - `npm test` - Launches the test runner
 - `npm run build` - Builds the app for production
@@ -126,13 +183,23 @@ android2FinalProj/
 - View and create professional posts
 - Like, comment, and share posts
 - Real-time interaction with posts
+- **Personal Chat** - Click user avatar to start 1-on-1 chat
 - Professional post layout with user info
 
-### 👥 Groups Search
-- Search groups by name or description
-- Filter by categories (Tech, Business, Design, etc.)
-- Follow/unfollow groups
-- View group statistics (members, posts)
+### 👥 Groups Page
+- **My Groups** - View groups you've joined with admin badges
+- **Suggested Groups** - Discover new groups to join
+- **Create Group** - Modal for creating new groups (name, description, tags)
+- Join/Leave groups functionality
+- Search groups by name, description, or tags
+
+### 💬 Real-time Chat
+- **WebSocket-based messaging** - Instant message delivery
+- **Chat History** - Load previous conversations from database
+- **Online Status** - See who's online
+- **Offline Messages** - Send messages even when recipient is offline
+- **Read Receipts** - Track message delivery and read status
+- Click any user avatar to open chat window
 
 ### 👤 User Profile
 - **Posts Tab** - Personal posts with engagement stats
@@ -153,38 +220,50 @@ android2FinalProj/
 - Secondary: `#764ba2` (Purple gradient)
 - Text: `#2c3e50` (Dark gray)
 - Background: `#f8f9fa` (Light gray)
-
-### Typography
-- Hebrew RTL support
-- Modern font stack
-- Responsive font sizes
+- Online Status: `#10b981` (Green)
+- Offline Status: `#94a3b8` (Gray)
 
 ### Components
 - Card-based layouts
 - Gradient buttons
 - Smooth animations
 - Hover effects
+- Modal overlays
+- Floating chat windows
+- Real-time status indicators
+
+## 🔌 API Documentation
+
+See [API_SETUP.md](API_SETUP.md) for complete API documentation including:
+- Authentication endpoints
+- Chat & messaging endpoints
+- Group management endpoints
+- WebSocket protocol details
 
 ## 🚀 Deployment
 
-### Build for Production
+### Docker Production Deployment
+1. Update `JWT_SECRET` in docker-compose.yml
+2. Set `NODE_ENV=production`
+3. Build and deploy:
+   ```bash
+   docker-compose -f docker-compose.yml up -d
+   ```
+
+### Manual Production Build
 ```bash
+# Frontend
+cd frontend
 npm run build
+
+# Serve with static server or nginx
 ```
 
-### Deploy to GitHub Pages
-1. Install gh-pages: `npm install --save-dev gh-pages`
-2. Add to package.json:
-   ```json
-   "homepage": "https://yourusername.github.io/android2FinalProj"
-   ```
-3. Add deploy script:
-   ```json
-   "scripts": {
-     "deploy": "gh-pages -d build"
-   }
-   ```
-4. Deploy: `npm run deploy`
+### Environment Variables for Production
+- Set secure `JWT_SECRET`
+- Update `MONGODB_URI` to production database
+- Configure CORS for production domains
+- Set appropriate `REACT_APP_API_URL` and `REACT_APP_WS_URL`
 
 ## 🤝 Contributing
 
