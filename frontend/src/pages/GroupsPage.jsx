@@ -4,6 +4,7 @@ import Footer from '../components/Footer';
 import SearchBar from '../components/SearchBar';
 import NewGroup from '../components/NewGroup';
 import ApiService from '../services/api';
+import { mockGroups } from '../utils/mockData';
 import './GroupsPage.css';
 
 export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) {
@@ -22,58 +23,71 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
     try {
       // TODO: Replace with actual API calls when backend is ready
       // const myGroupsResult = await ApiService.getMyGroups();
-      // const suggestedResult = await ApiService.getSuggestedGroups();
       
-      // Mock data for now
-      setTimeout(() => {
-        setMyGroups([
-          {
-            id: 1,
-            name: 'React Developers Israel',
-            description: 'A community for React developers in Israel',
-            tags: ['React', 'JavaScript', 'Web'],
-            membersCount: 1250,
-            avatar: 'https://i.pravatar.cc/150?img=1',
-            isAdmin: true
-          },
-          {
-            id: 2,
-            name: 'UI/UX Designers',
-            description: 'Share your designs and get feedback',
-            tags: ['Design', 'UI', 'UX'],
-            membersCount: 820,
-            avatar: 'https://i.pravatar.cc/150?img=2',
-            isAdmin: false
-          }
-        ]);
+      // Mock data for now - user's current groups
+      const userGroups = [
+        {
+          id: 1,
+          name: 'React Developers Israel',
+          description: 'A community for React developers in Israel',
+          tags: ['React', 'JavaScript', 'Web'],
+          membersCount: 1250,
+          avatar: 'https://i.pravatar.cc/150?img=1',
+          isAdmin: true
+        },
+      ];
 
-        setSuggestedGroups([
-          {
-            id: 3,
-            name: 'Tech Entrepreneurs',
-            description: 'Network with tech entrepreneurs and startup founders',
-            tags: ['Startup', 'Business', 'Tech'],
-            membersCount: 2100,
-            avatar: 'https://i.pravatar.cc/150?img=3'
-          },
-          {
-            id: 4,
-            name: 'Frontend Masters',
-            description: 'Advanced frontend development techniques',
-            tags: ['Frontend', 'JavaScript', 'CSS'],
-            membersCount: 950,
-            avatar: 'https://i.pravatar.cc/150?img=4'
-          },
-          {
-            id: 5,
-            name: 'DevOps Community',
-            description: 'Share DevOps best practices and tools',
-            tags: ['DevOps', 'Cloud', 'Docker'],
-            membersCount: 1600,
-            avatar: 'https://i.pravatar.cc/150?img=5'
-          }
-        ]);
+      // Get user interests from user object
+      const userInterests = user?.interests || [];
+      console.log('👤 User interests:', userInterests);
+
+      // Calculate match score for each group based on user interests
+      const calculateMatchScore = (groupTags) => {
+        if (!userInterests || userInterests.length === 0) return 0;
         
+        let matches = 0;
+        groupTags.forEach(tag => {
+          userInterests.forEach(interest => {
+            // Exact match or partial match
+            if (
+              tag.toLowerCase() === interest.toLowerCase() ||
+              tag.toLowerCase().includes(interest.toLowerCase()) ||
+              interest.toLowerCase().includes(tag.toLowerCase())
+            ) {
+              matches++;
+            }
+          });
+        });
+        
+        return matches;
+      };
+
+      // Filter out groups user is already a member of
+      const myGroupIds = userGroups.map(g => g.id);
+      const availableGroups = mockGroups
+        .filter(g => !myGroupIds.includes(g.id))
+        .map(group => ({
+          ...group,
+          avatar: group.image || `https://i.pravatar.cc/150?img=${group.id}`,
+          membersCount: group.members,
+          matchScore: calculateMatchScore(group.tags)
+        }));
+
+      // Sort by match score (highest first), then by member count
+      const sortedSuggested = availableGroups.sort((a, b) => {
+        if (b.matchScore !== a.matchScore) {
+          return b.matchScore - a.matchScore;
+        }
+        return b.membersCount - a.membersCount;
+      });
+
+      console.log('✨ Suggested groups with scores:', 
+        sortedSuggested.map(g => ({ name: g.name, score: g.matchScore }))
+      );
+
+      setTimeout(() => {
+        setMyGroups(userGroups);
+        setSuggestedGroups(sortedSuggested);
         setLoading(false);
       }, 800);
     } catch (error) {
@@ -200,6 +214,19 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
                 <h2 className="section-title">
                   ✨ Suggested for You ({filteredSuggestedGroups.length})
                 </h2>
+                {user?.interests && user.interests.length > 0 && (
+                  <div className="interests-info">
+                    <span className="interests-label">📌 Based on your interests:</span>
+                    <div className="user-interests">
+                      {user.interests.slice(0, 5).map((interest, idx) => (
+                        <span key={idx} className="interest-badge">{interest}</span>
+                      ))}
+                      {user.interests.length > 5 && (
+                        <span className="interest-badge more">+{user.interests.length - 5} more</span>
+                      )}
+                    </div>
+                  </div>
+                )}
                 {filteredSuggestedGroups.length === 0 ? (
                   <div className="empty-state">
                     <p>No suggested groups at the moment.</p>
@@ -213,6 +240,7 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
                         isMember={false}
                         onAction={() => handleJoinGroup(group.id)}
                         actionLabel="Join"
+                        userInterests={user?.interests || []}
                       />
                     ))}
                   </div>
@@ -238,9 +266,22 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
 }
 
 // Group Card Component
-function GroupCard({ group, isMember, onAction, actionLabel }) {
+function GroupCard({ group, isMember, onAction, actionLabel, userInterests = [] }) {
+  // Check which tags match user interests
+  const isTagMatched = (tag) => {
+    if (!userInterests || userInterests.length === 0) return false;
+    
+    return userInterests.some(interest => 
+      tag.toLowerCase() === interest.toLowerCase() ||
+      tag.toLowerCase().includes(interest.toLowerCase()) ||
+      interest.toLowerCase().includes(tag.toLowerCase())
+    );
+  };
+
+  const hasMatches = group.matchScore && group.matchScore > 0;
+
   return (
-    <div className="group-card">
+    <div className={`group-card ${hasMatches ? 'recommended' : ''}`}>
       <div className="group-card-header">
         <img src={group.avatar} alt={group.name} className="group-avatar" />
         <div className="group-info">
@@ -250,14 +291,26 @@ function GroupCard({ group, isMember, onAction, actionLabel }) {
         {group.isAdmin && (
           <span className="admin-badge">Admin</span>
         )}
+        {hasMatches && !group.isAdmin && (
+          <span className="match-badge">🎯 {group.matchScore} match{group.matchScore > 1 ? 'es' : ''}</span>
+        )}
       </div>
 
       <p className="group-description">{group.description}</p>
 
       <div className="group-tags">
-        {group.tags.map((tag, index) => (
-          <span key={index} className="group-tag">#{tag}</span>
-        ))}
+        {group.tags.map((tag, index) => {
+          const isMatched = isTagMatched(tag);
+          return (
+            <span 
+              key={index} 
+              className={`group-tag ${isMatched ? 'matched' : ''}`}
+              title={isMatched ? 'Matches your interests!' : ''}
+            >
+              {isMatched && '⭐ '}#{tag}
+            </span>
+          );
+        })}
       </div>
 
       <button 

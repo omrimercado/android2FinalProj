@@ -730,6 +730,68 @@ class ApiService {
       };
     }
   }
+
+  // Update user preferences (interests)
+  static async updateUserPreferences(interests) {
+    console.log('🔧 ApiService.updateUserPreferences() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/auth/preferences`);
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'PUT');
+      console.log('📤 Interests:', interests);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+      
+      const response = await fetch(`${API_BASE_URL}/auth/preferences`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ interests })
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Update preferences failed');
+        throw new Error(data.message || 'Update preferences failed');
+      }
+
+      console.log('✅ Update preferences API call successful');
+      
+      if (data.success && data.data) {
+        return {
+          success: true,
+          data: data.data,
+          message: data.message || 'Preferences updated successfully'
+        };
+      }
+      
+      return {
+        success: true,
+        data: data,
+        message: 'Preferences updated successfully'
+      };
+    } catch (error) {
+      console.log('❌ Update preferences API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Update preferences failed'
+      };
+    }
+  }
 }
 
 export default ApiService;

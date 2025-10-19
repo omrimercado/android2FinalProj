@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChatApiService } from '../services';
+import { getAvatar } from '../utils/helpers';
 import './ChatWindow.css';
 
 export default function ChatWindow({ user, targetUser, onClose }) {
@@ -171,7 +172,7 @@ export default function ChatWindow({ user, targetUser, onClose }) {
         {/* כותרת */}
         <div className="chat-header">
           <div className="chat-header-user">
-            <img src={targetUser.avatar} alt={targetUser.name} className="chat-avatar" />
+            <img src={getAvatar(targetUser.avatar, targetUser.name)} alt={targetUser.name} className="chat-avatar" />
             <div className="chat-header-info">
               <h3>{targetUser.name}</h3>
               <span className="chat-status">

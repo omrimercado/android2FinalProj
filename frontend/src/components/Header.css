@@ -40,6 +40,8 @@
   font-size: 1.5rem;
   font-weight: 700;
   transform: rotate(-10deg);
+
+  text-shadow: 3px 3px 3px rgba(0, 0, 0, 0.4);
 }
 
 .logo-text {
@@ -47,6 +49,9 @@
   font-size: 1.25rem;
   font-weight: 600;
   letter-spacing: -0.5px;
+
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3),
+               0 0 10px rgba(102, 126, 234, 0.5);
 }
 
 /* Navigation */

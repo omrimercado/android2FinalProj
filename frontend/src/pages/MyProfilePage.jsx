@@ -4,11 +4,12 @@ import Footer from '../components/Footer';
 import PostCard from '../components/PostCard';
 import ChangeImage from '../components/ChangeImage';
 import ApiService from '../services/api';
+import { getAvatar } from '../utils/helpers';
 import './MyProfilePage.css';
 
 export default function MyProfilePage({ user, currentPage, onNavigate, onLogout }) {
   const [showChangeImage, setShowChangeImage] = useState(false);
-  const [currentAvatar, setCurrentAvatar] = useState(user?.avatar || 'https://i.pravatar.cc/150?img=1');
+  const [currentAvatar, setCurrentAvatar] = useState(getAvatar(user?.avatar, user?.name));
   
   // State for join requests - now organized by groups
   const [adminGroups, setAdminGroups] = useState([]);
@@ -21,7 +22,7 @@ export default function MyProfilePage({ user, currentPage, onNavigate, onLogout 
   const [myPosts] = useState([
     {
       id: 1,
-      avatar: user?.avatar || 'https://i.pravatar.cc/150?img=1',
+      avatar: getAvatar(user?.avatar, user?.name),
       group: 'React Developers Israel',
       username: user?.name || 'John Doe',
       handle: user?.email?.split('@')[0] || 'johndoe',
@@ -34,7 +35,7 @@ export default function MyProfilePage({ user, currentPage, onNavigate, onLogout 
     },
     {
       id: 2,
-      avatar: user?.avatar || 'https://i.pravatar.cc/150?img=1',
+      avatar: getAvatar(user?.avatar, user?.name),
       group: 'Tech Entrepreneurs',
       username: user?.name || 'John Doe',
       handle: user?.email?.split('@')[0] || 'johndoe',
@@ -47,7 +48,7 @@ export default function MyProfilePage({ user, currentPage, onNavigate, onLogout 
     },
     {
       id: 3,
-      avatar: user?.avatar || 'https://i.pravatar.cc/150?img=1',
+      avatar: getAvatar(user?.avatar, user?.name),
       group: 'UI/UX Designers',
       username: user?.name || 'John Doe',
       handle: user?.email?.split('@')[0] || 'johndoe',
@@ -182,7 +183,7 @@ export default function MyProfilePage({ user, currentPage, onNavigate, onLogout 
                 groupId: group.group_id,
                 userId: appliedUser.user_id,
                 userName: appliedUser.name || appliedUser.username || 'Anonymous User',
-                userAvatar: appliedUser.avatar || 'https://i.pravatar.cc/150?img=1',
+                userAvatar: getAvatar(appliedUser.avatar, appliedUser.name || appliedUser.username),
                 requestDate: appliedUser.request_date || appliedUser.requested_at || 'Recently'
               }));
 

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Register.css';
 import ApiService from '../services/api';
+import PreferencesSetup from './PreferencesSetup';
 
 function Register({ onClose, onSwitchToLogin }) {
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ function Register({ onClose, onSwitchToLogin }) {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPreferences, setShowPreferences] = useState(false);
+  const [registeredUser, setRegisteredUser] = useState(null);
 
   const handleChange = (e) => {
     setFormData({
@@ -69,17 +72,11 @@ function Register({ onClose, onSwitchToLogin }) {
           localStorage.setItem('user', JSON.stringify(response.data.user));
           console.log('💾 פרטי משתמש נשמרו ב-localStorage');
           console.log('🔍 בדיקה: localStorage.getItem("user"):', localStorage.getItem('user'));
+          
+          // Show preferences setup instead of navigating immediately
+          setRegisteredUser(response.data.user);
+          setShowPreferences(true);
         }
-
-        // הצגת הודעת הצלחה
-        alert('נרשמת בהצלחה!');
-        
-        // סגירת חלון ההרשמה
-        onClose();
-        
-        // ניווט לעמוד Feed עם רענון
-        console.log('🔄 מנווט לעמוד Feed...');
-        window.location.href = '/feed';
       } else {
         setError(response.error || 'הרשמה נכשלה');
       }
@@ -96,8 +93,46 @@ function Register({ onClose, onSwitchToLogin }) {
     console.log('Google Sign Up');
   };
 
+  const handlePreferencesComplete = async (updatedUser) => {
+    console.log('✅ Preferences completed!', updatedUser);
+    
+    try {
+      // Update user preferences in the backend
+      const response = await ApiService.updateUserPreferences(updatedUser.interests);
+      
+      if (response.success) {
+        console.log('✅ Preferences saved to server');
+      } else {
+        console.warn('⚠️ Failed to save preferences to server, but continuing...');
+      }
+    } catch (error) {
+      console.error('❌ Error saving preferences:', error);
+      // Continue anyway - preferences are already saved in localStorage
+    }
+    
+    alert('נרשמת בהצלחה! 🎉');
+    onClose();
+    window.location.href = '/feed';
+  };
+
+  const handlePreferencesSkip = () => {
+    console.log('⏭️ Preferences skipped');
+    alert('נרשמת בהצלחה!');
+    onClose();
+    window.location.href = '/feed';
+  };
+
   return (
-    <div className="register-overlay" onClick={onClose}>
+    <>
+      {showPreferences && registeredUser && (
+        <PreferencesSetup
+          user={registeredUser}
+          onComplete={handlePreferencesComplete}
+          onSkip={handlePreferencesSkip}
+        />
+      )}
+      
+    <div className="register-overlay" onClick={onClose} style={{ display: showPreferences ? 'none' : 'flex' }}>
       <div className="register-modal" onClick={(e) => e.stopPropagation()}>
         <button className="close-button" onClick={onClose}>×</button>
         
@@ -190,6 +225,7 @@ function Register({ onClose, onSwitchToLogin }) {
         </div>
       </div>
     </div>
+    </>
   );
 }
 

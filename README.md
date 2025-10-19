@@ -256,7 +256,7 @@ See [API_SETUP.md](API_SETUP.md) for complete API documentation including:
 cd frontend
 npm run build
 
-# Serve with static server or nginx
+
 ```
 
 ### Environment Variables for Production
@@ -273,7 +273,4 @@ npm run build
 4. Push to branch: `git push origin feature-name`
 5. Submit a pull request
 
-## 📝 License
-
-This project is licensed under the MIT License.
 
