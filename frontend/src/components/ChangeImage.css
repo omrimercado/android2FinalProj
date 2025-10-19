@@ -99,6 +99,28 @@
   display: flex;
   justify-content: center;
   margin-bottom: 15px;
+  position: relative;
+}
+
+/* HTML5 Canvas - CSS3 Requirement */
+.preview-canvas {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 5px solid #6366f1;
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
+  transition: all 0.3s ease;
+  display: block;
+}
+
+.preview-canvas:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.3);
+}
+
+.hidden-image {
+  display: none;
 }
 
 .preview-image {
@@ -120,6 +142,74 @@
   font-size: 14px;
   color: #64748b;
   margin: 0;
+  font-weight: 600;
+}
+
+/* Canvas Filters Section */
+.filters-section {
+  margin-bottom: 25px;
+  text-align: center;
+}
+
+.filters-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 15px 0;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.filter-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 8px;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  min-height: 70px;
+}
+
+.filter-btn:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.filter-btn.active {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border-color: #6366f1;
+  color: white;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.filter-btn.active:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+
+.filter-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.filter-name {
+  font-size: 12px;
+  font-weight: 600;
 }
 
 /* Upload Section */
@@ -227,9 +317,28 @@
     margin-bottom: 20px;
   }
 
+  .preview-canvas,
   .preview-image {
     width: 120px;
     height: 120px;
+  }
+
+  .filters-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .filter-btn {
+    padding: 10px 6px;
+    min-height: 60px;
+  }
+
+  .filter-icon {
+    font-size: 20px;
+  }
+
+  .filter-name {
+    font-size: 11px;
   }
 
   .modal-actions {
@@ -248,9 +357,19 @@
     padding: 20px 15px;
   }
 
+  .preview-canvas,
   .preview-image {
     width: 100px;
     height: 100px;
+  }
+
+  .filters-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .filter-btn {
+    padding: 8px 5px;
+    min-height: 55px;
   }
 
   .upload-button {

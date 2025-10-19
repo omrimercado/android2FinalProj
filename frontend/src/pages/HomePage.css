@@ -46,6 +46,9 @@
   font-weight: 700;
   margin: 0;
   letter-spacing: -1px;
+
+  text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3),
+               0 0 20px rgba(255, 255, 255, 0.2);
 }
 
 .hero-subtitle {
@@ -53,6 +56,8 @@
   margin: 1.5rem 0 2rem;
   opacity: 0.95;
   font-weight: 400;
+
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .search-container {
@@ -141,6 +146,10 @@
   margin: 0;
   opacity: 0.9;
   font-size: 1rem;
+  /* CSS3 Requirement: multiple-columns for longer text */
+  column-count: 1;
+  column-gap: 15px;
+  text-align: left;
 }
 
 /* Responsive */

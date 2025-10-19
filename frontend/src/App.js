@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import HomePage from './pages/HomePage';
 import FeedPage from './pages/FeedPage';
 import MyProfilePage from './pages/MyProfilePage';
+import GroupsPage from './pages/GroupsPage';
 import './App.css';
 
 function App() {
@@ -76,6 +77,21 @@ function App() {
               )
             } 
           />
+          <Route 
+            path="/groups" 
+            element={
+              isLoggedIn ? (
+                <GroupsPage 
+                  user={user} 
+                  currentPage="groups"
+                  onNavigate={() => {}}
+                  onLogout={handleLogout}
+                />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            } 
+          />  
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>

@@ -32,6 +32,7 @@ export const register = async (req, res, next) => {
           name: user.name,
           email: user.email,
           birthDate: user.birthDate,
+          interests: user.interests || [],
         },
       },
     });
@@ -76,6 +77,7 @@ export const login = async (req, res, next) => {
           name: user.name,
           email: user.email,
           birthDate: user.birthDate,
+          interests: user.interests || [],
         },
       },
     });
@@ -97,6 +99,7 @@ export const verifyToken = async (req, res, next) => {
           name: user.name,
           email: user.email,
           birthDate: user.birthDate,
+          interests: user.interests || [],
         },
       },
     });
@@ -135,6 +138,51 @@ export const forgotPassword = async (req, res, next) => {
     res.status(200).json({
       success: true,
       message: 'Password reset email sent',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updatePreferences = async (req, res, next) => {
+  try {
+    const { interests } = req.body;
+    const userId = req.user._id;
+
+    if (!interests || !Array.isArray(interests)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Interests must be an array',
+        error: 'Invalid input',
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { interests },
+      { new: true, runValidators: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: 'User does not exist',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Preferences updated successfully',
+      data: {
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          birthDate: user.birthDate,
+          interests: user.interests,
+        },
+      },
     });
   } catch (error) {
     next(error);

@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: '👤',
     },
+    interests: {
+      type: [String],
+      default: [],
+    },
   },
   {
     timestamps: true,

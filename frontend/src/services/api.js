@@ -272,6 +272,526 @@ class ApiService {
       };
     }
   }
+
+  // ===== Group Management APIs =====
+
+  // Create a new group
+  static async createGroup(groupData) {
+    console.log('🔧 ApiService.createGroup() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/create`);
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'POST');
+      console.log('📤 Group Data:', groupData);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+      
+      const response = await fetch(`${API_BASE_URL}/groups/create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(groupData)
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to create group');
+        throw new Error(data.message || 'Failed to create group');
+      }
+
+      console.log('✅ Create group API call successful');
+      
+      if (data.success && data.data) {
+        return {
+          success: true,
+          data: data.data,
+          message: data.message || 'Group created successfully'
+        };
+      }
+      
+      return {
+        success: true,
+        data: data,
+        message: 'Group created successfully'
+      };
+    } catch (error) {
+      console.log('❌ Create group API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to create group'
+      };
+    }
+  }
+
+  // Get all groups user belongs to
+  static async getMyGroups() {
+    console.log('🔧 ApiService.getMyGroups() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/my`);
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'GET');
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+      
+      const response = await fetch(`${API_BASE_URL}/groups/my`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to fetch my groups');
+        throw new Error(data.message || 'Failed to fetch my groups');
+      }
+
+      console.log('✅ Get my groups API call successful');
+      
+      return {
+        success: true,
+        data: data.groups || data.data || [],
+        message: data.message || 'Groups fetched successfully'
+      };
+    } catch (error) {
+      console.log('❌ Get my groups API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to fetch my groups'
+      };
+    }
+  }
+
+  // Get suggested groups
+  static async getSuggestedGroups() {
+    console.log('🔧 ApiService.getSuggestedGroups() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/suggested`);
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'GET');
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+      
+      const response = await fetch(`${API_BASE_URL}/groups/suggested`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to fetch suggested groups');
+        throw new Error(data.message || 'Failed to fetch suggested groups');
+      }
+
+      console.log('✅ Get suggested groups API call successful');
+      
+      return {
+        success: true,
+        data: data.groups || data.data || [],
+        message: data.message || 'Suggested groups fetched successfully'
+      };
+    } catch (error) {
+      console.log('❌ Get suggested groups API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to fetch suggested groups'
+      };
+    }
+  }
+
+  // Join a group
+  static async joinGroup(groupId) {
+    console.log('🔧 ApiService.joinGroup() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/${groupId}/join`);
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'POST');
+      console.log('📤 Group ID:', groupId);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+      
+      const response = await fetch(`${API_BASE_URL}/groups/${groupId}/join`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to join group');
+        throw new Error(data.message || 'Failed to join group');
+      }
+
+      console.log('✅ Join group API call successful');
+      
+      return {
+        success: true,
+        data: data.data || data,
+        message: data.message || 'Joined group successfully'
+      };
+    } catch (error) {
+      console.log('❌ Join group API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to join group'
+      };
+    }
+  }
+
+  // Leave a group
+  static async leaveGroup(groupId) {
+    console.log('🔧 ApiService.leaveGroup() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/${groupId}/leave`);
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'DELETE');
+      console.log('📤 Group ID:', groupId);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+      
+      const response = await fetch(`${API_BASE_URL}/groups/${groupId}/leave`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to leave group');
+        throw new Error(data.message || 'Failed to leave group');
+      }
+
+      console.log('✅ Leave group API call successful');
+      
+      return {
+        success: true,
+        data: data.data || data,
+        message: data.message || 'Left group successfully'
+      };
+    } catch (error) {
+      console.log('❌ Leave group API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to leave group'
+      };
+    }
+  }
+
+  // Get all groups where user is admin with pending join requests
+  static async getAdminGroupsWithRequests() {
+    console.log('🔧 ApiService.getAdminGroupsWithRequests() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/admin/requests`);
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'GET');
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+      
+      const response = await fetch(`${API_BASE_URL}/groups/admin/requests`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to fetch group requests');
+        throw new Error(data.message || 'Failed to fetch group requests');
+      }
+
+      console.log('✅ Get admin groups with requests API call successful');
+      
+      if (data.success && data.data) {
+        return {
+          success: true,
+          data: data.data,
+          message: data.message || 'Requests fetched successfully'
+        };
+      }
+      
+      return {
+        success: true,
+        data: data,
+        message: 'Requests fetched successfully'
+      };
+    } catch (error) {
+      console.log('❌ Get admin groups with requests API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to fetch group requests'
+      };
+    }
+  }
+
+  // Approve a join request
+  static async approveGroupRequest(groupId, userId) {
+    console.log('🔧 ApiService.approveGroupRequest() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/${groupId}/requests/${userId}/approve`);
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'POST');
+      console.log('📤 Group ID:', groupId);
+      console.log('📤 User ID:', userId);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+      
+      const response = await fetch(`${API_BASE_URL}/groups/${groupId}/requests/${userId}/approve`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to approve request');
+        throw new Error(data.message || 'Failed to approve request');
+      }
+
+      console.log('✅ Approve request API call successful');
+      
+      if (data.success && data.data) {
+        return {
+          success: true,
+          data: data.data,
+          message: data.message || 'Request approved successfully'
+        };
+      }
+      
+      return {
+        success: true,
+        data: data,
+        message: 'Request approved successfully'
+      };
+    } catch (error) {
+      console.log('❌ Approve request API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to approve request'
+      };
+    }
+  }
+
+  // Reject a join request
+  static async rejectGroupRequest(groupId, userId) {
+    console.log('🔧 ApiService.rejectGroupRequest() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/${groupId}/requests/${userId}/reject`);
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'DELETE');
+      console.log('📤 Group ID:', groupId);
+      console.log('📤 User ID:', userId);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+      
+      const response = await fetch(`${API_BASE_URL}/groups/${groupId}/requests/${userId}/reject`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to reject request');
+        throw new Error(data.message || 'Failed to reject request');
+      }
+
+      console.log('✅ Reject request API call successful');
+      
+      if (data.success && data.data) {
+        return {
+          success: true,
+          data: data.data,
+          message: data.message || 'Request rejected successfully'
+        };
+      }
+      
+      return {
+        success: true,
+        data: data,
+        message: 'Request rejected successfully'
+      };
+    } catch (error) {
+      console.log('❌ Reject request API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to reject request'
+      };
+    }
+  }
+
+  // Update user preferences (interests)
+  static async updateUserPreferences(interests) {
+    console.log('🔧 ApiService.updateUserPreferences() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/auth/preferences`);
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'PUT');
+      console.log('📤 Interests:', interests);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+      
+      const response = await fetch(`${API_BASE_URL}/auth/preferences`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ interests })
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Update preferences failed');
+        throw new Error(data.message || 'Update preferences failed');
+      }
+
+      console.log('✅ Update preferences API call successful');
+      
+      if (data.success && data.data) {
+        return {
+          success: true,
+          data: data.data,
+          message: data.message || 'Preferences updated successfully'
+        };
+      }
+      
+      return {
+        success: true,
+        data: data,
+        message: 'Preferences updated successfully'
+      };
+    } catch (error) {
+      console.log('❌ Update preferences API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Update preferences failed'
+      };
+    }
+  }
 }
 
 export default ApiService;
