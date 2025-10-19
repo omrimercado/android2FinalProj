@@ -66,3 +66,50 @@ export const validateLogin = [
     next();
   },
 ];
+
+export const validatePost = [
+  body('content')
+    .trim()
+    .notEmpty()
+    .withMessage('Post content is required')
+    .isLength({ min: 1 })
+    .withMessage('Post content cannot be empty'),
+
+  body('image')
+    .optional()
+    .isString()
+    .withMessage('Image must be a valid URL string'),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        error: errors.array()[0].msg,
+      });
+    }
+    next();
+  },
+];
+
+export const validateComment = [
+  body('content')
+    .trim()
+    .notEmpty()
+    .withMessage('Comment content is required')
+    .isLength({ min: 1 })
+    .withMessage('Comment content cannot be empty'),
+
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        error: errors.array()[0].msg,
+      });
+    }
+    next();
+  },
+];
