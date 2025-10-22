@@ -10,7 +10,7 @@ import './MyProfilePage.css';
 export default function MyProfilePage({ user, currentPage, onNavigate, onLogout }) {
   const [showChangeImage, setShowChangeImage] = useState(false);
   const [currentAvatar, setCurrentAvatar] = useState(getAvatar(user?.avatar, user?.name));
-  
+
   // State for join requests - now organized by groups
   const [adminGroups, setAdminGroups] = useState([]);
   const [isLoadingRequests, setIsLoadingRequests] = useState(true);
@@ -18,53 +18,45 @@ export default function MyProfilePage({ user, currentPage, onNavigate, onLogout 
   const [successMessage, setSuccessMessage] = useState(null);
   const [processingRequestId, setProcessingRequestId] = useState(null);
 
-  // Mock data for user's posts
-  const [myPosts] = useState([
-    {
-      id: 1,
-      avatar: getAvatar(user?.avatar, user?.name),
-      group: 'React Developers Israel',
-      username: user?.name || 'John Doe',
-      handle: user?.email?.split('@')[0] || 'johndoe',
-      time: '2h',
-      text: 'Just launched my new React project! 🚀 Would love to get some feedback from the community.',
-      image: 'https://picsum.photos/600/400?random=1',
-      comments: 12,
-      retweets: 5,
-      likes: 34
-    },
-    {
-      id: 2,
-      avatar: getAvatar(user?.avatar, user?.name),
-      group: 'Tech Entrepreneurs',
-      username: user?.name || 'John Doe',
-      handle: user?.email?.split('@')[0] || 'johndoe',
-      time: '5h',
-      text: 'Working on something exciting! Stay tuned for updates 👀',
-      image: null,
-      comments: 8,
-      retweets: 3,
-      likes: 21
-    },
-    {
-      id: 3,
-      avatar: getAvatar(user?.avatar, user?.name),
-      group: 'UI/UX Designers',
-      username: user?.name || 'John Doe',
-      handle: user?.email?.split('@')[0] || 'johndoe',
-      time: '1d',
-      text: 'Anyone interested in collaborating on an open source project? Looking for developers and designers!',
-      image: null,
-      comments: 15,
-      retweets: 8,
-      likes: 42
-    }
-  ]);
+  // State for user's posts
+  const [myPosts, setMyPosts] = useState([]);
+  const [isLoadingPosts, setIsLoadingPosts] = useState(true);
+  const [postsError, setPostsError] = useState(null);
 
-  // Fetch join requests when component mounts
+  // Fetch join requests and user posts when component mounts
   useEffect(() => {
     fetchJoinRequests();
-  }, []);
+    fetchUserPosts();
+  }, [user]);
+
+  // Fetch user's posts from API
+  const fetchUserPosts = async () => {
+    if (!user || !user.id) {
+      console.warn('No user ID available');
+      setIsLoadingPosts(false);
+      return;
+    }
+
+    setIsLoadingPosts(true);
+    setPostsError(null);
+
+    try {
+      const response = await ApiService.getUserPosts(user.id);
+
+      if (response.success) {
+        // Backend returns { data: { posts: [...], count: n } }
+        const postsData = response.data.posts || response.data || [];
+        setMyPosts(postsData);
+      } else {
+        setPostsError(response.message || 'Failed to load posts');
+      }
+    } catch (err) {
+      setPostsError('An error occurred while loading posts');
+      console.error('Error fetching user posts:', err);
+    } finally {
+      setIsLoadingPosts(false);
+    }
+  };
 
   // Auto-clear messages after 5 seconds
   useEffect(() => {
@@ -484,19 +476,51 @@ export default function MyProfilePage({ user, currentPage, onNavigate, onLogout 
           <div className="posts-section">
             <h2 className="section-title">📝 My Posts</h2>
             <p className="section-subtitle">All posts you've shared</p>
-            
-            <div className="posts-list">
-              {myPosts.length > 0 ? (
-                myPosts.map(post => (
-                  <PostCard key={post.id} post={post} />
-                ))
-              ) : (
-                <div className="no-posts">
-                  <p>You haven't posted anything yet.</p>
-                  <button className="btn-create-post">Create your first post</button>
-                </div>
-              )}
-            </div>
+
+            {/* Loading State for Posts */}
+            {isLoadingPosts && (
+              <div className="loading-message">
+                <p>Loading your posts...</p>
+              </div>
+            )}
+
+            {/* Error State for Posts */}
+            {postsError && !isLoadingPosts && (
+              <div className="error-message">
+                <p>{postsError}</p>
+                <button onClick={fetchUserPosts} className="retry-btn">Try Again</button>
+              </div>
+            )}
+
+            {/* Posts List */}
+            {!isLoadingPosts && !postsError && (
+              <div className="posts-list">
+                {myPosts.length > 0 ? (
+                  myPosts.map(post => {
+                    // Transform API post data to PostCard expected format
+                    const transformedPost = {
+                      id: post._id,
+                      avatar: getAvatar(post.userId?.avatar, post.userId?.name),
+                      group: 'My Posts', // Could be enhanced later
+                      username: post.userId?.name || user?.name,
+                      handle: post.userId?.email?.split('@')[0] || user?.email?.split('@')[0],
+                      time: new Date(post.createdAt).toLocaleDateString(),
+                      text: post.content,
+                      image: post.image,
+                      comments: post.commentsCount || 0,
+                      retweets: 0, // Not implemented in backend yet
+                      likes: post.likesCount || 0
+                    };
+                    return <PostCard key={post._id} post={transformedPost} />;
+                  })
+                ) : (
+                  <div className="no-posts">
+                    <p>You haven't posted anything yet.</p>
+                    <button className="btn-create-post" onClick={() => onNavigate('feed')}>Create your first post</button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

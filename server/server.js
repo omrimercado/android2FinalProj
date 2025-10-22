@@ -5,7 +5,9 @@ import http from 'http';
 import { WebSocketServer } from 'ws';
 import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
+import postRoutes from './routes/postRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
+import groupRoutes from './routes/groupRoutes.js';
 import { errorHandler, notFound } from './middleware/errorMiddleware.js';
 import Message from './models/Message.js';
 
@@ -25,6 +27,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/posts', postRoutes);
+app.use('/api/groups', groupRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Social Media API Server is running' });
@@ -38,7 +42,7 @@ const connections = new Map(); // userId -> WebSocket
 
 wss.on('connection', (ws, req) => {
   console.log('✅ New WebSocket connection');
-  
+
   let userId = null;
 
   ws.on('message', async (message) => {
@@ -51,17 +55,17 @@ wss.on('connection', (ws, req) => {
           // משתמש מתחבר
           userId = data.userId;
           connections.set(userId, ws);
-          
+
           console.log(`👤 User ${data.userName} (ID: ${userId}) joined`);
           console.log(`👥 Total connections: ${connections.size}`);
-          
+
           // שליחת היסטוריה ממסד הנתונים
           const conversationId = Message.getConversationId(userId, data.targetUserId);
           const history = await Message.find({ conversationId })
             .sort({ createdAt: 1 })
             .limit(50)
             .lean();
-          
+
           if (history.length > 0) {
             ws.send(JSON.stringify({
               type: 'history',
@@ -118,18 +122,18 @@ wss.on('connection', (ws, req) => {
           // שליחה למשתמש היעד (אם מחובר)
           const targetWs = connections.get(data.targetUserId);
           let delivered = false;
-          
+
           if (targetWs && targetWs.readyState === ws.OPEN) {
             targetWs.send(JSON.stringify({
               type: 'message',
               ...messageData
             }));
-            
+
             // עדכון שההודעה נמסרה
             newMessage.deliveredAt = new Date();
             await newMessage.save();
             delivered = true;
-            
+
             console.log(`💬 Message delivered to ${data.targetUserId} (online)`);
           } else {
             console.log(`📬 Message saved for ${data.targetUserId} (offline)`);
