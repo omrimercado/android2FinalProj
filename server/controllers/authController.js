@@ -188,3 +188,49 @@ export const updatePreferences = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateAvatar = async (req, res, next) => {
+  try {
+    const { avatarUrl } = req.body;
+    const userId = req.user._id;
+
+    if (!avatarUrl || typeof avatarUrl !== 'string') {
+      return res.status(400).json({
+        success: false,
+        message: 'Avatar URL is required',
+        error: 'Invalid input',
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { avatar: avatarUrl },
+      { new: true, runValidators: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: 'User does not exist',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Avatar updated successfully',
+      data: {
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          birthDate: user.birthDate,
+          avatar: user.avatar,
+          interests: user.interests,
+        },
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};

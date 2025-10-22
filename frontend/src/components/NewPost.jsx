@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './NewPost.css';
 import { getAvatar } from '../utils/helpers';
+import ApiService from '../services/api';
 
 function NewPost({ user, onPostCreated }) {
   const [postContent, setPostContent] = useState('');
@@ -8,37 +9,58 @@ function NewPost({ user, onPostCreated }) {
   const [videoUrl, setVideoUrl] = useState('');
   const [showMediaInput, setShowMediaInput] = useState(false);
   const [mediaType, setMediaType] = useState(''); // 'image' or 'video'
+  const [isCreating, setIsCreating] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleCreatePost = () => {
+  const handleCreatePost = async () => {
     if (!postContent.trim() && !imageUrl && !videoUrl) return;
-    
-    const newPost = {
-      id: Date.now(),
-      userId: user.id,
-      content: postContent,
-      image: imageUrl || null,
-      video: videoUrl || null, // HTML5 Video Support
-      likes: 0,
-      comments: 0,
-      timestamp: new Date().toISOString(),
-    };
-    
-    if (onPostCreated) {
-      onPostCreated(newPost);
+
+    setIsCreating(true);
+    setError(null);
+
+    try {
+      // Prepare post data for API
+      const postData = {
+        content: postContent,
+      };
+
+      // Only include image field if there's an actual image URL
+      if (imageUrl) {
+        postData.image = imageUrl;
+      }
+
+      // Call API to create post
+      const response = await ApiService.createPost(postData);
+
+      if (response.success) {
+        // Backend returns { data: { post: {...} } }
+        const createdPost = response.data.post || response.data;
+
+        if (onPostCreated) {
+          onPostCreated(createdPost);
+        }
+
+        // Reset file inputs
+        const imageInput = document.getElementById('image-file-input');
+        const videoInput = document.getElementById('video-file-input');
+        if (imageInput) imageInput.value = '';
+        if (videoInput) videoInput.value = '';
+
+        // Reset form
+        setPostContent('');
+        setImageUrl('');
+        setVideoUrl('');
+        setShowMediaInput(false);
+        setMediaType('');
+      } else {
+        setError(response.message || 'Failed to create post');
+      }
+    } catch (err) {
+      setError('An error occurred while creating the post');
+      console.error('Error creating post:', err);
+    } finally {
+      setIsCreating(false);
     }
-    
-    // Reset file inputs
-    const imageInput = document.getElementById('image-file-input');
-    const videoInput = document.getElementById('video-file-input');
-    if (imageInput) imageInput.value = '';
-    if (videoInput) videoInput.value = '';
-    
-    // Reset form (don't revoke URLs here as they're now part of the post)
-    setPostContent('');
-    setImageUrl('');
-    setVideoUrl('');
-    setShowMediaInput(false);
-    setMediaType('');
   };
 
   const handleAddImage = () => {
@@ -122,15 +144,22 @@ function NewPost({ user, onPostCreated }) {
 
   return (
     <div className="new-post-section">
+      {error && (
+        <div className="error-message" style={{ marginBottom: '10px', padding: '10px', backgroundColor: '#fee', borderRadius: '8px', color: '#c00' }}>
+          {error}
+        </div>
+      )}
+
       <div className="new-post-box">
         <img src={getAvatar(user.avatar, user.name)} alt={user.name} className="user-avatar" />
-        <input 
-          type="text" 
-          placeholder="What's on your mind?" 
+        <input
+          type="text"
+          placeholder="What's on your mind?"
           className="new-post-input"
           value={postContent}
           onChange={(e) => setPostContent(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && !showMediaInput && handleCreatePost()}
+          onKeyPress={(e) => e.key === 'Enter' && !showMediaInput && !isCreating && handleCreatePost()}
+          disabled={isCreating}
         />
       </div>
 
@@ -183,27 +212,29 @@ function NewPost({ user, onPostCreated }) {
 
       <div className="new-post-actions">
         <div className="media-buttons">
-          <button 
+          <button
             className="media-action-btn"
             onClick={handleAddImage}
             title="Add Image"
+            disabled={isCreating}
           >
             🖼️ Photo
           </button>
-          <button 
+          <button
             className="media-action-btn video-btn"
             onClick={handleAddVideo}
             title="Add Video"
+            disabled={isCreating}
           >
             🎥 Video
           </button>
         </div>
-        <button 
+        <button
           className="post-button"
           onClick={handleCreatePost}
-          disabled={!postContent.trim() && !imageUrl && !videoUrl}
+          disabled={(!postContent.trim() && !imageUrl && !videoUrl) || isCreating}
         >
-          POST
+          {isCreating ? 'POSTING...' : 'POST'}
         </button>
       </div>
     </div>

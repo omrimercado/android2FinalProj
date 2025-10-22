@@ -7,6 +7,7 @@ import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
+import groupRoutes from './routes/groupRoutes.js';
 import { errorHandler, notFound } from './middleware/errorMiddleware.js';
 import Message from './models/Message.js';
 
@@ -27,6 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/posts', postRoutes);
+app.use('/api/groups', groupRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Social Media API Server is running' });

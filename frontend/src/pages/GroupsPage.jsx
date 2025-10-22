@@ -4,7 +4,6 @@ import Footer from '../components/Footer';
 import SearchBar from '../components/SearchBar';
 import NewGroup from '../components/NewGroup';
 import ApiService from '../services/api';
-import { mockGroups } from '../utils/mockData';
 import './GroupsPage.css';
 
 export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) {
@@ -21,21 +20,11 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
   const fetchGroups = async () => {
     setLoading(true);
     try {
-      // TODO: Replace with actual API calls when backend is ready
-      // const myGroupsResult = await ApiService.getMyGroups();
-      
-      // Mock data for now - user's current groups
-      const userGroups = [
-        {
-          id: 1,
-          name: 'React Developers Israel',
-          description: 'A community for React developers in Israel',
-          tags: ['React', 'JavaScript', 'Web'],
-          membersCount: 1250,
-          avatar: 'https://i.pravatar.cc/150?img=1',
-          isAdmin: true
-        },
-      ];
+      // Fetch user's groups and suggested groups from API
+      const [myGroupsResult, suggestedGroupsResult] = await Promise.all([
+        ApiService.getMyGroups(),
+        ApiService.getSuggestedGroups()
+      ]);
 
       // Get user interests from user object
       const userInterests = user?.interests || [];
@@ -44,7 +33,7 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
       // Calculate match score for each group based on user interests
       const calculateMatchScore = (groupTags) => {
         if (!userInterests || userInterests.length === 0) return 0;
-        
+
         let matches = 0;
         groupTags.forEach(tag => {
           userInterests.forEach(interest => {
@@ -58,38 +47,54 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
             }
           });
         });
-        
+
         return matches;
       };
 
-      // Filter out groups user is already a member of
-      const myGroupIds = userGroups.map(g => g.id);
-      const availableGroups = mockGroups
-        .filter(g => !myGroupIds.includes(g.id))
-        .map(group => ({
-          ...group,
-          avatar: group.image || `https://i.pravatar.cc/150?img=${group.id}`,
-          membersCount: group.members,
-          matchScore: calculateMatchScore(group.tags)
+      // Map backend response to frontend format for user's groups
+      let userGroups = [];
+      if (myGroupsResult.success && myGroupsResult.data.groups) {
+        userGroups = myGroupsResult.data.groups.map(group => ({
+          id: group._id,
+          name: group.name,
+          description: group.description,
+          tags: group.tags,
+          membersCount: group.membersCount || group.members?.length || 0,
+          avatar: `https://i.pravatar.cc/150?img=${Math.abs(group._id.charCodeAt(0) % 50)}`,
+          isAdmin: group.isAdmin
+        }));
+      }
+
+      // Map backend response to frontend format for suggested groups
+      let availableGroups = [];
+      if (suggestedGroupsResult.success && suggestedGroupsResult.data.groups) {
+        availableGroups = suggestedGroupsResult.data.groups.map(group => ({
+          id: group._id,
+          name: group.name,
+          description: group.description,
+          tags: group.tags,
+          membersCount: group.membersCount || group.members?.length || 0,
+          avatar: `https://i.pravatar.cc/150?img=${Math.abs(group._id.charCodeAt(0) % 50)}`,
+          matchScore: calculateMatchScore(group.tags),
+          isPrivate: group.isPrivate
         }));
 
-      // Sort by match score (highest first), then by member count
-      const sortedSuggested = availableGroups.sort((a, b) => {
-        if (b.matchScore !== a.matchScore) {
-          return b.matchScore - a.matchScore;
-        }
-        return b.membersCount - a.membersCount;
-      });
+        // Sort by match score (highest first), then by member count
+        availableGroups.sort((a, b) => {
+          if (b.matchScore !== a.matchScore) {
+            return b.matchScore - a.matchScore;
+          }
+          return b.membersCount - a.membersCount;
+        });
 
-      console.log('✨ Suggested groups with scores:', 
-        sortedSuggested.map(g => ({ name: g.name, score: g.matchScore }))
-      );
+        console.log('✨ Suggested groups with scores:',
+          availableGroups.map(g => ({ name: g.name, score: g.matchScore }))
+        );
+      }
 
-      setTimeout(() => {
-        setMyGroups(userGroups);
-        setSuggestedGroups(sortedSuggested);
-        setLoading(false);
-      }, 800);
+      setMyGroups(userGroups);
+      setSuggestedGroups(availableGroups);
+      setLoading(false);
     } catch (error) {
       console.error('Error fetching groups:', error);
       setLoading(false);
@@ -100,38 +105,99 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
     setSearchTerm(term);
   };
 
-  const handleGroupCreated = (newGroup) => {
-    console.log('New group created:', newGroup);
+  const handleGroupCreated = (createdGroup) => {
+    console.log('New group created:', createdGroup);
+
+    // Map backend response to frontend format
+    const group = createdGroup.group || createdGroup;
+    const newGroup = {
+      id: group._id,
+      name: group.name,
+      description: group.description,
+      tags: group.tags,
+      membersCount: group.membersCount || 1,
+      avatar: `https://i.pravatar.cc/150?img=${Math.abs(group._id.charCodeAt(0) % 50)}`,
+      isAdmin: true
+    };
+
+    // Add to my groups at the top
     setMyGroups([newGroup, ...myGroups]);
-    fetchGroups();
+
+    // Optionally refresh all groups to ensure consistency
+    // fetchGroups();
   };
 
   const handleJoinGroup = async (groupId) => {
     try {
-      // TODO: Call actual API
-      // const result = await ApiService.joinGroup(groupId);
       console.log('Joining group:', groupId);
-      
-      // Mock: Move from suggested to my groups
-      const groupToJoin = suggestedGroups.find(g => g.id === groupId);
-      if (groupToJoin) {
-        setSuggestedGroups(suggestedGroups.filter(g => g.id !== groupId));
-        setMyGroups([...myGroups, { ...groupToJoin, isAdmin: false }]);
+
+      const result = await ApiService.joinGroup(groupId);
+
+      if (result.success) {
+        const status = result.data.status; // 'member' or 'pending'
+
+        if (status === 'member') {
+          // Public group - user joined immediately
+          console.log('✅ Joined group successfully');
+
+          // Move from suggested to my groups
+          const groupToJoin = suggestedGroups.find(g => g.id === groupId);
+          if (groupToJoin) {
+            setSuggestedGroups(suggestedGroups.filter(g => g.id !== groupId));
+            setMyGroups([...myGroups, { ...groupToJoin, isAdmin: false }]);
+          }
+
+          // Show success message (you can add a toast notification here)
+          alert('Successfully joined the group!');
+        } else if (status === 'pending') {
+          // Private group - request sent
+          console.log('📤 Join request sent');
+
+          // Remove from suggested groups (request pending)
+          setSuggestedGroups(suggestedGroups.filter(g => g.id !== groupId));
+
+          // Show pending message
+          alert('Join request sent! Waiting for admin approval.');
+        }
+      } else {
+        console.error('Failed to join group:', result.message);
+        alert(result.message || 'Failed to join group');
       }
     } catch (error) {
       console.error('Error joining group:', error);
+      alert('Error joining group. Please try again.');
     }
   };
 
   const handleLeaveGroup = async (groupId) => {
     try {
-      // TODO: Call actual API
-      // const result = await ApiService.leaveGroup(groupId);
       console.log('Leaving group:', groupId);
-      
-      setMyGroups(myGroups.filter(g => g.id !== groupId));
+
+      // Confirm before leaving
+      if (!window.confirm('Are you sure you want to leave this group?')) {
+        return;
+      }
+
+      const result = await ApiService.leaveGroup(groupId);
+
+      if (result.success) {
+        console.log('✅ Left group successfully');
+
+        // Remove from my groups
+        setMyGroups(myGroups.filter(g => g.id !== groupId));
+
+        // Show success message
+        alert('Successfully left the group');
+
+        // Optionally refresh groups to show it in suggested again
+        // fetchGroups();
+      } else {
+        console.error('Failed to leave group:', result.message);
+        alert(result.message || 'Failed to leave group');
+      }
     } catch (error) {
       console.error('Error leaving group:', error);
+      alert('Error leaving group. Please try again.');
     }
   };
 
