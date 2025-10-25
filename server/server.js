@@ -8,6 +8,7 @@ import authRoutes from './routes/authRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import groupRoutes from './routes/groupRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
 import { errorHandler, notFound } from './middleware/errorMiddleware.js';
 import Message from './models/Message.js';
 
@@ -18,7 +19,6 @@ connectDB();
 const app = express();
 const server = http.createServer(app);
 
-// WebSocket Server
 const wss = new WebSocketServer({ server, path: '/chat' });
 
 app.use(cors());
@@ -29,6 +29,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/groups', groupRoutes);
+app.use('/api/ai', aiRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Social Media API Server is running' });
@@ -37,8 +38,7 @@ app.get('/', (req, res) => {
 app.use(notFound);
 app.use(errorHandler);
 
-// WebSocket Chat Handling
-const connections = new Map(); // userId -> WebSocket
+const connections = new Map();
 
 wss.on('connection', (ws, req) => {
   console.log('✅ New WebSocket connection');
@@ -52,14 +52,12 @@ wss.on('connection', (ws, req) => {
 
       switch(data.type) {
         case 'join':
-          // משתמש מתחבר
           userId = data.userId;
           connections.set(userId, ws);
 
           console.log(`👤 User ${data.userName} (ID: ${userId}) joined`);
           console.log(`👥 Total connections: ${connections.size}`);
 
-          // שליחת היסטוריה ממסד הנתונים
           const conversationId = Message.getConversationId(userId, data.targetUserId);
           const history = await Message.find({ conversationId })
             .sort({ createdAt: 1 })
@@ -79,7 +77,6 @@ wss.on('connection', (ws, req) => {
             }));
           }
 
-          // שליחת סטטוס של המשתמש היעד
           const isTargetOnline = connections.has(data.targetUserId);
           ws.send(JSON.stringify({
             type: 'user_status',
@@ -87,7 +84,6 @@ wss.on('connection', (ws, req) => {
             isOnline: isTargetOnline
           }));
 
-          // הודעה למשתמש היעד שמשתמש זה התחבר
           const targetWsOnJoin = connections.get(data.targetUserId);
           if (targetWsOnJoin && targetWsOnJoin.readyState === ws.OPEN) {
             targetWsOnJoin.send(JSON.stringify({
@@ -99,7 +95,6 @@ wss.on('connection', (ws, req) => {
           break;
 
         case 'message':
-          // שמירת ההודעה במסד הנתונים
           const newMessage = new Message({
             senderId: data.senderId,
             senderName: data.senderName,
@@ -119,7 +114,6 @@ wss.on('connection', (ws, req) => {
             timestamp: newMessage.createdAt
           };
 
-          // שליחה למשתמש היעד (אם מחובר)
           const targetWs = connections.get(data.targetUserId);
           let delivered = false;
 
@@ -129,7 +123,6 @@ wss.on('connection', (ws, req) => {
               ...messageData
             }));
 
-            // עדכון שההודעה נמסרה
             newMessage.deliveredAt = new Date();
             await newMessage.save();
             delivered = true;
@@ -139,7 +132,6 @@ wss.on('connection', (ws, req) => {
             console.log(`📬 Message saved for ${data.targetUserId} (offline)`);
           }
 
-          // אישור לשולח
           ws.send(JSON.stringify({
             type: 'message',
             ...messageData,
@@ -148,7 +140,6 @@ wss.on('connection', (ws, req) => {
           break;
 
         case 'typing':
-          // אינדיקציה של הקלדה
           const targetTypingWs = connections.get(data.targetUserId);
           if (targetTypingWs && targetTypingWs.readyState === ws.OPEN) {
             targetTypingWs.send(JSON.stringify({
@@ -172,7 +163,6 @@ wss.on('connection', (ws, req) => {
       console.log(`👋 User ${userId} disconnected`);
       console.log(`👥 Total connections: ${connections.size}`);
 
-      // הודעה לכל המשתמשים המחוברים
       connections.forEach((connection) => {
         if (connection.readyState === ws.OPEN) {
           connection.send(JSON.stringify({

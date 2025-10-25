@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './NewPost.css';
 import { getAvatar } from '../utils/helpers';
 import ApiService from '../services/api';
+import AIPostModal from './AIPostModal';
 
 function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onPostUpdated = null, onCancelEdit = null }) {
   const [postContent, setPostContent] = useState(editMode && postToEdit ? postToEdit.content : '');
@@ -16,6 +17,7 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [aiDraft, setAiDraft] = useState(null);
   const [showAiPreview, setShowAiPreview] = useState(false);
+  const [showAiModal, setShowAiModal] = useState(false);
 
   const handleCreatePost = async () => {
     if (!postContent.trim() && !imageUrl && !videoUrl) return;
@@ -161,22 +163,29 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
   };
 
   // AI Generation handlers
-  const handleGenerateWithAI = async () => {
-    if (!postContent.trim()) {
-      setError('Please write some text for AI to enhance');
-      return;
-    }
+  const handleOpenAiModal = () => {
+    setShowAiModal(true);
+    setError(null);
+  };
 
+  const handleCloseAiModal = () => {
+    if (!isGeneratingAI) {
+      setShowAiModal(false);
+    }
+  };
+
+  const handleGenerateWithAI = async ({ topic, style, length }) => {
     setIsGeneratingAI(true);
     setError(null);
 
     try {
-      const result = await ApiService.generatePostWithAI(postContent);
+      const result = await ApiService.generatePostWithAI({ topic, style, length });
 
       if (result.success) {
-        // Expected response: { generatedContent: "...", originalInput: "..." }
+        // Expected response: { generatedContent: "...", originalInput: "...", style, length, metadata }
         setAiDraft(result.data);
         setShowAiPreview(true);
+        setShowAiModal(false); // Close modal when preview is shown
       } else {
         setError(result.message || 'Failed to generate AI content');
       }
@@ -387,9 +396,9 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
               {!editMode && (
                 <button
                   className="media-action-btn ai-btn"
-                  onClick={handleGenerateWithAI}
+                  onClick={handleOpenAiModal}
                   title="Generate with AI"
-                  disabled={!postContent.trim() || isCreating || isGeneratingAI}
+                  disabled={isCreating || isGeneratingAI}
                 >
                   {isGeneratingAI ? '⌛' : '✨'} AI Generate
                 </button>
@@ -416,6 +425,13 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
           </div>
         </>
       )}
+
+      {/* AI Post Modal */}
+      <AIPostModal
+        isOpen={showAiModal}
+        onClose={handleCloseAiModal}
+        onGenerate={handleGenerateWithAI}
+      />
     </div>
   );
 }

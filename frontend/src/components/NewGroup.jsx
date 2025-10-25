@@ -6,6 +6,7 @@ export default function NewGroup({ user, onClose, onGroupCreated }) {
   const [groupName, setGroupName] = useState('');
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState(['']);
+  const [isPrivate, setIsPrivate] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -56,6 +57,7 @@ export default function NewGroup({ user, onClose, onGroupCreated }) {
         name: groupName.trim(),
         description: description.trim(),
         tags: filteredTags,
+        isPrivate: isPrivate,
         adminId: user.id
       });
 
@@ -158,6 +160,19 @@ export default function NewGroup({ user, onClose, onGroupCreated }) {
                 + Add Tag
               </button>
             )}
+          </div>
+
+          {/* Privacy Setting */}
+          <div className="form-group checkbox-group">
+            <label>
+              <input
+                type="checkbox"
+                checked={isPrivate}
+                onChange={(e) => setIsPrivate(e.target.checked)}
+                disabled={isSubmitting}
+              />
+              <span className="checkbox-label">🔒 Private Group (requires admin approval to join)</span>
+            </label>
           </div>
 
           {/* Action Buttons */}
