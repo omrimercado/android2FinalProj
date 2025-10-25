@@ -1518,12 +1518,15 @@ class ApiService {
   }
 
   /**
-   * Generate post content using AI
-   * @param {string} userInput - User's text input for AI to generate post from
+   * Generate post content using AI with LangGraph
+   * @param {Object} params - Generation parameters
+   * @param {string} params.topic - Topic for the post
+   * @param {string} params.style - Style of the post (professional, casual, funny, inspirational, storytelling)
+   * @param {string} params.length - Length of the post (short, medium, long)
    */
-  static async generatePostWithAI(userInput) {
+  static async generatePostWithAI({ topic, style = 'casual', length = 'medium' }) {
     console.log('🔧 ApiService.generatePostWithAI() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/posts/generate-ai`);
+    console.log('📍 Endpoint:', `${API_BASE_URL}/ai/generate-post`);
 
     try {
       const token = localStorage.getItem('token');
@@ -1533,16 +1536,18 @@ class ApiService {
       }
 
       console.log('📤 Request Method:', 'POST');
-      console.log('📤 User Input:', userInput);
+      console.log('📤 Topic:', topic);
+      console.log('📤 Style:', style);
+      console.log('📤 Length:', length);
       console.log('🎫 Token:', token ? 'Found' : 'Not found');
 
-      const response = await fetch(`${API_BASE_URL}/posts/generate-ai`, {
+      const response = await fetch(`${API_BASE_URL}/ai/generate-post`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ userInput })
+        body: JSON.stringify({ topic, style, length })
       });
 
       console.log('📥 Response Status:', response.status);

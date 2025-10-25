@@ -558,14 +558,27 @@ function GroupCard({ group, isMember, onAction, actionLabel, userInterests = [],
 // Edit Group Modal Component
 function EditGroupModal({ group, onClose, onUpdate }) {
   const [groupName, setGroupName] = useState(group.name);
+  const [description, setDescription] = useState(group.description || '');
+  const [tags, setTags] = useState(group.tags ? group.tags.join(', ') : '');
+  const [isPrivate, setIsPrivate] = useState(group.isPrivate || false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!groupName.trim()) {
       setError('Group name cannot be empty');
+      return;
+    }
+
+    if (!description.trim()) {
+      setError('Group description cannot be empty');
+      return;
+    }
+
+    if (!tags.trim()) {
+      setError('At least one tag is required');
       return;
     }
 
@@ -573,10 +586,30 @@ function EditGroupModal({ group, onClose, onUpdate }) {
     setError(null);
 
     try {
-      const result = await ApiService.updateGroup(group.id, { name: groupName });
+      // Prepare update data
+      const updateData = {
+        name: groupName.trim(),
+        description: description.trim(),
+        tags: tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0),
+        isPrivate
+      };
+
+      const result = await ApiService.updateGroup(group.id, updateData);
 
       if (result.success) {
-        onUpdate({ ...group, name: groupName });
+        // Extract the updated group from the backend response
+        const updatedGroupData = result.data.group || result.data;
+
+        // Update the frontend format
+        const updatedGroup = {
+          ...group,
+          name: updatedGroupData.name,
+          description: updatedGroupData.description,
+          tags: updatedGroupData.tags,
+          isPrivate: updatedGroupData.isPrivate
+        };
+
+        onUpdate(updatedGroup);
       } else {
         setError(result.message || 'Failed to update group');
       }
@@ -590,7 +623,7 @@ function EditGroupModal({ group, onClose, onUpdate }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content modal-large" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>✏️ Edit Group</h2>
           <button className="modal-close-btn" onClick={onClose}>✕</button>
@@ -602,7 +635,7 @@ function EditGroupModal({ group, onClose, onUpdate }) {
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="groupName">Group Name:</label>
+            <label htmlFor="groupName">Group Name: <span className="required">*</span></label>
             <input
               id="groupName"
               type="text"
@@ -611,7 +644,46 @@ function EditGroupModal({ group, onClose, onUpdate }) {
               placeholder="Enter group name"
               disabled={isUpdating}
               autoFocus
+              maxLength={100}
             />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="description">Description: <span className="required">*</span></label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Enter group description"
+              disabled={isUpdating}
+              rows={4}
+              maxLength={500}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="tags">Tags (comma-separated): <span className="required">*</span></label>
+            <input
+              id="tags"
+              type="text"
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+              placeholder="e.g., tech, coding, javascript"
+              disabled={isUpdating}
+            />
+            <small className="form-hint">Enter 1-5 tags separated by commas</small>
+          </div>
+
+          <div className="form-group checkbox-group">
+            <label>
+              <input
+                type="checkbox"
+                checked={isPrivate}
+                onChange={(e) => setIsPrivate(e.target.checked)}
+                disabled={isUpdating}
+              />
+              <span>Private Group (requires admin approval to join)</span>
+            </label>
           </div>
 
           <div className="modal-actions">
@@ -626,9 +698,9 @@ function EditGroupModal({ group, onClose, onUpdate }) {
             <button
               type="submit"
               className="modal-btn submit-btn"
-              disabled={isUpdating || !groupName.trim()}
+              disabled={isUpdating || !groupName.trim() || !description.trim() || !tags.trim()}
             >
-              {isUpdating ? '⌛ Updating...' : '✓ Update'}
+              {isUpdating ? '⌛ Updating...' : '✓ Update Group'}
             </button>
           </div>
         </form>
@@ -656,7 +728,9 @@ function ManageGroupMembersModal({ group, onClose, onMemberRemoved }) {
       const result = await ApiService.getGroupMembers(group.id);
 
       if (result.success) {
-        setMembers(result.data);
+        // Extract members array from the response
+        const membersData = result.data.members || result.data || [];
+        setMembers(membersData);
       } else {
         setError(result.message || 'Failed to load members');
       }

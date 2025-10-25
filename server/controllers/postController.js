@@ -96,16 +96,13 @@ export const likePost = async (req, res, next) => {
     const likeIndex = post.likes.indexOf(userId);
 
     if (likeIndex > -1) {
-      // Unlike: Remove user from likes array
       post.likes.splice(likeIndex, 1);
     } else {
-      // Like: Add user to likes array
       post.likes.push(userId);
     }
 
     await post.save();
 
-    // Populate user info
     await post.populate('userId', 'name email avatar');
 
     res.status(200).json({
@@ -121,9 +118,6 @@ export const likePost = async (req, res, next) => {
   }
 };
 
-// @desc    Add comment to a post
-// @route   POST /api/posts/:postId/comment
-// @access  Private
 export const addComment = async (req, res, next) => {
   try {
     const { postId } = req.params;
@@ -140,7 +134,6 @@ export const addComment = async (req, res, next) => {
       });
     }
 
-    // Add comment to post
     post.comments.push({
       userId,
       content,
@@ -148,7 +141,6 @@ export const addComment = async (req, res, next) => {
 
     await post.save();
 
-    // Populate user info
     await post.populate('userId', 'name email avatar');
     await post.populate('comments.userId', 'name email avatar');
 
@@ -165,9 +157,6 @@ export const addComment = async (req, res, next) => {
   }
 };
 
-// @desc    Get comments for a post
-// @route   GET /api/posts/:postId/comments
-// @access  Private
 export const getComments = async (req, res, next) => {
   try {
     const { postId } = req.params;
@@ -191,6 +180,91 @@ export const getComments = async (req, res, next) => {
       data: {
         comments: post.comments,
         count: post.comments.length,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updatePost = async (req, res, next) => {
+  try {
+    const { postId } = req.params;
+    const { content, image } = req.body;
+    const userId = req.user._id;
+
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: 'Post not found',
+        error: 'The specified post does not exist',
+      });
+    }
+
+    if (post.userId.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'Unauthorized',
+        error: 'You are not authorized to update this post',
+      });
+    }
+
+    if (content !== undefined) {
+      post.content = content;
+    }
+    if (image !== undefined) {
+      post.image = image;
+    }
+
+    await post.save();
+
+    await post.populate('userId', 'name email avatar');
+    await post.populate('comments.userId', 'name email avatar');
+
+    res.status(200).json({
+      success: true,
+      message: 'Post updated successfully',
+      data: {
+        post,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deletePost = async (req, res, next) => {
+  try {
+    const { postId } = req.params;
+    const userId = req.user._id;
+
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: 'Post not found',
+        error: 'The specified post does not exist',
+      });
+    }
+
+    if (post.userId.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'Unauthorized',
+        error: 'You are not authorized to delete this post',
+      });
+    }
+
+    await Post.findByIdAndDelete(postId);
+
+    res.status(200).json({
+      success: true,
+      message: 'Post deleted successfully',
+      data: {
+        postId,
       },
     });
   } catch (error) {
