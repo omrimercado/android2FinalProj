@@ -3,6 +3,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import PostCard from '../components/PostCard';
 import ChangeImage from '../components/ChangeImage';
+import NewPost from '../components/NewPost';
 import ApiService from '../services/api';
 import { getAvatar } from '../utils/helpers';
 import './MyProfilePage.css';
@@ -22,6 +23,10 @@ export default function MyProfilePage({ user, currentPage, onNavigate, onLogout 
   const [myPosts, setMyPosts] = useState([]);
   const [isLoadingPosts, setIsLoadingPosts] = useState(true);
   const [postsError, setPostsError] = useState(null);
+
+  // State for editing posts
+  const [editingPost, setEditingPost] = useState(null);
+  const [isDeletingPostId, setIsDeletingPostId] = useState(null);
 
   // Fetch join requests and user posts when component mounts
   useEffect(() => {
@@ -93,26 +98,26 @@ export default function MyProfilePage({ user, currentPage, onNavigate, onLogout 
                 id: 'group1-user1',
                 groupId: 'group1',
                 userId: 'user1',
-                userName: 'Sarah Cohen',
-                userAvatar: 'https://i.pravatar.cc/150?img=10',
-                requestDate: '2 hours ago'
-              },
-              {
+      userName: 'Sarah Cohen',
+      userAvatar: 'https://i.pravatar.cc/150?img=10',
+      requestDate: '2 hours ago'
+    },
+    {
                 id: 'group1-user2',
                 groupId: 'group1',
                 userId: 'user2',
-                userName: 'David Levi',
-                userAvatar: 'https://i.pravatar.cc/150?img=12',
-                requestDate: '5 hours ago'
-              },
-              {
+      userName: 'David Levi',
+      userAvatar: 'https://i.pravatar.cc/150?img=12',
+      requestDate: '5 hours ago'
+    },
+    {
                 id: 'group1-user3',
                 groupId: 'group1',
                 userId: 'user3',
-                userName: 'Rachel Ben-David',
-                userAvatar: 'https://i.pravatar.cc/150?img=15',
-                requestDate: '1 day ago'
-              }
+      userName: 'Rachel Ben-David',
+      userAvatar: 'https://i.pravatar.cc/150?img=15',
+      requestDate: '1 day ago'
+    }
             ]
           },
           {
@@ -361,6 +366,58 @@ export default function MyProfilePage({ user, currentPage, onNavigate, onLogout 
     localStorage.setItem('user', JSON.stringify(savedUser));
   };
 
+  // Start editing a post
+  const handleEditPost = (post) => {
+    setEditingPost(post);
+  };
+
+  // Cancel editing
+  const handleCancelEdit = () => {
+    setEditingPost(null);
+  };
+
+  // Handle post updated (callback from NewPost component)
+  const handlePostUpdated = (updatedPost) => {
+    // Update the post in the local state
+    setMyPosts(prevPosts =>
+      prevPosts.map(post =>
+        post._id === updatedPost._id || post._id === updatedPost.id 
+          ? { ...post, content: updatedPost.content, image: updatedPost.image } 
+          : post
+      )
+    );
+    setSuccessMessage('✅ Post updated successfully!');
+    setEditingPost(null);
+  };
+
+  // Delete a post
+  const handleDeletePost = async (postId) => {
+    // Confirm before deleting
+    const confirmed = window.confirm('Are you sure you want to delete this post? This action cannot be undone.');
+    
+    if (!confirmed) return;
+
+    setIsDeletingPostId(postId);
+    setPostsError(null);
+
+    try {
+      const result = await ApiService.deletePost(postId);
+
+      if (result.success) {
+        // Remove the post from local state
+        setMyPosts(prevPosts => prevPosts.filter(post => post._id !== postId));
+        setSuccessMessage('✅ Post deleted successfully!');
+      } else {
+        setPostsError(result.message || 'Failed to delete post');
+      }
+    } catch (error) {
+      console.error('Error deleting post:', error);
+      setPostsError('An error occurred while deleting the post');
+    } finally {
+      setIsDeletingPostId(null);
+    }
+  };
+
   return (
     <div className="myprofile-page">
       <Header 
@@ -476,7 +533,7 @@ export default function MyProfilePage({ user, currentPage, onNavigate, onLogout 
           <div className="posts-section">
             <h2 className="section-title">📝 My Posts</h2>
             <p className="section-subtitle">All posts you've shared</p>
-
+            
             {/* Loading State for Posts */}
             {isLoadingPosts && (
               <div className="loading-message">
@@ -497,21 +554,69 @@ export default function MyProfilePage({ user, currentPage, onNavigate, onLogout 
               <div className="posts-list">
                 {myPosts.length > 0 ? (
                   myPosts.map(post => {
-                    // Transform API post data to PostCard expected format
-                    const transformedPost = {
-                      id: post._id,
-                      avatar: getAvatar(post.userId?.avatar, post.userId?.name),
-                      group: 'My Posts', // Could be enhanced later
-                      username: post.userId?.name || user?.name,
-                      handle: post.userId?.email?.split('@')[0] || user?.email?.split('@')[0],
-                      time: new Date(post.createdAt).toLocaleDateString(),
-                      text: post.content,
-                      image: post.image,
-                      comments: post.commentsCount || 0,
-                      retweets: 0, // Not implemented in backend yet
-                      likes: post.likesCount || 0
-                    };
-                    return <PostCard key={post._id} post={transformedPost} />;
+                    const isEditing = editingPost && editingPost._id === post._id;
+                    const isDeleting = isDeletingPostId === post._id;
+
+                    return (
+                      <div key={post._id} className="my-post-card">
+                        {isEditing ? (
+                          // Edit Mode - Use NewPost Component
+                          <NewPost
+                            user={user}
+                            editMode={true}
+                            postToEdit={post}
+                            onPostUpdated={handlePostUpdated}
+                            onCancelEdit={handleCancelEdit}
+                          />
+                        ) : (
+                          // View Mode
+                          <>
+                            <div className="post-card-header">
+                              <img
+                                src={getAvatar(post.userId?.avatar, post.userId?.name)}
+                                alt={post.userId?.name || user?.name}
+                                className="post-avatar"
+                              />
+                              <div className="post-user-info">
+                                <h3 className="post-username">{post.userId?.name || user?.name}</h3>
+                                <p className="post-time">{new Date(post.createdAt).toLocaleDateString()}</p>
+                              </div>
+                              <div className="post-actions-menu">
+                                <button
+                                  className="btn-edit-post"
+                                  onClick={() => handleEditPost(post)}
+                                  title="Edit post"
+                                >
+                                  ✏️
+                                </button>
+                                <button
+                                  className="btn-delete-post"
+                                  onClick={() => handleDeletePost(post._id)}
+                                  disabled={isDeleting}
+                                  title="Delete post"
+                                >
+                                  {isDeleting ? '⌛' : '🗑️'}
+                                </button>
+                              </div>
+                            </div>
+                            <div className="post-card-content">
+                              <p className="post-text">{post.content}</p>
+                              {post.image && (
+                                <img src={post.image} alt="Post" className="post-image" />
+                              )}
+                            </div>
+                            <div className="post-card-footer">
+                              <div className="post-stat">
+                                <span>💬 {post.commentsCount || 0} Comments</span>
+                              </div>
+                              <div className="post-stat">
+                                <span>❤️ {post.likesCount || 0} Likes</span>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    );
                   })
                 ) : (
                   <div className="no-posts">

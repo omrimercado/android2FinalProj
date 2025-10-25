@@ -101,8 +101,43 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
     }
   };
 
-  const handleSearch = (term) => {
-    setSearchTerm(term);
+  const handleSearch = async (searchParams) => {
+    // אם זה חיפוש מתקדם (אובייקט עם פרמטרים)
+    if (typeof searchParams === 'object' && searchParams.name !== undefined) {
+      setLoading(true);
+      try {
+        const result = await ApiService.searchGroups(searchParams);
+        if (result.success) {
+          const groups = result.data || [];
+          
+          // Map to frontend format
+          const formattedGroups = groups.map(group => ({
+            id: group.group_id || group._id || group.id,
+            name: group.group_name || group.name,
+            description: group.description || '',
+            tags: group.tags || [],
+            membersCount: group.members_count || group.membersCount || 0,
+            avatar: `https://i.pravatar.cc/150?img=${Math.abs((group.group_id || group._id || group.id).toString().charCodeAt(0) % 50)}`,
+            isPrivate: group.is_private || group.isPrivate,
+            isMember: group.isMember || false
+          }));
+
+          // Show results in suggested groups section
+          setSuggestedGroups(formattedGroups);
+          setSearchTerm(''); // Clear simple search term
+        } else {
+          console.error('Failed to search groups:', result.message);
+        }
+      } catch (error) {
+        console.error('Error searching groups:', error);
+      } finally {
+        setLoading(false);
+      }
+    } 
+    // אם זה חיפוש רגיל (סתם טקסט)
+    else {
+      setSearchTerm(searchParams);
+    }
   };
 
   const handleGroupCreated = (createdGroup) => {
@@ -229,6 +264,8 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
             <SearchBar 
               placeholder="Search groups..."
               onSearch={handleSearch}
+              showAdvancedSearch={true}
+              searchType="groups"
             />
             <button 
               className="create-group-btn"

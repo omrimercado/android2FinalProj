@@ -115,6 +115,78 @@
   transform: translateY(0);
 }
 
+/* Advanced Search Toggle Button */
+.advanced-search-toggle {
+  padding: 0.875rem 1.5rem;
+  background: white;
+  color: #667eea;
+  border: 2px solid #667eea;
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.advanced-search-toggle:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.advanced-search-toggle.active {
+  background: #667eea;
+  color: white;
+}
+
+.advanced-icon {
+  font-size: 16px;
+}
+
+.advanced-text {
+  font-size: 14px;
+}
+
+.arrow-icon {
+  font-size: 10px;
+  transition: transform 0.3s ease;
+}
+
+.arrow-icon.up {
+  transform: rotate(180deg);
+}
+
+/* Advanced Search Dropdown */
+.advanced-search-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Make search-bar relative for absolute positioning */
+.search-bar {
+  position: relative;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .search-form {
@@ -133,6 +205,11 @@
 
   .search-button {
     width: 100%;
+  }
+
+  .advanced-search-toggle {
+    width: 100%;
+    justify-content: center;
   }
 }
 

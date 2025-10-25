@@ -954,6 +954,114 @@ class ApiService {
     }
   }
 
+  // Update a post
+  static async updatePost(postId, postData) {
+    console.log('🔧 ApiService.updatePost() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/posts/${postId}`);
+
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'PUT');
+      console.log('📤 Post ID:', postId);
+      console.log('📤 Post Data:', postData);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+
+      const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(postData)
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to update post');
+        throw new Error(data.message || 'Failed to update post');
+      }
+
+      console.log('✅ Update post API call successful');
+
+      return {
+        success: true,
+        data: data.data || data,
+        message: data.message || 'Post updated successfully'
+      };
+    } catch (error) {
+      console.log('❌ Update post API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to update post'
+      };
+    }
+  }
+
+  // Delete a post
+  static async deletePost(postId) {
+    console.log('🔧 ApiService.deletePost() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/posts/${postId}`);
+
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'DELETE');
+      console.log('📤 Post ID:', postId);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+
+      const response = await fetch(`${API_BASE_URL}/posts/${postId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to delete post');
+        throw new Error(data.message || 'Failed to delete post');
+      }
+
+      console.log('✅ Delete post API call successful');
+
+      return {
+        success: true,
+        data: data.data || data,
+        message: data.message || 'Post deleted successfully'
+      };
+    } catch (error) {
+      console.log('❌ Delete post API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to delete post'
+      };
+    }
+  }
+
   // Like or unlike a post (toggle)
   static async likePost(postId) {
     console.log('🔧 ApiService.likePost() - התחלה');
@@ -1111,6 +1219,201 @@ class ApiService {
         success: false,
         error: error.message,
         message: 'Failed to fetch comments'
+      };
+    }
+  }
+
+  // ===== Advanced Search APIs =====
+
+  /**
+   * Search posts with advanced filters
+   * @param {Object} searchParams - Search parameters
+   * @param {string} searchParams.query - Search text/keywords
+   * @param {string} searchParams.groupFilter - 'all_my_groups' or specific groupId
+   * @param {string} searchParams.dateRange - 'today', 'week', 'month', 'all'
+   * @param {string} searchParams.sortBy - 'newest', 'most_liked', 'most_commented'
+   */
+  static async searchPosts(searchParams) {
+    console.log('🔧 ApiService.searchPosts() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/search/posts`);
+
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      // Build query string
+      const params = new URLSearchParams();
+      if (searchParams.query) params.append('query', searchParams.query);
+      if (searchParams.groupFilter) params.append('groupFilter', searchParams.groupFilter);
+      if (searchParams.dateRange) params.append('dateRange', searchParams.dateRange);
+      if (searchParams.sortBy) params.append('sortBy', searchParams.sortBy);
+
+      const endpoint = `${API_BASE_URL}/search/posts?${params.toString()}`;
+
+      console.log('📤 Request Method:', 'GET');
+      console.log('📤 Search Params:', searchParams);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to search posts');
+        throw new Error(data.message || 'Failed to search posts');
+      }
+
+      console.log('✅ Search posts API call successful');
+
+      return {
+        success: true,
+        data: data.data || data.posts || [],
+        message: data.message || 'Posts searched successfully'
+      };
+    } catch (error) {
+      console.log('❌ Search posts API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to search posts'
+      };
+    }
+  }
+
+  /**
+   * Generate post content using AI
+   * @param {string} userInput - User's text input for AI to generate post from
+   */
+  static async generatePostWithAI(userInput) {
+    console.log('🔧 ApiService.generatePostWithAI() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/posts/generate-ai`);
+
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'POST');
+      console.log('📤 User Input:', userInput);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+
+      const response = await fetch(`${API_BASE_URL}/posts/generate-ai`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ userInput })
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to generate AI post');
+        throw new Error(data.message || 'Failed to generate AI post');
+      }
+
+      console.log('✅ Generate AI post API call successful');
+
+      return {
+        success: true,
+        data: data.data || data,
+        message: data.message || 'AI post generated successfully'
+      };
+    } catch (error) {
+      console.log('❌ Generate AI post API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to generate AI post'
+      };
+    }
+  }
+
+  /**
+   * Search groups with advanced filters
+   * @param {Object} searchParams - Search parameters
+   * @param {string} searchParams.name - Group name search
+   * @param {string} searchParams.category - Category filter
+   * @param {string} searchParams.size - Group size filter ('small', 'medium', 'large', 'huge')
+   */
+  static async searchGroups(searchParams) {
+    console.log('🔧 ApiService.searchGroups() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/search/groups`);
+
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      // Build query string
+      const params = new URLSearchParams();
+      if (searchParams.name) params.append('name', searchParams.name);
+      if (searchParams.category) params.append('category', searchParams.category);
+      if (searchParams.size) params.append('size', searchParams.size);
+
+      const endpoint = `${API_BASE_URL}/search/groups?${params.toString()}`;
+
+      console.log('📤 Request Method:', 'GET');
+      console.log('📤 Search Params:', searchParams);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to search groups');
+        throw new Error(data.message || 'Failed to search groups');
+      }
+
+      console.log('✅ Search groups API call successful');
+
+      return {
+        success: true,
+        data: data.data || data.groups || [],
+        message: data.message || 'Groups searched successfully'
+      };
+    } catch (error) {
+      console.log('❌ Search groups API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to search groups'
       };
     }
   }

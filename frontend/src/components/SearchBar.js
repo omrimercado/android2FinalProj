@@ -1,9 +1,18 @@
 import React, { useState } from 'react';
+import AdvancedPostSearch from './AdvancedPostSearch';
+import AdvancedGroupSearch from './AdvancedGroupSearch';
 import './SearchBar.css';
 
-function SearchBar({ placeholder = "חפש...", onSearch, showFilters = false }) {
+function SearchBar({ 
+  placeholder = "Search...", 
+  onSearch, 
+  showFilters = false,
+  showAdvancedSearch = false,
+  searchType = 'posts' // 'posts' or 'groups'
+}) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [showAdvancedDropdown, setShowAdvancedDropdown] = useState(false);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -20,6 +29,13 @@ function SearchBar({ placeholder = "חפש...", onSearch, showFilters = false })
     if (onSearch) {
       onSearch(value, filterType);
     }
+  };
+
+  const handleAdvancedSearch = (searchParams) => {
+    if (onSearch) {
+      onSearch(searchParams);
+    }
+    setShowAdvancedDropdown(false);
   };
 
   return (
@@ -58,18 +74,50 @@ function SearchBar({ placeholder = "חפש...", onSearch, showFilters = false })
                 if (onSearch) onSearch(searchTerm, e.target.value);
               }}
             >
-              <option value="all">הכל</option>
-              <option value="posts">פוסטים</option>
-              <option value="users">משתמשים</option>
-              <option value="groups">קבוצות</option>
+              <option value="all">All</option>
+              <option value="posts">Posts</option>
+              <option value="users">Users</option>
+              <option value="groups">Groups</option>
             </select>
           </div>
         )}
 
         <button type="submit" className="search-button">
-          חפש
+          Search
         </button>
+
+        {showAdvancedSearch && (
+          <button
+            type="button"
+            className={`advanced-search-toggle ${showAdvancedDropdown ? 'active' : ''}`}
+            onClick={() => setShowAdvancedDropdown(!showAdvancedDropdown)}
+            title="Advanced Search"
+          >
+            <span className="advanced-icon">⚙️</span>
+            <span className="advanced-text">Advanced</span>
+            <span className={`arrow-icon ${showAdvancedDropdown ? 'up' : 'down'}`}>
+              {showAdvancedDropdown ? '▲' : '▼'}
+            </span>
+          </button>
+        )}
       </form>
+
+      {/* Advanced Search Dropdown */}
+      {showAdvancedSearch && showAdvancedDropdown && (
+        <div className="advanced-search-dropdown">
+          {searchType === 'posts' ? (
+            <AdvancedPostSearch 
+              onSearch={handleAdvancedSearch}
+              onClose={() => setShowAdvancedDropdown(false)}
+            />
+          ) : (
+            <AdvancedGroupSearch 
+              onSearch={handleAdvancedSearch}
+              onClose={() => setShowAdvancedDropdown(false)}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }

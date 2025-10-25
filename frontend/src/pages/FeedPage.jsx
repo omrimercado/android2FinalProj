@@ -43,8 +43,29 @@ export default function FeedPage({ user, currentPage, onNavigate, onLogout }) {
     }
   };
 
-  const handleSearch = (term) => {
-    setSearchTerm(term);
+  const handleSearch = async (searchParams) => {
+    // אם זה חיפוש מתקדם (אובייקט עם פרמטרים)
+    if (typeof searchParams === 'object' && searchParams.query !== undefined) {
+      setIsLoading(true);
+      try {
+        const result = await ApiService.searchPosts(searchParams);
+        if (result.success) {
+          setPosts(result.data || []);
+          setSearchTerm(''); // Clear simple search term
+        } else {
+          setError(result.message || 'Failed to search posts');
+        }
+      } catch (error) {
+        console.error('Error searching posts:', error);
+        setError('An error occurred while searching');
+      } finally {
+        setIsLoading(false);
+      }
+    } 
+    // אם זה חיפוש רגיל (סתם טקסט)
+    else {
+      setSearchTerm(searchParams);
+    }
   };
 
   const handlePostCreated = (newPost) => {
@@ -193,6 +214,8 @@ export default function FeedPage({ user, currentPage, onNavigate, onLogout }) {
             <SearchBar
               placeholder="Search posts..."
               onSearch={handleSearch}
+              showAdvancedSearch={true}
+              searchType="posts"
             />
           </div>
 

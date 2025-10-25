@@ -395,6 +395,167 @@
   gap: 20px;
 }
 
+/* My Post Card */
+.my-post-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.my-post-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Post Card Header */
+.post-card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.post-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 1rem;
+}
+
+.post-user-info {
+  flex: 1;
+}
+
+.post-username {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 0.25rem 0;
+}
+
+.post-time {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+}
+
+/* Post Actions Menu (Edit & Delete buttons) */
+.post-actions-menu {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-edit-post,
+.btn-delete-post {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-edit-post {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.btn-edit-post:hover {
+  background: #1976d2;
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
+}
+
+.btn-delete-post {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.btn-delete-post:hover:not(:disabled) {
+  background: #d32f2f;
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(211, 47, 47, 0.3);
+}
+
+.btn-delete-post:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Post Card Content */
+.post-card-content {
+  margin-bottom: 1rem;
+}
+
+.post-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #333;
+  margin: 0 0 1rem 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.post-image {
+  width: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+  max-height: 400px;
+}
+
+/* Post Card Footer */
+.post-card-footer {
+  display: flex;
+  gap: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e1e8ed;
+}
+
+.post-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Edit Mode - Using NewPost component, so no custom styles needed here */
+
+/* Loading and Error Messages */
+.loading-message,
+.error-message {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.error-message {
+  color: #e74c3c;
+}
+
+.retry-btn {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.retry-btn:hover {
+  background: #4f46e5;
+}
+
+/* No Posts State */
 .no-posts {
   text-align: center;
   padding: 60px 20px;
@@ -480,6 +641,17 @@
 
   .section-title {
     font-size: 20px;
+  }
+
+  /* Post Cards Responsive */
+  .post-card-header {
+    flex-wrap: wrap;
+  }
+
+  .post-actions-menu {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
   }
 }
 
