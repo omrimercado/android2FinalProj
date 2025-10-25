@@ -735,10 +735,10 @@ class ApiService {
   static async updateUserPreferences(interests) {
     console.log('🔧 ApiService.updateUserPreferences() - התחלה');
     console.log('📍 Endpoint:', `${API_BASE_URL}/auth/preferences`);
-    
+
     try {
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         throw new Error('No token found. Please login again.');
       }
@@ -746,7 +746,7 @@ class ApiService {
       console.log('📤 Request Method:', 'PUT');
       console.log('📤 Interests:', interests);
       console.log('🎫 Token:', token ? 'Found' : 'Not found');
-      
+
       const response = await fetch(`${API_BASE_URL}/auth/preferences`, {
         method: 'PUT',
         headers: {
@@ -768,7 +768,7 @@ class ApiService {
       }
 
       console.log('✅ Update preferences API call successful');
-      
+
       if (data.success && data.data) {
         return {
           success: true,
@@ -776,7 +776,7 @@ class ApiService {
           message: data.message || 'Preferences updated successfully'
         };
       }
-      
+
       return {
         success: true,
         data: data,
@@ -789,6 +789,328 @@ class ApiService {
         success: false,
         error: error.message,
         message: 'Update preferences failed'
+      };
+    }
+  }
+
+  // ===== Posts Management APIs =====
+
+  // Get all posts
+  static async getPosts() {
+    console.log('🔧 ApiService.getPosts() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/posts`);
+
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'GET');
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+
+      const response = await fetch(`${API_BASE_URL}/posts`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to fetch posts');
+        throw new Error(data.message || 'Failed to fetch posts');
+      }
+
+      console.log('✅ Get posts API call successful');
+
+      return {
+        success: true,
+        data: data.data || data,
+        message: data.message || 'Posts fetched successfully'
+      };
+    } catch (error) {
+      console.log('❌ Get posts API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to fetch posts'
+      };
+    }
+  }
+
+  // Create a new post
+  static async createPost(postData) {
+    console.log('🔧 ApiService.createPost() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/posts`);
+
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'POST');
+      console.log('📤 Post Data:', postData);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+
+      const response = await fetch(`${API_BASE_URL}/posts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(postData)
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to create post');
+        throw new Error(data.message || 'Failed to create post');
+      }
+
+      console.log('✅ Create post API call successful');
+
+      return {
+        success: true,
+        data: data.data || data,
+        message: data.message || 'Post created successfully'
+      };
+    } catch (error) {
+      console.log('❌ Create post API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to create post'
+      };
+    }
+  }
+
+  // Get posts by a specific user
+  static async getUserPosts(userId) {
+    console.log('🔧 ApiService.getUserPosts() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/posts/user/${userId}`);
+
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'GET');
+      console.log('📤 User ID:', userId);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+
+      const response = await fetch(`${API_BASE_URL}/posts/user/${userId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to fetch user posts');
+        throw new Error(data.message || 'Failed to fetch user posts');
+      }
+
+      console.log('✅ Get user posts API call successful');
+
+      return {
+        success: true,
+        data: data.data || data,
+        message: data.message || 'User posts fetched successfully'
+      };
+    } catch (error) {
+      console.log('❌ Get user posts API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to fetch user posts'
+      };
+    }
+  }
+
+  // Like or unlike a post (toggle)
+  static async likePost(postId) {
+    console.log('🔧 ApiService.likePost() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/posts/${postId}/like`);
+
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'POST');
+      console.log('📤 Post ID:', postId);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+
+      const response = await fetch(`${API_BASE_URL}/posts/${postId}/like`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to like post');
+        throw new Error(data.message || 'Failed to like post');
+      }
+
+      console.log('✅ Like post API call successful');
+
+      return {
+        success: true,
+        data: data.data || data,
+        message: data.message || 'Post liked/unliked successfully'
+      };
+    } catch (error) {
+      console.log('❌ Like post API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to like post'
+      };
+    }
+  }
+
+  // Add a comment to a post
+  static async addComment(postId, content) {
+    console.log('🔧 ApiService.addComment() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/posts/${postId}/comment`);
+
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'POST');
+      console.log('📤 Post ID:', postId);
+      console.log('📤 Comment:', content);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+
+      const response = await fetch(`${API_BASE_URL}/posts/${postId}/comment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ content })
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to add comment');
+        throw new Error(data.message || 'Failed to add comment');
+      }
+
+      console.log('✅ Add comment API call successful');
+
+      return {
+        success: true,
+        data: data.data || data,
+        message: data.message || 'Comment added successfully'
+      };
+    } catch (error) {
+      console.log('❌ Add comment API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to add comment'
+      };
+    }
+  }
+
+  // Get all comments for a post
+  static async getComments(postId) {
+    console.log('🔧 ApiService.getComments() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/posts/${postId}/comments`);
+
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'GET');
+      console.log('📤 Post ID:', postId);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+
+      const response = await fetch(`${API_BASE_URL}/posts/${postId}/comments`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to fetch comments');
+        throw new Error(data.message || 'Failed to fetch comments');
+      }
+
+      console.log('✅ Get comments API call successful');
+
+      return {
+        success: true,
+        data: data.data || data,
+        message: data.message || 'Comments fetched successfully'
+      };
+    } catch (error) {
+      console.log('❌ Get comments API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to fetch comments'
       };
     }
   }
