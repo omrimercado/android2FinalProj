@@ -29,9 +29,26 @@ export default function ChangeImage({ onClose, currentImage, onSave }) {
 
     if (!img || !canvas || !ctx) return;
 
-    // Set canvas size to image size
-    canvas.width = img.width;
-    canvas.height = img.height;
+    // Calculate new dimensions (max 400x400 to reduce file size)
+    const maxSize = 400;
+    let width = img.width;
+    let height = img.height;
+
+    if (width > height) {
+      if (width > maxSize) {
+        height = (height * maxSize) / width;
+        width = maxSize;
+      }
+    } else {
+      if (height > maxSize) {
+        width = (width * maxSize) / height;
+        height = maxSize;
+      }
+    }
+
+    // Set canvas size to calculated size
+    canvas.width = width;
+    canvas.height = height;
 
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -57,8 +74,8 @@ export default function ChangeImage({ onClose, currentImage, onSave }) {
         ctx.filter = 'none';
     }
 
-    // Draw image with filter
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    // Draw image with filter (resized)
+    ctx.drawImage(img, 0, 0, width, height);
   };
 
   // Update preview when filter changes
@@ -101,14 +118,20 @@ export default function ChangeImage({ onClose, currentImage, onSave }) {
     console.log('💾 שומר תמונה חדשה...');
     
     try {
-      // Get filtered image from canvas
+      // Get filtered/compressed image from canvas
       const canvas = canvasRef.current;
-      let finalImageUrl = previewUrl;
+      let finalImageUrl;
       
-      if (canvas && selectedFilter !== 'normal') {
-        // Convert canvas to data URL with filter applied
-        finalImageUrl = canvas.toDataURL('image/png');
-        console.log('🎨 Canvas filter applied:', selectedFilter);
+      // Always use canvas to resize and compress
+      if (canvas) {
+        // Convert canvas to JPEG with high compression (quality 0.7 = 70%)
+        finalImageUrl = canvas.toDataURL('image/jpeg', 0.7);
+        console.log('🎨 Image compressed - Filter:', selectedFilter);
+        console.log('📊 Original size:', previewUrl.length, 'bytes');
+        console.log('📊 Compressed size:', finalImageUrl.length, 'bytes');
+        console.log('📉 Size reduction:', Math.round((1 - finalImageUrl.length / previewUrl.length) * 100), '%');
+      } else {
+        finalImageUrl = previewUrl;
       }
       
       console.log('🖼️ Final URL:', finalImageUrl.substring(0, 50) + '...');
@@ -131,7 +154,13 @@ export default function ChangeImage({ onClose, currentImage, onSave }) {
         onClose();
       } else {
         console.error('❌ שגיאה בעדכון התמונה:', response.error);
-        setError(response.error || 'Failed to update avatar');
+        
+        // Check if error is about file size
+        if (response.error && response.error.toLowerCase().includes('too large')) {
+          setError('Image is still too large. Please try a smaller image or use a different photo.');
+        } else {
+          setError(response.error || 'Failed to update avatar');
+        }
       }
     } catch (err) {
       console.error('💥 שגיאה:', err);

@@ -731,6 +731,229 @@ class ApiService {
     }
   }
 
+  // Update a group (admin only)
+  static async updateGroup(groupId, groupData) {
+    console.log('🔧 ApiService.updateGroup() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/${groupId}`);
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'PUT');
+      console.log('📤 Group ID:', groupId);
+      console.log('📤 Group Data:', groupData);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+      
+      const response = await fetch(`${API_BASE_URL}/groups/${groupId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(groupData)
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to update group');
+        throw new Error(data.message || 'Failed to update group');
+      }
+
+      console.log('✅ Update group API call successful');
+      
+      if (data.success && data.data) {
+        return {
+          success: true,
+          data: data.data,
+          message: data.message || 'Group updated successfully'
+        };
+      }
+      
+      return {
+        success: true,
+        data: data,
+        message: 'Group updated successfully'
+      };
+    } catch (error) {
+      console.log('❌ Update group API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to update group'
+      };
+    }
+  }
+
+  // Delete a group (admin only)
+  static async deleteGroup(groupId) {
+    console.log('🔧 ApiService.deleteGroup() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/${groupId}`);
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'DELETE');
+      console.log('📤 Group ID:', groupId);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+      
+      const response = await fetch(`${API_BASE_URL}/groups/${groupId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to delete group');
+        throw new Error(data.message || 'Failed to delete group');
+      }
+
+      console.log('✅ Delete group API call successful');
+      
+      return {
+        success: true,
+        data: data.data || data,
+        message: data.message || 'Group deleted successfully'
+      };
+    } catch (error) {
+      console.log('❌ Delete group API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to delete group'
+      };
+    }
+  }
+
+  // Remove a user from group (admin only)
+  static async removeUserFromGroup(groupId, userId) {
+    console.log('🔧 ApiService.removeUserFromGroup() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/${groupId}/members/${userId}`);
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'DELETE');
+      console.log('📤 Group ID:', groupId);
+      console.log('📤 User ID:', userId);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+      
+      const response = await fetch(`${API_BASE_URL}/groups/${groupId}/members/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to remove user from group');
+        throw new Error(data.message || 'Failed to remove user from group');
+      }
+
+      console.log('✅ Remove user from group API call successful');
+      
+      return {
+        success: true,
+        data: data.data || data,
+        message: data.message || 'User removed from group successfully'
+      };
+    } catch (error) {
+      console.log('❌ Remove user from group API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to remove user from group'
+      };
+    }
+  }
+
+  // Get group members (admin only)
+  static async getGroupMembers(groupId) {
+    console.log('🔧 ApiService.getGroupMembers() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/${groupId}/members`);
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'GET');
+      console.log('📤 Group ID:', groupId);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+      
+      const response = await fetch(`${API_BASE_URL}/groups/${groupId}/members`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to fetch group members');
+        throw new Error(data.message || 'Failed to fetch group members');
+      }
+
+      console.log('✅ Get group members API call successful');
+      
+      return {
+        success: true,
+        data: data.data || data.members || [],
+        message: data.message || 'Group members fetched successfully'
+      };
+    } catch (error) {
+      console.log('❌ Get group members API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to fetch group members'
+      };
+    }
+  }
+
   // Update user preferences (interests)
   static async updateUserPreferences(interests) {
     console.log('🔧 ApiService.updateUserPreferences() - התחלה');

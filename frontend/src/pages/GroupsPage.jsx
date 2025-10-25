@@ -12,6 +12,12 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
   const [searchTerm, setSearchTerm] = useState('');
   const [showNewGroup, setShowNewGroup] = useState(false);
   const [loading, setLoading] = useState(true);
+  
+  // Admin management states
+  const [editingGroup, setEditingGroup] = useState(null);
+  const [managingGroup, setManagingGroup] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     fetchGroups();
@@ -60,7 +66,6 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
           description: group.description,
           tags: group.tags,
           membersCount: group.membersCount || group.members?.length || 0,
-          avatar: `https://i.pravatar.cc/150?img=${Math.abs(group._id.charCodeAt(0) % 50)}`,
           isAdmin: group.isAdmin
         }));
       }
@@ -74,7 +79,6 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
           description: group.description,
           tags: group.tags,
           membersCount: group.membersCount || group.members?.length || 0,
-          avatar: `https://i.pravatar.cc/150?img=${Math.abs(group._id.charCodeAt(0) % 50)}`,
           matchScore: calculateMatchScore(group.tags),
           isPrivate: group.isPrivate
         }));
@@ -222,19 +226,58 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
         setMyGroups(myGroups.filter(g => g.id !== groupId));
 
         // Show success message
-        alert('Successfully left the group');
+        setSuccessMessage('Successfully left the group');
 
         // Optionally refresh groups to show it in suggested again
         // fetchGroups();
       } else {
         console.error('Failed to leave group:', result.message);
-        alert(result.message || 'Failed to leave group');
+        setErrorMessage(result.message || 'Failed to leave group');
       }
     } catch (error) {
       console.error('Error leaving group:', error);
-      alert('Error leaving group. Please try again.');
+      setErrorMessage('Error leaving group. Please try again.');
     }
   };
+
+  const handleEditGroup = (group) => {
+    setEditingGroup(group);
+  };
+
+  const handleDeleteGroup = async (groupId, groupName) => {
+    try {
+      if (!window.confirm(`Are you sure you want to delete "${groupName}"? This action cannot be undone.`)) {
+        return;
+      }
+
+      const result = await ApiService.deleteGroup(groupId);
+
+      if (result.success) {
+        setMyGroups(myGroups.filter(g => g.id !== groupId));
+        setSuccessMessage(`"${groupName}" deleted successfully`);
+      } else {
+        setErrorMessage(result.message || 'Failed to delete group');
+      }
+    } catch (error) {
+      console.error('Error deleting group:', error);
+      setErrorMessage('Error deleting group. Please try again.');
+    }
+  };
+
+  const handleManageMembers = (group) => {
+    setManagingGroup(group);
+  };
+
+  // Auto-clear messages after 5 seconds
+  useEffect(() => {
+    if (successMessage || errorMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage(null);
+        setErrorMessage(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage, errorMessage]);
 
   const filteredMyGroups = myGroups.filter(group =>
     group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -259,6 +302,22 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
 
       <div className="groups-container">
         <div className="groups-content">
+          {/* Success/Error Messages */}
+          {(successMessage || errorMessage) && (
+            <div className={`message-banner ${successMessage ? 'success' : 'error'}`}>
+              <span>{successMessage || errorMessage}</span>
+              <button 
+                className="close-message"
+                onClick={() => {
+                  setSuccessMessage(null);
+                  setErrorMessage(null);
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
           {/* Search and Create Button */}
           <div className="groups-header">
             <SearchBar 
@@ -306,6 +365,9 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
                         isMember={true}
                         onAction={() => handleLeaveGroup(group.id)}
                         actionLabel="Leave"
+                        onEdit={group.isAdmin ? () => handleEditGroup(group) : null}
+                        onDelete={group.isAdmin ? () => handleDeleteGroup(group.id, group.name) : null}
+                        onManageMembers={group.isAdmin ? () => handleManageMembers(group) : null}
                       />
                     ))}
                   </div>
@@ -364,12 +426,42 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
           onGroupCreated={handleGroupCreated}
         />
       )}
+
+      {/* Edit Group Modal */}
+      {editingGroup && (
+        <EditGroupModal
+          group={editingGroup}
+          onClose={() => setEditingGroup(null)}
+          onUpdate={(updatedGroup) => {
+            setMyGroups(myGroups.map(g => g.id === updatedGroup.id ? updatedGroup : g));
+            setEditingGroup(null);
+            setSuccessMessage('Group updated successfully!');
+          }}
+        />
+      )}
+
+      {/* Manage Members Modal */}
+      {managingGroup && (
+        <ManageGroupMembersModal
+          group={managingGroup}
+          onClose={() => setManagingGroup(null)}
+          onMemberRemoved={(userId) => {
+            // Update members count
+            setMyGroups(myGroups.map(g => 
+              g.id === managingGroup.id 
+                ? { ...g, membersCount: Math.max(0, g.membersCount - 1) } 
+                : g
+            ));
+            setSuccessMessage('Member removed successfully');
+          }}
+        />
+      )}
     </div>
   );
 }
 
 // Group Card Component
-function GroupCard({ group, isMember, onAction, actionLabel, userInterests = [] }) {
+function GroupCard({ group, isMember, onAction, actionLabel, userInterests = [], onEdit, onDelete, onManageMembers }) {
   // Check which tags match user interests
   const isTagMatched = (tag) => {
     if (!userInterests || userInterests.length === 0) return false;
@@ -382,19 +474,22 @@ function GroupCard({ group, isMember, onAction, actionLabel, userInterests = [] 
   };
 
   const hasMatches = group.matchScore && group.matchScore > 0;
+  const isAdmin = group.isAdmin;
 
   return (
-    <div className={`group-card ${hasMatches ? 'recommended' : ''}`}>
+    <div className={`group-card ${hasMatches ? 'recommended' : ''} ${isAdmin ? 'admin-card' : ''}`}>
       <div className="group-card-header">
-        <img src={group.avatar} alt={group.name} className="group-avatar" />
+        <div className="group-avatar-icon">
+          👥
+        </div>
         <div className="group-info">
           <h3 className="group-name">{group.name}</h3>
           <span className="group-members">👤 {group.membersCount} members</span>
         </div>
-        {group.isAdmin && (
-          <span className="admin-badge">Admin</span>
+        {isAdmin && (
+          <span className="admin-badge">⭐ Admin</span>
         )}
-        {hasMatches && !group.isAdmin && (
+        {hasMatches && !isAdmin && (
           <span className="match-badge">🎯 {group.matchScore} match{group.matchScore > 1 ? 'es' : ''}</span>
         )}
       </div>
@@ -416,12 +511,235 @@ function GroupCard({ group, isMember, onAction, actionLabel, userInterests = [] 
         })}
       </div>
 
+      {/* Admin Actions */}
+      {isAdmin && (onEdit || onDelete || onManageMembers) && (
+        <div className="admin-actions">
+          {onManageMembers && (
+            <button 
+              className="admin-btn manage-btn"
+              onClick={onManageMembers}
+              title="Manage Members"
+            >
+              👥 Manage Members
+            </button>
+          )}
+          {onEdit && (
+            <button 
+              className="admin-btn edit-btn"
+              onClick={onEdit}
+              title="Edit Group"
+            >
+              ✏️ Edit
+            </button>
+          )}
+          {onDelete && (
+            <button 
+              className="admin-btn delete-btn"
+              onClick={onDelete}
+              title="Delete Group"
+            >
+              🗑️ Delete
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Regular Action Button */}
       <button 
         className={`group-action-btn ${isMember ? 'leave' : 'join'}`}
         onClick={onAction}
       >
         {actionLabel}
       </button>
+    </div>
+  );
+}
+
+// Edit Group Modal Component
+function EditGroupModal({ group, onClose, onUpdate }) {
+  const [groupName, setGroupName] = useState(group.name);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!groupName.trim()) {
+      setError('Group name cannot be empty');
+      return;
+    }
+
+    setIsUpdating(true);
+    setError(null);
+
+    try {
+      const result = await ApiService.updateGroup(group.id, { name: groupName });
+
+      if (result.success) {
+        onUpdate({ ...group, name: groupName });
+      } else {
+        setError(result.message || 'Failed to update group');
+      }
+    } catch (err) {
+      setError('An error occurred while updating the group');
+      console.error('Error updating group:', err);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>✏️ Edit Group</h2>
+          <button className="modal-close-btn" onClick={onClose}>✕</button>
+        </div>
+
+        {error && (
+          <div className="modal-error">{error}</div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="groupName">Group Name:</label>
+            <input
+              id="groupName"
+              type="text"
+              value={groupName}
+              onChange={(e) => setGroupName(e.target.value)}
+              placeholder="Enter group name"
+              disabled={isUpdating}
+              autoFocus
+            />
+          </div>
+
+          <div className="modal-actions">
+            <button
+              type="button"
+              className="modal-btn cancel-btn"
+              onClick={onClose}
+              disabled={isUpdating}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="modal-btn submit-btn"
+              disabled={isUpdating || !groupName.trim()}
+            >
+              {isUpdating ? '⌛ Updating...' : '✓ Update'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// Manage Group Members Modal Component
+function ManageGroupMembersModal({ group, onClose, onMemberRemoved }) {
+  const [members, setMembers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [removingUserId, setRemovingUserId] = useState(null);
+
+  useEffect(() => {
+    fetchMembers();
+  }, []);
+
+  const fetchMembers = async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const result = await ApiService.getGroupMembers(group.id);
+
+      if (result.success) {
+        setMembers(result.data);
+      } else {
+        setError(result.message || 'Failed to load members');
+      }
+    } catch (err) {
+      setError('An error occurred while loading members');
+      console.error('Error fetching members:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRemoveMember = async (userId, userName) => {
+    if (!window.confirm(`Remove ${userName} from ${group.name}?`)) {
+      return;
+    }
+
+    setRemovingUserId(userId);
+    setError(null);
+
+    try {
+      const result = await ApiService.removeUserFromGroup(group.id, userId);
+
+      if (result.success) {
+        setMembers(members.filter(m => m._id !== userId));
+        onMemberRemoved(userId);
+      } else {
+        setError(result.message || 'Failed to remove member');
+      }
+    } catch (err) {
+      setError('An error occurred while removing member');
+      console.error('Error removing member:', err);
+    } finally {
+      setRemovingUserId(null);
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content modal-large" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>👥 Manage Members - {group.name}</h2>
+          <button className="modal-close-btn" onClick={onClose}>✕</button>
+        </div>
+
+        {error && (
+          <div className="modal-error">{error}</div>
+        )}
+
+        {isLoading ? (
+          <div className="modal-loading">
+            <div className="spinner"></div>
+            <p>Loading members...</p>
+          </div>
+        ) : members.length === 0 ? (
+          <div className="modal-empty">
+            <p>No members in this group yet.</p>
+          </div>
+        ) : (
+          <div className="members-list">
+            {members.map(member => (
+              <div key={member._id} className="member-item">
+                <img 
+                  src={member.avatar || `https://i.pravatar.cc/150?u=${member._id}`} 
+                  alt={member.name} 
+                  className="member-avatar" 
+                />
+                <div className="member-info">
+                  <h4 className="member-name">{member.name}</h4>
+                  <p className="member-email">{member.email}</p>
+                </div>
+                <button
+                  className="remove-member-btn"
+                  onClick={() => handleRemoveMember(member._id, member.name)}
+                  disabled={removingUserId === member._id}
+                  title="Remove member"
+                >
+                  {removingUserId === member._id ? '⌛' : '🗑️'} Remove
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

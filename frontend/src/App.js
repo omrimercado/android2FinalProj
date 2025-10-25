@@ -4,11 +4,40 @@ import HomePage from './pages/HomePage';
 import FeedPage from './pages/FeedPage';
 import MyProfilePage from './pages/MyProfilePage';
 import GroupsPage from './pages/GroupsPage';
+import useInactivityTimeout from './hooks/useInactivityTimeout';
 import './App.css';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [showTimeoutWarning, setShowTimeoutWarning] = useState(false);
+
+  // Handle automatic logout on inactivity
+  const handleInactivityTimeout = () => {
+    console.log('⏱️ Inactivity timeout - Auto logout');
+    setShowTimeoutWarning(true);
+    
+    // Show warning for 3 seconds before logging out
+    setTimeout(() => {
+      handleLogout();
+      setShowTimeoutWarning(false);
+    }, 3000);
+  };
+
+  // Set up inactivity timeout (10 minutes)
+  // Only active when user is logged in
+  useEffect(() => {
+    if (!isLoggedIn) {
+      // If not logged in, clean up activity tracking
+      localStorage.removeItem('lastActivityTime');
+    }
+  }, [isLoggedIn]);
+
+  // Hook is always called, but only functional when logged in
+  useInactivityTimeout(
+    isLoggedIn ? handleInactivityTimeout : () => {}, // No-op when not logged in
+    10 // 10 minutes
+  );
 
   useEffect(() => {
     console.log('🔄 App.js - useEffect התחיל');
@@ -29,8 +58,10 @@ function App() {
   }, []);
 
   const handleLogout = () => {
+    console.log('👋 Logging out user');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('lastActivityTime'); // Clean up activity tracking
     setIsLoggedIn(false);
     setUser(null);
   };
@@ -40,6 +71,15 @@ function App() {
   return (
     <Router>
       <div className="App">
+        {/* Inactivity Timeout Warning */}
+        {showTimeoutWarning && (
+          <div className="timeout-warning-banner">
+            <div className="timeout-warning-content">
+              ⏱️ Your session has expired due to inactivity. Logging out...
+            </div>
+          </div>
+        )}
+        
         <Routes>
           <Route 
             path="/" 
