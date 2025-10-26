@@ -111,3 +111,4 @@ export const useInactivityTimeout = (onTimeout, timeoutMinutes = 10) => {
 
 export default useInactivityTimeout;
 
+
