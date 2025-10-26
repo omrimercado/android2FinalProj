@@ -1,0 +1,65 @@
+.chart-container {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.chart-title {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-align: center;
+}
+
+.chart-container svg {
+  overflow: visible;
+}
+
+.no-data-message {
+  padding: 2rem;
+  text-align: center;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+/* Grid lines styling */
+.grid line {
+  stroke: #ddd;
+}
+
+.grid path {
+  stroke-width: 0;
+}
+
+/* Tooltip styling */
+.tooltip {
+  pointer-events: none;
+}
+
+/* Bar chart animations */
+.bar {
+  transition: opacity 0.2s ease;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .chart-container {
+    padding: 1rem;
+  }
+
+  .chart-title {
+    font-size: 1.1rem;
+  }
+
+  .chart-container svg {
+    max-width: 100%;
+    height: auto;
+  }
+}
+

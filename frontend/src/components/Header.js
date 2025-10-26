@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Header.css';
 
-function Header({ currentPage, onNavigate, onLogout, isLoggedIn = false }) {
+function Header({ currentPage, onNavigate, onLogout, isLoggedIn = false, user = null }) {
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -19,9 +19,13 @@ function Header({ currentPage, onNavigate, onLogout, isLoggedIn = false }) {
       navigate('/profile');
     } else if (page === 'groups') {
       navigate('/groups');
-      
+    } else if (page === 'statistics') {
+      navigate('/statistics');
     }
   };
+
+  // Check if user is admin
+  const isAdmin = user && user.email === 'admin@master.com';
 
   return (
     <header className="header">
@@ -56,6 +60,16 @@ function Header({ currentPage, onNavigate, onLogout, isLoggedIn = false }) {
               >
                 My Profile
               </button>
+
+              {/* Statistics button - Only visible to admin */}
+              {isAdmin && (
+                <button 
+                  className={`nav-link admin-link ${currentPage === 'statistics' ? 'active' : ''}`}
+                  onClick={() => handleNavigate('statistics')}
+                >
+                  📊 Statistics
+                </button>
+              )}
             </nav>
             
             {/* Logout Button */}

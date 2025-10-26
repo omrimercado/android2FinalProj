@@ -94,6 +94,28 @@
   border-radius: 3px 3px 0 0;
 }
 
+/* Admin Link Styling */
+.nav-link.admin-link {
+  color: #ffd700;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 215, 0, 0.1);
+  border-radius: 6px;
+}
+
+.nav-link.admin-link:hover {
+  color: #ffed4e;
+  background: rgba(255, 215, 0, 0.15);
+}
+
+.nav-link.admin-link.active {
+  background: rgba(255, 215, 0, 0.2);
+}
+
+.nav-link.admin-link.active::after {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+}
+
 /* Auth Button */
 .header-actions {
   display: flex;

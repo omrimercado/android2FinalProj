@@ -36,3 +36,25 @@ export const protect = async (req, res, next) => {
     });
   }
 };
+
+// Middleware to check if user is admin
+export const adminOnly = async (req, res, next) => {
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      message: 'Not authorized',
+      error: 'User not authenticated',
+    });
+  }
+
+  // Check if user email is admin-master
+  if (req.user.email !== 'admin@master.com') {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied',
+      error: 'Admin privileges required',
+    });
+  }
+
+  next();
+};

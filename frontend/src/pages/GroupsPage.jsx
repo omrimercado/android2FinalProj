@@ -298,6 +298,7 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
         onNavigate={onNavigate}
         onLogout={onLogout}
         isLoggedIn={true}
+        user={user}
       />
 
       <div className="groups-container">

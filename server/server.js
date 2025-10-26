@@ -9,6 +9,7 @@ import postRoutes from './routes/postRoutes.js';
 import chatRoutes from './routes/chatRoutes.js';
 import groupRoutes from './routes/groupRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
+import statisticsRoutes from './routes/statisticsRoutes.js';
 import { errorHandler, notFound } from './middleware/errorMiddleware.js';
 import Message from './models/Message.js';
 
@@ -30,6 +31,7 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/groups', groupRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/statistics', statisticsRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Social Media API Server is running' });

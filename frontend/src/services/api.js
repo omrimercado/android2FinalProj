@@ -1698,6 +1698,170 @@ class ApiService {
       };
     }
   }
+
+  // ===========================
+  // Statistics API
+  // ===========================
+
+  // Get posts over time statistics
+  static async getPostsOverTime() {
+    console.log('🔧 ApiService.getPostsOverTime() - התחלה');
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      const response = await fetch(`${API_BASE_URL}/statistics/posts-over-time`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch posts over time data');
+      }
+
+      return {
+        success: true,
+        data: data.data || data,
+        message: data.message || 'Data fetched successfully'
+      };
+    } catch (error) {
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to fetch posts over time data'
+      };
+    }
+  }
+
+  // Get posts per group statistics
+  static async getPostsPerGroup() {
+    console.log('🔧 ApiService.getPostsPerGroup() - התחלה');
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      const response = await fetch(`${API_BASE_URL}/statistics/posts-per-group`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch posts per group data');
+      }
+
+      return {
+        success: true,
+        data: data.data || data,
+        message: data.message || 'Data fetched successfully'
+      };
+    } catch (error) {
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to fetch posts per group data'
+      };
+    }
+  }
+
+  // Get popular groups statistics
+  static async getPopularGroups() {
+    console.log('🔧 ApiService.getPopularGroups() - התחלה');
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      const response = await fetch(`${API_BASE_URL}/statistics/popular-groups`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch popular groups data');
+      }
+
+      return {
+        success: true,
+        data: data.data || data,
+        message: data.message || 'Data fetched successfully'
+      };
+    } catch (error) {
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to fetch popular groups data'
+      };
+    }
+  }
+
+  // Get general statistics
+  static async getGeneralStats() {
+    console.log('🔧 ApiService.getGeneralStats() - התחלה');
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      const response = await fetch(`${API_BASE_URL}/statistics/general`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to fetch general statistics');
+      }
+
+      return {
+        success: true,
+        data: data.data || data,
+        message: data.message || 'Data fetched successfully'
+      };
+    } catch (error) {
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to fetch general statistics'
+      };
+    }
+  }
 }
 
 export default ApiService;

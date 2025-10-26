@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage';
 import FeedPage from './pages/FeedPage';
 import MyProfilePage from './pages/MyProfilePage';
 import GroupsPage from './pages/GroupsPage';
+import StatisticsPage from './pages/StatisticsPage';
 import useInactivityTimeout from './hooks/useInactivityTimeout';
 import './App.css';
 
@@ -129,6 +130,21 @@ function App() {
                 />
               ) : (
                 <Navigate to="/" replace />
+              )
+            } 
+          />
+          <Route 
+            path="/statistics" 
+            element={
+              isLoggedIn && user && user.email === 'admin@master.com' ? (
+                <StatisticsPage 
+                  user={user} 
+                  currentPage="statistics"
+                  onNavigate={() => {}}
+                  onLogout={handleLogout}
+                />
+              ) : (
+                <Navigate to="/feed" replace />
               )
             } 
           />  
