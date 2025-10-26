@@ -1,12 +1,10 @@
 import Message from '../models/Message.js';
 import { User } from '../models/User.js';
 
-// קבלת היסטוריית הודעות בין שני משתמשים
 export const getConversation = async (req, res) => {
   try {
     const { userId, targetUserId } = req.params;
-    
-    // בדיקה שהמשתמש מבקש את השיחות שלו בלבד
+
     if (req.user.id !== userId) {
       return res.status(403).json({ message: 'אין הרשאה לצפות בשיחה זו' });
     }
@@ -15,7 +13,7 @@ export const getConversation = async (req, res) => {
     
     const messages = await Message.find({ conversationId })
       .sort({ createdAt: 1 })
-      .limit(100) // הגבלה ל-100 הודעות אחרונות
+      .limit(100)
       .lean();
 
     res.json({
@@ -39,12 +37,10 @@ export const getConversation = async (req, res) => {
   }
 };
 
-// קבלת כל השיחות של משתמש
 export const getUserConversations = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // מציאת כל ההודעות שהמשתמש שלח או קיבל
     const messages = await Message.aggregate([
       {
         $match: {
@@ -79,7 +75,6 @@ export const getUserConversations = async (req, res) => {
       }
     ]);
 
-    // קבלת פרטי המשתמשים
     const conversations = await Promise.all(
       messages.map(async (conv) => {
         const msg = conv.lastMessage;
@@ -120,7 +115,6 @@ export const getUserConversations = async (req, res) => {
   }
 };
 
-// סימון הודעות כנקראו
 export const markAsRead = async (req, res) => {
   try {
     const { conversationId } = req.params;
@@ -150,13 +144,11 @@ export const markAsRead = async (req, res) => {
   }
 };
 
-// מחיקת שיחה
 export const deleteConversation = async (req, res) => {
   try {
     const { conversationId } = req.params;
     const userId = req.user.id;
 
-    // בדיקה שהמשתמש שייך לשיחה
     const message = await Message.findOne({ conversationId });
     
     if (!message) {

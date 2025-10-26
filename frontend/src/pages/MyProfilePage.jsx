@@ -80,113 +80,29 @@ export default function MyProfilePage({ user, currentPage, onNavigate, onLogout 
     setRequestsError(null);
 
     try {
-      // ===== TEMPORARY MOCK DATA FOR TESTING =====
-      // TODO: Replace with actual API call when backend is ready
-      const USE_MOCK_DATA = true; // Set to false to use real API
-      
-      if (USE_MOCK_DATA) {
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Mock data simulating server response
-        const mockGroups = [
-          {
-            groupId: 'group1',
-            groupName: 'React Developers Israel',
-            requests: [
-              {
-                id: 'group1-user1',
-                groupId: 'group1',
-                userId: 'user1',
-      userName: 'Sarah Cohen',
-      userAvatar: 'https://i.pravatar.cc/150?img=10',
-      requestDate: '2 hours ago'
-    },
-    {
-                id: 'group1-user2',
-                groupId: 'group1',
-                userId: 'user2',
-      userName: 'David Levi',
-      userAvatar: 'https://i.pravatar.cc/150?img=12',
-      requestDate: '5 hours ago'
-    },
-    {
-                id: 'group1-user3',
-                groupId: 'group1',
-                userId: 'user3',
-      userName: 'Rachel Ben-David',
-      userAvatar: 'https://i.pravatar.cc/150?img=15',
-      requestDate: '1 day ago'
-    }
-            ]
-          },
-          {
-            groupId: 'group2',
-            groupName: 'Tech Entrepreneurs',
-            requests: [
-              {
-                id: 'group2-user4',
-                groupId: 'group2',
-                userId: 'user4',
-                userName: 'Michael Goldstein',
-                userAvatar: 'https://i.pravatar.cc/150?img=20',
-                requestDate: '3 hours ago'
-              },
-              {
-                id: 'group2-user5',
-                groupId: 'group2',
-                userId: 'user5',
-                userName: 'Emma Wilson',
-                userAvatar: 'https://i.pravatar.cc/150?img=25',
-                requestDate: '8 hours ago'
-              }
-            ]
-          },
-          {
-            groupId: 'group3',
-            groupName: 'UI/UX Designers',
-            requests: [
-              {
-                id: 'group3-user6',
-                groupId: 'group3',
-                userId: 'user6',
-                userName: 'John Smith',
-                userAvatar: 'https://i.pravatar.cc/150?img=30',
-                requestDate: '30 minutes ago'
-              }
-            ]
-          }
-        ];
-        
-        setAdminGroups(mockGroups);
-        setIsLoadingRequests(false);
-        return;
-      }
-      // ===== END MOCK DATA =====
-
       const result = await ApiService.getAdminGroupsWithRequests();
 
       if (result.success) {
         // Transform the data from the server format to component format
-        // Expected server response: { groups: [{ group_id, group_name, applied_users: [...] }] }
+        // API returns: { groups: [{ _id, name, pendingRequests: [{ userId: {...}, requestedAt }] }] }
         const groupsWithRequests = [];
-        
+
         if (result.data && result.data.groups) {
           result.data.groups.forEach(group => {
             // Only include groups that have pending requests
-            if (group.applied_users && group.applied_users.length > 0) {
-              const transformedRequests = group.applied_users.map(appliedUser => ({
-                id: `${group.group_id}-${appliedUser.user_id}`, // Unique ID combining group and user
-                groupId: group.group_id,
-                userId: appliedUser.user_id,
-                userName: appliedUser.name || appliedUser.username || 'Anonymous User',
-                userAvatar: getAvatar(appliedUser.avatar, appliedUser.name || appliedUser.username),
-                requestDate: appliedUser.request_date || appliedUser.requested_at || 'Recently'
+            if (group.pendingRequests && group.pendingRequests.length > 0) {
+              const transformedRequests = group.pendingRequests.map(request => ({
+                id: `${group._id || group.id}-${request.userId._id || request.userId.id}`, // Unique ID combining group and user
+                groupId: group._id || group.id,
+                userId: request.userId._id || request.userId.id,
+                userName: request.userId.name || 'Anonymous User',
+                userAvatar: getAvatar(request.userId.avatar, request.userId.name),
+                requestDate: new Date(request.requestedAt).toLocaleString()
               }));
 
               groupsWithRequests.push({
-                groupId: group.group_id,
-                groupName: group.group_name,
+                groupId: group._id || group.id,
+                groupName: group.name,
                 requests: transformedRequests
               });
             }
@@ -229,31 +145,6 @@ export default function MyProfilePage({ user, currentPage, onNavigate, onLogout 
     setSuccessMessage(null);
 
     try {
-      // ===== MOCK MODE: Simulate approval =====
-      // TODO: Replace with actual API call when backend is ready
-      const USE_MOCK_DATA = true; // Set to false to use real API
-      
-      if (USE_MOCK_DATA) {
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        // Simulate successful approval
-        setAdminGroups(prevGroups => {
-          const newGroups = [...prevGroups];
-          newGroups[groupIndex] = {
-            ...newGroups[groupIndex],
-            requests: newGroups[groupIndex].requests.filter(req => req.id !== requestId)
-          };
-          // Remove the group if it has no more requests
-          return newGroups.filter(group => group.requests.length > 0);
-        });
-        
-        setSuccessMessage(`✅ ${request.userName} has been approved to join ${groupName}`);
-        setProcessingRequestId(null);
-        return;
-      }
-      // ===== END MOCK MODE =====
-
       const result = await ApiService.approveGroupRequest(request.groupId, request.userId);
 
       if (result.success) {
@@ -304,31 +195,6 @@ export default function MyProfilePage({ user, currentPage, onNavigate, onLogout 
     setSuccessMessage(null);
 
     try {
-      // ===== MOCK MODE: Simulate rejection =====
-      // TODO: Replace with actual API call when backend is ready
-      const USE_MOCK_DATA = true; // Set to false to use real API
-      
-      if (USE_MOCK_DATA) {
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        // Simulate successful rejection
-        setAdminGroups(prevGroups => {
-          const newGroups = [...prevGroups];
-          newGroups[groupIndex] = {
-            ...newGroups[groupIndex],
-            requests: newGroups[groupIndex].requests.filter(req => req.id !== requestId)
-          };
-          // Remove the group if it has no more requests
-          return newGroups.filter(group => group.requests.length > 0);
-        });
-        
-        setSuccessMessage(`❌ ${request.userName}'s request to join ${groupName} has been rejected`);
-        setProcessingRequestId(null);
-        return;
-      }
-      // ===== END MOCK MODE =====
-
       const result = await ApiService.rejectGroupRequest(request.groupId, request.userId);
 
       if (result.success) {

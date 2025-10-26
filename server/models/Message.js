@@ -37,13 +37,10 @@ const messageSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// אינדקס לחיפוש מהיר של הודעות לפי שיחה
 messageSchema.index({ conversationId: 1, createdAt: -1 });
 
-// אינדקס לחיפוש הודעות לא נקראו
 messageSchema.index({ receiverId: 1, isRead: 1 });
 
-// פונקציה סטטית ליצירת conversationId
 messageSchema.statics.getConversationId = function(userId1, userId2) {
   const sorted = [userId1.toString(), userId2.toString()].sort();
   return `${sorted[0]}-${sorted[1]}`;

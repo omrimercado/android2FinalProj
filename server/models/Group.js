@@ -63,16 +63,13 @@ const groupSchema = new mongoose.Schema(
   }
 );
 
-// Virtual field for members count
 groupSchema.virtual('membersCount').get(function () {
   return this.members.length;
 });
 
-// Ensure virtuals are included in JSON and Object
 groupSchema.set('toJSON', { virtuals: true });
 groupSchema.set('toObject', { virtuals: true });
 
-// Pre-save middleware to ensure admin is in members array
 groupSchema.pre('save', function (next) {
   if (this.isNew && !this.members.includes(this.adminId)) {
     this.members.push(this.adminId);

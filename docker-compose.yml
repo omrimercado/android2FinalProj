@@ -1,6 +1,17 @@
 version: '3.8'
 
 services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: social-media-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - social-media-network
+
   mongodb:
     image: mongo:latest
     container_name: social-media-mongodb
@@ -43,8 +54,13 @@ services:
       - JWT_SECRET=your_jwt_secret_key_change_this_in_production
       - JWT_EXPIRE=24h
       - NODE_ENV=development
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=llama3.2
+      - AI_TEMPERATURE=0.7
+      - AI_MAX_TOKENS=500
     depends_on:
       - mongodb
+      - ollama
     volumes:
       - ./server:/app
       - /app/node_modules
@@ -80,4 +96,6 @@ networks:
 
 volumes:
   mongodb_data:
+    driver: local
+  ollama_data:
     driver: local
