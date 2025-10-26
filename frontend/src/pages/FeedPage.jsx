@@ -15,10 +15,12 @@ export default function FeedPage({ user, currentPage, onNavigate, onLogout }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedComments, setExpandedComments] = useState({}); // { postId: { isExpanded: bool, comments: [], newComment: '', isLoading: bool } }
+  const [myGroups, setMyGroups] = useState([]);
 
-  // Fetch posts when component mounts
+  // Fetch posts and groups when component mounts
   useEffect(() => {
     fetchPosts();
+    fetchMyGroups();
   }, []);
 
   const fetchPosts = async () => {
@@ -40,6 +42,20 @@ export default function FeedPage({ user, currentPage, onNavigate, onLogout }) {
       console.error('Error fetching posts:', err);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const fetchMyGroups = async () => {
+    try {
+      const response = await ApiService.getMyGroups();
+      if (response.success && response.data.groups) {
+        setMyGroups(response.data.groups.map(group => ({
+          id: group._id,
+          name: group.name
+        })));
+      }
+    } catch (err) {
+      console.error('Error fetching groups:', err);
     }
   };
 
@@ -222,6 +238,7 @@ export default function FeedPage({ user, currentPage, onNavigate, onLogout }) {
           <NewPost
             user={user}
             onPostCreated={handlePostCreated}
+            myGroups={myGroups}
           />
 
           {/* Loading State */}
@@ -272,7 +289,12 @@ export default function FeedPage({ user, currentPage, onNavigate, onLogout }) {
                         />
                         <div className="post-info">
                           <h4 className="post-author">{postUser.name}</h4>
-                          <span className="post-time">{new Date(post.createdAt).toLocaleString()}</span>
+                          <div className="post-meta">
+                            {post.groupId && (
+                              <span className="post-group">📍 {post.groupId.name}</span>
+                            )}
+                            <span className="post-time">{new Date(post.createdAt).toLocaleString()}</span>
+                          </div>
                         </div>
                       </div>
                       <div className="post-content">

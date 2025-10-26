@@ -4,7 +4,7 @@ import { getAvatar } from '../utils/helpers';
 import ApiService from '../services/api';
 import AIPostModal from './AIPostModal';
 
-function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onPostUpdated = null, onCancelEdit = null }) {
+function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onPostUpdated = null, onCancelEdit = null, groupId = null, myGroups = [] }) {
   const [postContent, setPostContent] = useState(editMode && postToEdit ? postToEdit.content : '');
   const [imageUrl, setImageUrl] = useState(editMode && postToEdit ? postToEdit.image || '' : '');
   const [videoUrl, setVideoUrl] = useState('');
@@ -12,6 +12,7 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
   const [mediaType, setMediaType] = useState(''); // 'image' or 'video'
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState(null);
+  const [selectedGroupId, setSelectedGroupId] = useState(groupId || null);
   
   // AI Generation states
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
@@ -34,6 +35,11 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
       // Only include image field if there's an actual image URL
       if (imageUrl) {
         postData.image = imageUrl;
+      }
+
+      // Include groupId if selected
+      if (selectedGroupId) {
+        postData.groupId = selectedGroupId;
       }
 
       let response;
@@ -213,6 +219,11 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
         postData.image = imageUrl;
       }
 
+      // Include groupId if selected
+      if (selectedGroupId) {
+        postData.groupId = selectedGroupId;
+      }
+
       const response = await ApiService.createPost(postData);
 
       if (response.success) {
@@ -327,6 +338,27 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
               disabled={isCreating || isGeneratingAI}
             />
           </div>
+
+          {/* Group Selector - Only show if groups are available and not in edit mode */}
+          {!editMode && myGroups && myGroups.length > 0 && (
+            <div className="group-selector">
+              <label htmlFor="group-select">📍 Post to group (optional):</label>
+              <select
+                id="group-select"
+                value={selectedGroupId || ''}
+                onChange={(e) => setSelectedGroupId(e.target.value || null)}
+                disabled={isCreating || isGeneratingAI}
+                className="group-select-dropdown"
+              >
+                <option value="">General post (no group)</option>
+                {myGroups.map(group => (
+                  <option key={group.id} value={group.id}>
+                    👥 {group.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
       {/* Hidden file inputs for media upload */}
       <input

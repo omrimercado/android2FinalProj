@@ -3,6 +3,7 @@ import {
   createPost,
   getPosts,
   getUserPosts,
+  getGroupPosts,
   updatePost,
   deletePost,
   likePost,
@@ -21,6 +22,7 @@ const router = express.Router();
 router.post('/', protect, validatePost, createPost);
 router.get('/', protect, getPosts);
 router.get('/user/:userId', protect, getUserPosts);
+router.get('/group/:groupId', protect, getGroupPosts);
 router.put('/:postId', protect, validatePostUpdate, updatePost);
 router.delete('/:postId', protect, deletePost);
 

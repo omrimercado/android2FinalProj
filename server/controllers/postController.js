@@ -1,18 +1,43 @@
 import { Post } from '../models/Post.js';
 import { User } from '../models/User.js';
+import { Group } from '../models/Group.js';
 
 export const createPost = async (req, res, next) => {
   try {
-    const { content, image } = req.body;
+    const { content, image, groupId } = req.body;
     const userId = req.user._id;
+
+    // If posting to a group, verify user is a member
+    if (groupId) {
+      const group = await Group.findById(groupId);
+      if (!group) {
+        return res.status(404).json({
+          success: false,
+          message: 'Group not found',
+          error: 'The specified group does not exist',
+        });
+      }
+
+      if (!group.members.includes(userId)) {
+        return res.status(403).json({
+          success: false,
+          message: 'Access denied',
+          error: 'You must be a member of this group to post in it',
+        });
+      }
+    }
 
     const post = await Post.create({
       userId,
       content,
       image: image || null,
+      groupId: groupId || null,
     });
 
     await post.populate('userId', 'name email avatar');
+    if (post.groupId) {
+      await post.populate('groupId', 'name');
+    }
 
     res.status(201).json({
       success: true,
@@ -28,8 +53,23 @@ export const createPost = async (req, res, next) => {
 
 export const getPosts = async (req, res, next) => {
   try {
-    const posts = await Post.find()
+    const userId = req.user._id;
+
+    // Find all groups where the user is a member
+    const userGroups = await Group.find({ members: userId }).select('_id');
+    const groupIds = userGroups.map(group => group._id);
+
+    // Get posts that either:
+    // 1. Have no groupId (general posts)
+    // 2. Have a groupId that the user is a member of
+    const posts = await Post.find({
+      $or: [
+        { groupId: null },
+        { groupId: { $in: groupIds } }
+      ]
+    })
       .populate('userId', 'name email avatar')
+      .populate('groupId', 'name')
       .populate('comments.userId', 'name email avatar')
       .sort({ createdAt: -1 });
 
@@ -61,6 +101,7 @@ export const getUserPosts = async (req, res, next) => {
 
     const posts = await Post.find({ userId })
       .populate('userId', 'name email avatar')
+      .populate('groupId', 'name')
       .populate('comments.userId', 'name email avatar')
       .sort({ createdAt: -1 });
 
@@ -265,6 +306,49 @@ export const deletePost = async (req, res, next) => {
       message: 'Post deleted successfully',
       data: {
         postId,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getGroupPosts = async (req, res, next) => {
+  try {
+    const { groupId } = req.params;
+    const userId = req.user._id;
+
+    // Check if the group exists
+    const group = await Group.findById(groupId);
+    if (!group) {
+      return res.status(404).json({
+        success: false,
+        message: 'Group not found',
+        error: 'The specified group does not exist',
+      });
+    }
+
+    // Check if the user is a member of the group
+    if (!group.members.includes(userId)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied',
+        error: 'You must be a member of this group to view its posts',
+      });
+    }
+
+    const posts = await Post.find({ groupId })
+      .populate('userId', 'name email avatar')
+      .populate('groupId', 'name')
+      .populate('comments.userId', 'name email avatar')
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      message: 'Group posts retrieved successfully',
+      data: {
+        posts,
+        count: posts.length,
       },
     });
   } catch (error) {

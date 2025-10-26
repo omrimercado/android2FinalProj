@@ -1177,6 +1177,59 @@ class ApiService {
     }
   }
 
+  // Get posts for a specific group
+  static async getGroupPosts(groupId) {
+    console.log('🔧 ApiService.getGroupPosts() - התחלה');
+    console.log('📍 Endpoint:', `${API_BASE_URL}/posts/group/${groupId}`);
+
+    try {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        throw new Error('No token found. Please login again.');
+      }
+
+      console.log('📤 Request Method:', 'GET');
+      console.log('📤 Group ID:', groupId);
+      console.log('🎫 Token:', token ? 'Found' : 'Not found');
+
+      const response = await fetch(`${API_BASE_URL}/posts/group/${groupId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('📥 Response Status:', response.status);
+      console.log('📥 Response OK:', response.ok);
+
+      const data = await response.json();
+      console.log('📥 Response Data:', data);
+
+      if (!response.ok) {
+        console.log('⚠️ Server returned error:', data.message || 'Failed to fetch group posts');
+        throw new Error(data.message || 'Failed to fetch group posts');
+      }
+
+      console.log('✅ Get group posts API call successful');
+
+      return {
+        success: true,
+        data: data.data || data,
+        message: data.message || 'Group posts fetched successfully'
+      };
+    } catch (error) {
+      console.log('❌ Get group posts API call failed');
+      console.error('🔴 Error:', error);
+      return {
+        success: false,
+        error: error.message,
+        message: 'Failed to fetch group posts'
+      };
+    }
+  }
+
   // Update a post
   static async updatePost(postId, postData) {
     console.log('🔧 ApiService.updatePost() - התחלה');

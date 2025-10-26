@@ -35,6 +35,11 @@ const postSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    groupId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Group',
+      default: null,
+    },
     likes: [
       {
         type: mongoose.Schema.Types.ObjectId,
