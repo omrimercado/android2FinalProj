@@ -212,6 +212,17 @@
   box-shadow: 0 6px 16px rgba(16, 185, 129, 0.25);
 }
 
+.group-card.private-group {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-color: #fbbf24;
+  box-shadow: 0 2px 8px rgba(251, 191, 36, 0.15);
+}
+
+.group-card.private-group:hover {
+  border-color: #f59e0b;
+  box-shadow: 0 4px 12px rgba(251, 191, 36, 0.25);
+}
+
 .group-card-header {
   display: flex;
   align-items: center;
@@ -247,6 +258,20 @@
   white-space: nowrap;
 
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.private-indicator {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
 }
 
 .group-members {

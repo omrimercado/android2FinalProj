@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import ApiService from '../services/api';
+import ApiService from '../../services/api';
 import './ChangeImage.css';
 
 export default function ChangeImage({ onClose, currentImage, onSave }) {

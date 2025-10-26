@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
-import ApiService from '../services/api';
+import ApiService from '../../services/api';
 
 function Login({ onClose, onSwitchToRegister }) {
   const navigate = useNavigate();

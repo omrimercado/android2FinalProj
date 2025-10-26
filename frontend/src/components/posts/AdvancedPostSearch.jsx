@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ApiService from '../services/api';
+import ApiService from '../../services/api';
 import './AdvancedPostSearch.css';
 
 export default function AdvancedPostSearch({ onSearch, onClose }) {

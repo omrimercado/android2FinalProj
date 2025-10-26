@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import PostCard from '../components/PostCard';
-import ChangeImage from '../components/ChangeImage';
-import NewPost from '../components/NewPost';
+import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
+import PostCard from '../components/posts/PostCard';
+import ChangeImage from '../components/user/ChangeImage';
+import NewPost from '../components/posts/NewPost';
 import ApiService from '../services/api';
 import { getAvatar } from '../utils/helpers';
 import './MyProfilePage.css';

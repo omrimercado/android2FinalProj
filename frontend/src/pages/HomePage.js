@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import SearchBar from '../components/SearchBar';
-import Login from '../components/Login';
-import Register from '../components/Register';
+import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
+import SearchBar from '../components/layout/SearchBar';
+import Login from '../components/auth/Login';
+import Register from '../components/auth/Register';
 import './HomePage.css';
 
 function HomePage({ onLoginSuccess }) {

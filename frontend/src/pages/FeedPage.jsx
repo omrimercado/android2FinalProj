@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import SearchBar from '../components/SearchBar';
-import NewPost from '../components/NewPost';
-import ChatWindow from '../components/ChatWindow';
+import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
+import SearchBar from '../components/layout/SearchBar';
+import NewPost from '../components/posts/NewPost';
+import ChatWindow from '../components/chat/ChatWindow';
 import ApiService from '../services/api';
 import { getAvatar } from '../utils/helpers';
 import './FeedPage.css';

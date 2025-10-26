@@ -6,6 +6,8 @@ export const createGroup = async (req, res, next) => {
     const { name, description, tags, isPrivate } = req.body;
     const userId = req.user._id;
 
+    console.log(`📝 Creating group "${name}" - isPrivate: ${isPrivate}`);
+
     const cleanedTags = tags.map((tag) => tag.trim()).filter((tag) => tag.length > 0);
 
     const group = await Group.create({
@@ -114,6 +116,7 @@ export const joinGroup = async (req, res, next) => {
     }
 
     if (group.isPrivate) {
+      console.log(`🔒 Group "${group.name}" is private - adding user to pending requests`);
       group.pendingRequests.push({
         userId,
         requestedAt: new Date(),
@@ -130,6 +133,8 @@ export const joinGroup = async (req, res, next) => {
         },
       });
     }
+    
+    console.log(`🔓 Group "${group.name}" is public - adding user directly to members`);
 
     group.members.push(userId);
     await group.save();

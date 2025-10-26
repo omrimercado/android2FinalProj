@@ -1,6 +1,8 @@
-# Android Final Project - Professional Social Platform
+# Stay Tuned - Professional Social Platform
 
 A modern React-based social platform inspired by professional networking features, built with Create React App.
+
+**Stay Tuned** - Connect with friends, join groups, and stay updated with your community!
 
 ## 🚀 Features
 

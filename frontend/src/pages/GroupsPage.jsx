@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import SearchBar from '../components/SearchBar';
-import NewGroup from '../components/NewGroup';
+import Header from '../components/layout/Header';
+import Footer from '../components/layout/Footer';
+import SearchBar from '../components/layout/SearchBar';
+import NewGroup from '../components/groups/NewGroup';
 import ApiService from '../services/api';
 import './GroupsPage.css';
 
@@ -66,7 +66,8 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
           description: group.description,
           tags: group.tags,
           membersCount: group.membersCount || group.members?.length || 0,
-          isAdmin: group.isAdmin
+          isAdmin: group.isAdmin,
+          isPrivate: group.isPrivate
         }));
       }
 
@@ -156,7 +157,8 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
       tags: group.tags,
       membersCount: group.membersCount || 1,
       avatar: `https://i.pravatar.cc/150?img=${Math.abs(group._id.charCodeAt(0) % 50)}`,
-      isAdmin: true
+      isAdmin: true,
+      isPrivate: group.isPrivate
     };
 
     // Add to my groups at the top
@@ -478,13 +480,16 @@ function GroupCard({ group, isMember, onAction, actionLabel, userInterests = [],
   const isAdmin = group.isAdmin;
 
   return (
-    <div className={`group-card ${hasMatches ? 'recommended' : ''} ${isAdmin ? 'admin-card' : ''}`}>
+    <div className={`group-card ${hasMatches ? 'recommended' : ''} ${isAdmin ? 'admin-card' : ''} ${group.isPrivate ? 'private-group' : ''}`}>
       <div className="group-card-header">
         <div className="group-avatar-icon">
-          👥
+          {group.isPrivate ? '🔒' : '👥'}
         </div>
         <div className="group-info">
-          <h3 className="group-name">{group.name}</h3>
+          <h3 className="group-name">
+            {group.name}
+            {group.isPrivate && <span className="private-indicator" title="Private Group - Requires admin approval">🔒</span>}
+          </h3>
           <span className="group-members">👤 {group.membersCount} members</span>
         </div>
         {isAdmin && (
@@ -549,8 +554,9 @@ function GroupCard({ group, isMember, onAction, actionLabel, userInterests = [],
       <button 
         className={`group-action-btn ${isMember ? 'leave' : 'join'}`}
         onClick={onAction}
+        title={!isMember && group.isPrivate ? 'Send join request to admin' : ''}
       >
-        {actionLabel}
+        {!isMember && group.isPrivate ? '📨 Request to Join' : actionLabel}
       </button>
     </div>
   );

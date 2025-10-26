@@ -40,13 +40,19 @@ const postSchema = new mongoose.Schema(
       ref: 'Group',
       default: null,
     },
-    likes: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-      },
-    ],
-    comments: [commentSchema],
+    likes: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+        },
+      ],
+      default: [],
+    },
+    comments: {
+      type: [commentSchema],
+      default: [],
+    },
   },
   {
     timestamps: true,
@@ -54,11 +60,11 @@ const postSchema = new mongoose.Schema(
 );
 
 postSchema.virtual('likesCount').get(function () {
-  return this.likes.length;
+  return this.likes ? this.likes.length : 0;
 });
 
 postSchema.virtual('commentsCount').get(function () {
-  return this.comments.length;
+  return this.comments ? this.comments.length : 0;
 });
 
 postSchema.set('toJSON', { virtuals: true });

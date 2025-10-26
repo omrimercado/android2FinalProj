@@ -1,11 +1,15 @@
-// Chat API Service
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+import { API_BASE_URL } from '../config';
+
+/**
+ * Chat API Service
+ * Handles all chat-related operations (conversations, messages, WebSocket)
+ */
 const WS_BASE_URL = process.env.REACT_APP_WS_URL || 'ws://localhost:5000/chat';
 
-class ChatApiService {
+class ChatApi {
   // קבלת כל השיחות של המשתמש
   static async getConversations() {
-    console.log('🔧 ChatApiService.getConversations() - התחלה');
+    console.log('🔧 ChatApi.getConversations() - התחלה');
     console.log('📍 Endpoint:', `${API_BASE_URL}/chat/conversations`);
     
     try {
@@ -57,7 +61,7 @@ class ChatApiService {
 
   // קבלת שיחה ספציפית
   static async getConversation(userId, targetUserId) {
-    console.log('🔧 ChatApiService.getConversation() - התחלה');
+    console.log('🔧 ChatApi.getConversation() - התחלה');
     console.log('📍 Endpoint:', `${API_BASE_URL}/chat/conversation/${userId}/${targetUserId}`);
     
     try {
@@ -111,7 +115,7 @@ class ChatApiService {
 
   // סימון הודעות כנקראו
   static async markAsRead(conversationId) {
-    console.log('🔧 ChatApiService.markAsRead() - התחלה');
+    console.log('🔧 ChatApi.markAsRead() - התחלה');
     console.log('📍 Endpoint:', `${API_BASE_URL}/chat/conversation/${conversationId}/read`);
     
     try {
@@ -164,7 +168,7 @@ class ChatApiService {
 
   // מחיקת שיחה
   static async deleteConversation(conversationId) {
-    console.log('🔧 ChatApiService.deleteConversation() - התחלה');
+    console.log('🔧 ChatApi.deleteConversation() - התחלה');
     console.log('📍 Endpoint:', `${API_BASE_URL}/chat/conversation/${conversationId}`);
     
     try {
@@ -217,7 +221,7 @@ class ChatApiService {
 
   // יצירת חיבור WebSocket
   static createWebSocketConnection() {
-    console.log('🔧 ChatApiService.createWebSocketConnection() - התחלה');
+    console.log('🔧 ChatApi.createWebSocketConnection() - התחלה');
     console.log('📍 WebSocket URL:', WS_BASE_URL);
     
     try {
@@ -236,5 +240,5 @@ class ChatApiService {
   }
 }
 
-export default ChatApiService;
+export default ChatApi;
 

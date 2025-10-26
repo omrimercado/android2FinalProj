@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChatApiService } from '../services';
-import { getAvatar } from '../utils/helpers';
+import { ChatApiService } from '../../services';
+import { getAvatar } from '../../utils/helpers';
 import './ChatWindow.css';
 
 export default function ChatWindow({ user, targetUser, onClose }) {

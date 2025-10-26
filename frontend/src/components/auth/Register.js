@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Register.css';
-import ApiService from '../services/api';
-import PreferencesSetup from './PreferencesSetup';
+import ApiService from '../../services/api';
+import PreferencesSetup from '../user/PreferencesSetup';
 
 function Register({ onClose, onSwitchToLogin }) {
   const navigate = useNavigate();

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './NewPost.css';
-import { getAvatar } from '../utils/helpers';
-import ApiService from '../services/api';
+import { getAvatar } from '../../utils/helpers';
+import ApiService from '../../services/api';
 import AIPostModal from './AIPostModal';
 
 function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onPostUpdated = null, onCancelEdit = null, groupId = null, myGroups = [] }) {

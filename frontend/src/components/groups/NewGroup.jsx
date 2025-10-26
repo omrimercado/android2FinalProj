@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import ApiService from '../services/api';
+import ApiService from '../../services/api';
 import './NewGroup.css';
 
 export default function NewGroup({ user, onClose, onGroupCreated }) {

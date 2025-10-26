@@ -1,6 +1,6 @@
 // Central export point for all API services
 import ApiService from './api';
-import ChatApiService from './chatApi';
+import ChatApiService from './chat/chatApi';
 
 // Export both services
 export { ApiService, ChatApiService };

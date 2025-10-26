@@ -64,7 +64,7 @@ const groupSchema = new mongoose.Schema(
 );
 
 groupSchema.virtual('membersCount').get(function () {
-  return this.members.length;
+  return this.members ? this.members.length : 0;
 });
 
 groupSchema.set('toJSON', { virtuals: true });

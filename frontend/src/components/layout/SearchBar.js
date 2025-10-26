@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import AdvancedPostSearch from './AdvancedPostSearch';
-import AdvancedGroupSearch from './AdvancedGroupSearch';
+import AdvancedPostSearch from '../posts/AdvancedPostSearch';
+import AdvancedGroupSearch from '../groups/AdvancedGroupSearch';
 import './SearchBar.css';
 
 function SearchBar({ 

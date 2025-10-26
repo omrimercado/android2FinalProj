@@ -1,6 +1,8 @@
-# Android Final Project - Professional Social Platform
+# Stay Tuned - Professional Social Platform
 
 A modern full-stack social platform with React frontend and Node.js/Express/MongoDB backend following MVC architecture.
+
+ **Stay Tuned** - Connect with friends, join groups, and stay updated with your community!
 
 ## 🚀 Features
 
