@@ -6,7 +6,7 @@ export const createGroup = async (req, res, next) => {
     const { name, description, tags, isPrivate } = req.body;
     const userId = req.user._id;
 
-    console.log(`📝 Creating group "${name}" - isPrivate: ${isPrivate}`);
+    console.log(`Creating group "${name}" - isPrivate: ${isPrivate}`);
 
     const cleanedTags = tags.map((tag) => tag.trim()).filter((tag) => tag.length > 0);
 
@@ -116,7 +116,7 @@ export const joinGroup = async (req, res, next) => {
     }
 
     if (group.isPrivate) {
-      console.log(`🔒 Group "${group.name}" is private - adding user to pending requests`);
+      console.log(`Group "${group.name}" is private - adding user to pending requests`);
       group.pendingRequests.push({
         userId,
         requestedAt: new Date(),
@@ -133,8 +133,8 @@ export const joinGroup = async (req, res, next) => {
         },
       });
     }
-    
-    console.log(`🔓 Group "${group.name}" is public - adding user directly to members`);
+
+    console.log(`Group "${group.name}" is public - adding user directly to members`);
 
     group.members.push(userId);
     await group.save();
@@ -251,7 +251,6 @@ export const approveJoinRequest = async (req, res, next) => {
       });
     }
 
-    // Find the pending request
     const requestIndex = group.pendingRequests.findIndex(
       (req) => req.userId.toString() === requestUserId
     );
@@ -311,7 +310,6 @@ export const rejectJoinRequest = async (req, res, next) => {
       });
     }
 
-    // Verify user is the admin
     if (group.adminId.toString() !== adminId.toString()) {
       return res.status(403).json({
         success: false,
@@ -320,7 +318,6 @@ export const rejectJoinRequest = async (req, res, next) => {
       });
     }
 
-    // Find the pending request
     const requestIndex = group.pendingRequests.findIndex(
       (req) => req.userId.toString() === requestUserId
     );
@@ -333,7 +330,6 @@ export const rejectJoinRequest = async (req, res, next) => {
       });
     }
 
-    // Remove from pending requests
     group.pendingRequests.splice(requestIndex, 1);
 
     await group.save();
@@ -351,9 +347,6 @@ export const rejectJoinRequest = async (req, res, next) => {
   }
 };
 
-// @desc    Update a group
-// @route   PUT /api/groups/:groupId
-// @access  Private (Admin only)
 export const updateGroup = async (req, res, next) => {
   try {
     const { groupId } = req.params;
@@ -370,7 +363,6 @@ export const updateGroup = async (req, res, next) => {
       });
     }
 
-    // Verify user is the admin
     if (group.adminId.toString() !== userId.toString()) {
       return res.status(403).json({
         success: false,
@@ -379,11 +371,9 @@ export const updateGroup = async (req, res, next) => {
       });
     }
 
-    // Update fields if provided
     if (name !== undefined) group.name = name;
     if (description !== undefined) group.description = description;
     if (tags !== undefined) {
-      // Trim tags and filter out empty ones
       const cleanedTags = tags.map((tag) => tag.trim()).filter((tag) => tag.length > 0);
       group.tags = cleanedTags;
     }
@@ -391,7 +381,6 @@ export const updateGroup = async (req, res, next) => {
 
     await group.save();
 
-    // Populate admin info
     await group.populate('adminId', 'name email avatar');
 
     res.status(200).json({
@@ -406,9 +395,6 @@ export const updateGroup = async (req, res, next) => {
   }
 };
 
-// @desc    Delete a group
-// @route   DELETE /api/groups/:groupId
-// @access  Private (Admin only)
 export const deleteGroup = async (req, res, next) => {
   try {
     const { groupId } = req.params;
@@ -424,7 +410,6 @@ export const deleteGroup = async (req, res, next) => {
       });
     }
 
-    // Verify user is the admin
     if (group.adminId.toString() !== userId.toString()) {
       return res.status(403).json({
         success: false,
@@ -433,7 +418,6 @@ export const deleteGroup = async (req, res, next) => {
       });
     }
 
-    // Delete the group
     await Group.findByIdAndDelete(groupId);
 
     res.status(200).json({
@@ -448,9 +432,6 @@ export const deleteGroup = async (req, res, next) => {
   }
 };
 
-// @desc    Remove a user from group
-// @route   DELETE /api/groups/:groupId/members/:userId
-// @access  Private (Admin only)
 export const removeUserFromGroup = async (req, res, next) => {
   try {
     const { groupId, userId: targetUserId } = req.params;
@@ -466,7 +447,6 @@ export const removeUserFromGroup = async (req, res, next) => {
       });
     }
 
-    // Verify user is the admin
     if (group.adminId.toString() !== adminId.toString()) {
       return res.status(403).json({
         success: false,
@@ -475,7 +455,6 @@ export const removeUserFromGroup = async (req, res, next) => {
       });
     }
 
-    // Prevent admin from removing themselves
     if (targetUserId === adminId.toString()) {
       return res.status(400).json({
         success: false,
@@ -484,7 +463,6 @@ export const removeUserFromGroup = async (req, res, next) => {
       });
     }
 
-    // Check if user is a member
     if (!group.members.includes(targetUserId)) {
       return res.status(400).json({
         success: false,
@@ -493,14 +471,12 @@ export const removeUserFromGroup = async (req, res, next) => {
       });
     }
 
-    // Remove user from members
     group.members = group.members.filter(
       (memberId) => memberId.toString() !== targetUserId
     );
 
     await group.save();
 
-    // Populate admin info
     await group.populate('adminId', 'name email avatar');
 
     res.status(200).json({
@@ -516,9 +492,6 @@ export const removeUserFromGroup = async (req, res, next) => {
   }
 };
 
-// @desc    Get all group members
-// @route   GET /api/groups/:groupId/members
-// @access  Private (Admin only)
 export const getGroupMembers = async (req, res, next) => {
   try {
     const { groupId } = req.params;
@@ -534,7 +507,6 @@ export const getGroupMembers = async (req, res, next) => {
       });
     }
 
-    // Verify user is the admin
     if (group.adminId.toString() !== userId.toString()) {
       return res.status(403).json({
         success: false,

@@ -67,6 +67,50 @@ export const validateLogin = [
   },
 ];
 
+// Helper function to validate base64 media
+const validateBase64Media = (value, mediaType) => {
+  if (!value) return true; // Optional field
+
+  // Check if it's a base64 string
+  const base64Regex = /^data:(image|video)\/(jpeg|jpg|png|gif|webp|mp4|webm|ogg);base64,/;
+  if (!base64Regex.test(value)) {
+    throw new Error(`${mediaType} must be a valid base64 encoded string`);
+  }
+
+  // Extract the MIME type
+  const mimeMatch = value.match(/^data:(image|video)\/(jpeg|jpg|png|gif|webp|mp4|webm|ogg)/);
+  if (!mimeMatch) {
+    throw new Error(`${mediaType} has invalid MIME type`);
+  }
+
+  const [, type, format] = mimeMatch;
+
+  // Validate image formats
+  if (mediaType === 'Image' && type !== 'image') {
+    throw new Error('Image field must contain an image file');
+  }
+
+  // Validate video formats
+  if (mediaType === 'Video' && type !== 'video') {
+    throw new Error('Video field must contain a video file');
+  }
+
+  // Check file size (base64 is ~33% larger than original)
+  const base64Data = value.split(',')[1];
+  const sizeInBytes = (base64Data.length * 3) / 4;
+  const sizeInMB = sizeInBytes / (1024 * 1024);
+
+  if (mediaType === 'Image' && sizeInMB > 10) {
+    throw new Error('Image file size must be less than 10MB');
+  }
+
+  if (mediaType === 'Video' && sizeInMB > 50) {
+    throw new Error('Video file size must be less than 50MB');
+  }
+
+  return true;
+};
+
 export const validatePost = [
   body('content')
     .trim()
@@ -77,8 +121,11 @@ export const validatePost = [
 
   body('image')
     .optional()
-    .isString()
-    .withMessage('Image must be a valid URL string'),
+    .custom((value) => validateBase64Media(value, 'Image')),
+
+  body('video')
+    .optional()
+    .custom((value) => validateBase64Media(value, 'Video')),
 
   (req, res, next) => {
     const errors = validationResult(req);
@@ -89,6 +136,16 @@ export const validatePost = [
         error: errors.array()[0].msg,
       });
     }
+
+    // Ensure only one media type is provided
+    if (req.body.image && req.body.video) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        error: 'Cannot upload both image and video in the same post',
+      });
+    }
+
     next();
   },
 ];
@@ -125,8 +182,11 @@ export const validatePostUpdate = [
 
   body('image')
     .optional()
-    .isString()
-    .withMessage('Image must be a valid URL string'),
+    .custom((value) => validateBase64Media(value, 'Image')),
+
+  body('video')
+    .optional()
+    .custom((value) => validateBase64Media(value, 'Video')),
 
   (req, res, next) => {
     const errors = validationResult(req);
@@ -138,11 +198,20 @@ export const validatePostUpdate = [
       });
     }
 
-    if (!req.body.content && !req.body.image) {
+    if (!req.body.content && !req.body.image && !req.body.video) {
       return res.status(400).json({
         success: false,
         message: 'Validation failed',
-        error: 'At least one field (content or image) must be provided for update',
+        error: 'At least one field (content, image, or video) must be provided for update',
+      });
+    }
+
+    // Ensure only one media type is provided
+    if (req.body.image && req.body.video) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        error: 'Cannot upload both image and video in the same post',
       });
     }
 

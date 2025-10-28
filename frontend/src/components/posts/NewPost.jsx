@@ -37,6 +37,11 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
         postData.image = imageUrl;
       }
 
+      // Only include video field if there's an actual video URL
+      if (videoUrl) {
+        postData.video = videoUrl;
+      }
+
       // Include groupId if selected
       if (selectedGroupId) {
         postData.groupId = selectedGroupId;
@@ -109,12 +114,19 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
         return;
       }
 
-      // Create local URL for preview
-      const imageURL = URL.createObjectURL(file);
-      setImageUrl(imageURL);
-      setVideoUrl(''); // Clear video if image is selected
-      setMediaType('image');
-      setShowMediaInput(false);
+      // Convert to base64 for backend
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result;
+        setImageUrl(base64String);
+        setVideoUrl(''); // Clear video if image is selected
+        setMediaType('image');
+        setShowMediaInput(false);
+      };
+      reader.onerror = () => {
+        alert('Failed to read image file');
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -138,30 +150,29 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
         return;
       }
 
-      // Create local URL for preview
-      const videoURL = URL.createObjectURL(file);
-      setVideoUrl(videoURL);
-      setImageUrl(''); // Clear image if video is selected
-      setMediaType('video');
-      setShowMediaInput(false);
+      // Convert to base64 for backend
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result;
+        setVideoUrl(base64String);
+        setImageUrl(''); // Clear image if video is selected
+        setMediaType('video');
+        setShowMediaInput(false);
+      };
+      reader.onerror = () => {
+        alert('Failed to read video file');
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const handleRemoveMedia = () => {
-    // Revoke object URLs to prevent memory leaks
-    if (videoUrl && videoUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(videoUrl);
-    }
-    if (imageUrl && imageUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(imageUrl);
-    }
-    
     // Reset file inputs
     const imageInput = document.getElementById('image-file-input');
     const videoInput = document.getElementById('video-file-input');
     if (imageInput) imageInput.value = '';
     if (videoInput) videoInput.value = '';
-    
+
     setImageUrl('');
     setVideoUrl('');
     setShowMediaInput(false);
@@ -217,6 +228,10 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
 
       if (imageUrl) {
         postData.image = imageUrl;
+      }
+
+      if (videoUrl) {
+        postData.video = videoUrl;
       }
 
       // Include groupId if selected

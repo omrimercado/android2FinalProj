@@ -10,7 +10,6 @@ import { protect, adminOnly } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// All statistics routes require authentication AND admin privileges
 router.get('/posts-over-time', protect, adminOnly, getPostsOverTime);
 router.get('/posts-per-group', protect, adminOnly, getPostsPerGroup);
 router.get('/popular-groups', protect, adminOnly, getPopularGroups);

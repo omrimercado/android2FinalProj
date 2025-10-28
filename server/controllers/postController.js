@@ -4,10 +4,9 @@ import { Group } from '../models/Group.js';
 
 export const createPost = async (req, res, next) => {
   try {
-    const { content, image, groupId } = req.body;
+    const { content, image, video, groupId } = req.body;
     const userId = req.user._id;
 
-    // If posting to a group, verify user is a member
     if (groupId) {
       const group = await Group.findById(groupId);
       if (!group) {
@@ -27,10 +26,17 @@ export const createPost = async (req, res, next) => {
       }
     }
 
+    // Determine media type
+    let mediaType = null;
+    if (image) mediaType = 'image';
+    if (video) mediaType = 'video';
+
     const post = await Post.create({
       userId,
       content,
       image: image || null,
+      video: video || null,
+      mediaType,
       groupId: groupId || null,
     });
 
@@ -55,13 +61,9 @@ export const getPosts = async (req, res, next) => {
   try {
     const userId = req.user._id;
 
-    // Find all groups where the user is a member
     const userGroups = await Group.find({ members: userId }).select('_id');
     const groupIds = userGroups.map(group => group._id);
 
-    // Get posts that either:
-    // 1. Have no groupId (general posts)
-    // 2. Have a groupId that the user is a member of
     const posts = await Post.find({
       $or: [
         { groupId: null },
@@ -231,7 +233,7 @@ export const getComments = async (req, res, next) => {
 export const updatePost = async (req, res, next) => {
   try {
     const { postId } = req.params;
-    const { content, image } = req.body;
+    const { content, image, video } = req.body;
     const userId = req.user._id;
 
     const post = await Post.findById(postId);
@@ -255,8 +257,17 @@ export const updatePost = async (req, res, next) => {
     if (content !== undefined) {
       post.content = content;
     }
+
+    // Update media fields
     if (image !== undefined) {
       post.image = image;
+      post.video = null; // Clear video if image is set
+      post.mediaType = image ? 'image' : null;
+    }
+    if (video !== undefined) {
+      post.video = video;
+      post.image = null; // Clear image if video is set
+      post.mediaType = video ? 'video' : null;
     }
 
     await post.save();
@@ -318,7 +329,6 @@ export const getGroupPosts = async (req, res, next) => {
     const { groupId } = req.params;
     const userId = req.user._id;
 
-    // Check if the group exists
     const group = await Group.findById(groupId);
     if (!group) {
       return res.status(404).json({
@@ -328,7 +338,6 @@ export const getGroupPosts = async (req, res, next) => {
       });
     }
 
-    // Check if the user is a member of the group
     if (!group.members.includes(userId)) {
       return res.status(403).json({
         success: false,

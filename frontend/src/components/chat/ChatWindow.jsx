@@ -13,7 +13,7 @@ export default function ChatWindow({ user, targetUser, onClose }) {
   const wsRef = useRef(null);
   const typingTimeoutRef = useRef(null);
 
-  // גלילה אוטומטית להודעה האחרונה
+  // Auto-scroll to latest message
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -22,9 +22,9 @@ export default function ChatWindow({ user, targetUser, onClose }) {
     scrollToBottom();
   }, [messages]);
 
-  // חיבור WebSocket
+  // WebSocket connection
   useEffect(() => {
-    // התחברות לשרת הראשי דרך ChatApiService
+    // Connect to main server via ChatApiService
     const wsUrl = ChatApiService.getWebSocketUrl();
     console.log('🔌 Attempting to connect to:', wsUrl);
     const ws = ChatApiService.createWebSocketConnection();
@@ -32,8 +32,8 @@ export default function ChatWindow({ user, targetUser, onClose }) {
     ws.onopen = () => {
       console.log('✅ WebSocket Connected successfully!');
       setIsConnected(true);
-      
-      // שליחת הודעת התחברות עם פרטי המשתמש
+
+      // Send join message with user details
       ws.send(JSON.stringify({
         type: 'join',
         userId: user.id,
@@ -70,7 +70,7 @@ export default function ChatWindow({ user, targetUser, onClose }) {
             break;
             
           case 'history':
-            // טעינת היסטוריית הודעות קודמת
+            // Load previous message history
             if (data.messages) {
               setMessages(data.messages.map(msg => ({
                 ...msg,
@@ -80,7 +80,7 @@ export default function ChatWindow({ user, targetUser, onClose }) {
             break;
 
           case 'user_status':
-            // עדכון סטטוס המשתמש היעד
+            // Update target user status
             if (data.userId === targetUser.id) {
               console.log(`👤 Target user ${targetUser.name} is now: ${data.isOnline ? 'ONLINE 🟢' : 'OFFLINE ⚪'}`);
               setIsTargetOnline(data.isOnline);
@@ -111,7 +111,7 @@ export default function ChatWindow({ user, targetUser, onClose }) {
 
     wsRef.current = ws;
 
-    // ניקוי בסגירת הקומפוננטה
+    // Cleanup when component unmounts
     return () => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.close();
@@ -120,7 +120,7 @@ export default function ChatWindow({ user, targetUser, onClose }) {
     };
   }, [user.id, targetUser.id, user.name]);
 
-  // שליחת אינדיקציה של הקלדה
+  // Send typing indicator
   const handleTyping = () => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       wsRef.current.send(JSON.stringify({
@@ -131,17 +131,17 @@ export default function ChatWindow({ user, targetUser, onClose }) {
     }
   };
 
-  // שליחת הודעה
+  // Send message
   const handleSendMessage = (e) => {
     e.preventDefault();
-    
+
     if (!newMessage.trim()) {
       return;
     }
 
-    // בדיקה שהחיבור פעיל
+    // Check that connection is active
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-      alert('אין חיבור לשרת. נסה שוב מאוחר יותר.');
+      alert('No connection to server. Please try again later.');
       return;
     }
 
@@ -169,7 +169,7 @@ export default function ChatWindow({ user, targetUser, onClose }) {
   return (
     <div className="chat-window-overlay" onClick={onClose}>
       <div className="chat-window" onClick={(e) => e.stopPropagation()}>
-        {/* כותרת */}
+        {/* Header */}
         <div className="chat-header">
           <div className="chat-header-user">
             <img src={getAvatar(targetUser.avatar, targetUser.name)} alt={targetUser.name} className="chat-avatar" />
@@ -177,8 +177,8 @@ export default function ChatWindow({ user, targetUser, onClose }) {
               <h3>{targetUser.name}</h3>
               <span className="chat-status">
                 {isConnected ? (
-                  isTargetOnline ? '🟢 מחובר' : '⚪ לא מחובר (ההודעה תישמר)'
-                ) : '🔴לא מחובר'}
+                  isTargetOnline ? '🟢 Online' : '⚪ Offline (message will be saved)'
+                ) : '🔴 Disconnected'}
               </span>
             </div>
           </div>
@@ -187,11 +187,11 @@ export default function ChatWindow({ user, targetUser, onClose }) {
           </button>
         </div>
 
-        {/* אזור ההודעות */}
+        {/* Messages area */}
         <div className="chat-messages">
           {messages.length === 0 ? (
             <div className="chat-empty">
-              <p>👋 התחל שיחה עם {targetUser.name}</p>
+              <p>👋 Start a conversation with {targetUser.name}</p>
             </div>
           ) : (
             messages.map((msg) => (
@@ -223,12 +223,12 @@ export default function ChatWindow({ user, targetUser, onClose }) {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* אזור הקלדת הודעה */}
+        {/* Message input area */}
         <form className="chat-input-container" onSubmit={handleSendMessage}>
           <input
             type="text"
             className="chat-input"
-            placeholder="הקלד הודעה..."
+            placeholder="Type a message..."
             value={newMessage}
             onChange={(e) => {
               setNewMessage(e.target.value);
@@ -237,11 +237,11 @@ export default function ChatWindow({ user, targetUser, onClose }) {
             disabled={!isConnected}
             dir="auto"
           />
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="chat-send-btn"
             disabled={!newMessage.trim() || !isConnected}
-            title={isTargetOnline ? 'שלח הודעה' : 'שלח הודעה (תישמר עד שהמשתמש יתחבר)'}
+            title={isTargetOnline ? 'Send message' : 'Send message (will be saved until user connects)'}
           >
             {isTargetOnline ? '📤' : '📬'}
           </button>
