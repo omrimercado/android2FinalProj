@@ -22,7 +22,6 @@ class ApiService {
   // ===========================
   static login = AuthApi.login.bind(AuthApi);
   static register = AuthApi.register.bind(AuthApi);
-  static forgotPassword = AuthApi.forgotPassword.bind(AuthApi);
   static verifyToken = AuthApi.verifyToken.bind(AuthApi);
   static logout = AuthApi.logout.bind(AuthApi);
   static updateAvatar = AuthApi.updateAvatar.bind(AuthApi);

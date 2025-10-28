@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { DialogProvider } from './contexts/DialogContext';
+import DialogContainer from './components/common/DialogContainer';
 import HomePage from './pages/HomePage';
 import FeedPage from './pages/FeedPage';
 import MyProfilePage from './pages/MyProfilePage';
@@ -68,20 +70,24 @@ function App() {
   };
 
   console.log('🎨 App.js render - isLoggedIn:', isLoggedIn, 'user:', user);
-  
+
   return (
-    <Router>
-      <div className="App">
-        {/* Inactivity Timeout Warning */}
-        {showTimeoutWarning && (
-          <div className="timeout-warning-banner">
-            <div className="timeout-warning-content">
-              ⏱️ Your session has expired due to inactivity. Logging out...
+    <DialogProvider>
+      <Router>
+        <div className="App">
+          {/* Dialog Container */}
+          <DialogContainer />
+
+          {/* Inactivity Timeout Warning */}
+          {showTimeoutWarning && (
+            <div className="timeout-warning-banner">
+              <div className="timeout-warning-content">
+                ⏱️ Your session has expired due to inactivity. Logging out...
+              </div>
             </div>
-          </div>
-        )}
-        
-        <Routes>
+          )}
+
+          <Routes>
           <Route 
             path="/" 
             element={
@@ -152,6 +158,7 @@ function App() {
         </Routes>
       </div>
     </Router>
+    </DialogProvider>
   );
 }
 

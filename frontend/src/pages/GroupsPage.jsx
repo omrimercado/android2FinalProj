@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useDialog } from '../contexts/DialogContext';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import SearchBar from '../components/layout/SearchBar';
@@ -7,12 +8,13 @@ import ApiService from '../services/api';
 import './GroupsPage.css';
 
 export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) {
+  const { showSuccess, showError, showWarning, showConfirm } = useDialog();
   const [myGroups, setMyGroups] = useState([]);
   const [suggestedGroups, setSuggestedGroups] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showNewGroup, setShowNewGroup] = useState(false);
   const [loading, setLoading] = useState(true);
-  
+
   // Admin management states
   const [editingGroup, setEditingGroup] = useState(null);
   const [managingGroup, setManagingGroup] = useState(null);
@@ -188,8 +190,8 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
             setMyGroups([...myGroups, { ...groupToJoin, isAdmin: false }]);
           }
 
-          // Show success message (you can add a toast notification here)
-          alert('Successfully joined the group!');
+          // Show success message
+          showSuccess('Successfully joined the group!');
         } else if (status === 'pending') {
           // Private group - request sent
           console.log('📤 Join request sent');
@@ -198,15 +200,15 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
           setSuggestedGroups(suggestedGroups.filter(g => g.id !== groupId));
 
           // Show pending message
-          alert('Join request sent! Waiting for admin approval.');
+          showWarning('Join request sent! Waiting for admin approval.');
         }
       } else {
         console.error('Failed to join group:', result.message);
-        alert(result.message || 'Failed to join group');
+        showError(result.message || 'Failed to join group');
       }
     } catch (error) {
       console.error('Error joining group:', error);
-      alert('Error joining group. Please try again.');
+      showError('Error joining group. Please try again.');
     }
   };
 
@@ -215,7 +217,8 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
       console.log('Leaving group:', groupId);
 
       // Confirm before leaving
-      if (!window.confirm('Are you sure you want to leave this group?')) {
+      const confirmed = await showConfirm('Are you sure you want to leave this group?', 'Leave Group');
+      if (!confirmed) {
         return;
       }
 
@@ -248,7 +251,11 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
 
   const handleDeleteGroup = async (groupId, groupName) => {
     try {
-      if (!window.confirm(`Are you sure you want to delete "${groupName}"? This action cannot be undone.`)) {
+      const confirmed = await showConfirm(
+        `Are you sure you want to delete "${groupName}"? This action cannot be undone.`,
+        'Delete Group'
+      );
+      if (!confirmed) {
         return;
       }
 
@@ -750,7 +757,11 @@ function ManageGroupMembersModal({ group, onClose, onMemberRemoved }) {
   };
 
   const handleRemoveMember = async (userId, userName) => {
-    if (!window.confirm(`Remove ${userName} from ${group.name}?`)) {
+    const confirmed = await showConfirm(
+      `Remove ${userName} from ${group.name}?`,
+      'Remove Member'
+    );
+    if (!confirmed) {
       return;
     }
 

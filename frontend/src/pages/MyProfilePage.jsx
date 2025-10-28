@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useDialog } from '../contexts/DialogContext';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import PostCard from '../components/posts/PostCard';
@@ -9,6 +10,7 @@ import { getAvatar } from '../utils/helpers';
 import './MyProfilePage.css';
 
 export default function MyProfilePage({ user, currentPage, onNavigate, onLogout }) {
+  const { showConfirm } = useDialog();
   const [showChangeImage, setShowChangeImage] = useState(false);
   const [currentAvatar, setCurrentAvatar] = useState(getAvatar(user?.avatar, user?.name));
 
@@ -259,8 +261,11 @@ export default function MyProfilePage({ user, currentPage, onNavigate, onLogout 
   // Delete a post
   const handleDeletePost = async (postId) => {
     // Confirm before deleting
-    const confirmed = window.confirm('Are you sure you want to delete this post? This action cannot be undone.');
-    
+    const confirmed = await showConfirm(
+      'Are you sure you want to delete this post? This action cannot be undone.',
+      'Delete Post'
+    );
+
     if (!confirmed) return;
 
     setIsDeletingPostId(postId);

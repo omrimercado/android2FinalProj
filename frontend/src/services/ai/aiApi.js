@@ -13,8 +13,8 @@ class AiApi {
    * @param {string} params.length - Length of the post (short, medium, long)
    */
   static async generatePostWithAI({ topic, style = 'casual', length = 'medium' }) {
-    console.log('🔧 AiApi.generatePostWithAI() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/ai/generate-post`);
+    console.log('AiApi.generatePostWithAI() - Start');
+    console.log('Endpoint:', `${API_BASE_URL}/ai/generate-post`);
 
     try {
       const token = localStorage.getItem('token');
@@ -23,10 +23,10 @@ class AiApi {
         throw new Error('No token found. Please login again.');
       }
 
-      console.log('📤 Request Method:', 'POST');
-      console.log('📤 Topic:', topic);
-      console.log('📤 Style:', style);
-      console.log('📤 Length:', length);
+      console.log('Request Method:', 'POST');
+      console.log('Topic:', topic);
+      console.log('Style:', style);
+      console.log('Length:', length);
 
       const response = await fetch(`${API_BASE_URL}/ai/generate-post`, {
         method: 'POST',
@@ -49,7 +49,7 @@ class AiApi {
         message: data.message || 'AI post generated successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,

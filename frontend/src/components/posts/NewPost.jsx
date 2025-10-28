@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useDialog } from '../../contexts/DialogContext';
 import './NewPost.css';
 import { getAvatar } from '../../utils/helpers';
 import ApiService from '../../services/api';
 import AIPostModal from './AIPostModal';
 
 function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onPostUpdated = null, onCancelEdit = null, groupId = null, myGroups = [] }) {
+  const { showError } = useDialog();
   const [postContent, setPostContent] = useState(editMode && postToEdit ? postToEdit.content : '');
   const [imageUrl, setImageUrl] = useState(editMode && postToEdit ? postToEdit.image || '' : '');
   const [videoUrl, setVideoUrl] = useState('');
@@ -104,13 +106,13 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
     if (file) {
       // Check if it's an image file
       if (!file.type.startsWith('image/')) {
-        alert('Please select an image file only (JPG, PNG, GIF, etc.)');
+        showError('Please select an image file only (JPG, PNG, GIF, etc.)');
         return;
       }
 
       // Check file size (max 10MB for image)
       if (file.size > 10 * 1024 * 1024) {
-        alert('Image file is too large. Please select an image up to 10MB');
+        showError('Image file is too large. Please select an image up to 10MB');
         return;
       }
 
@@ -124,7 +126,7 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
         setShowMediaInput(false);
       };
       reader.onerror = () => {
-        alert('Failed to read image file');
+        showError('Failed to read image file');
       };
       reader.readAsDataURL(file);
     }
@@ -140,13 +142,13 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
     if (file) {
       // Check if it's a video file
       if (!file.type.startsWith('video/')) {
-        alert('Please select a video file only (MP4, WebM, etc.)');
+        showError('Please select a video file only (MP4, WebM, etc.)');
         return;
       }
 
       // Check file size (max 50MB for video)
       if (file.size > 50 * 1024 * 1024) {
-        alert('Video file is too large. Please select a video up to 50MB');
+        showError('Video file is too large. Please select a video up to 50MB');
         return;
       }
 
@@ -160,7 +162,7 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
         setShowMediaInput(false);
       };
       reader.onerror = () => {
-        alert('Failed to read video file');
+        showError('Failed to read video file');
       };
       reader.readAsDataURL(file);
     }

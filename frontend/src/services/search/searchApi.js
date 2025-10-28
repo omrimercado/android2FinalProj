@@ -14,8 +14,8 @@ class SearchApi {
    * @param {string} searchParams.sortBy - 'newest', 'most_liked', 'most_commented'
    */
   static async searchPosts(searchParams) {
-    console.log('🔧 SearchApi.searchPosts() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/search/posts`);
+    console.log('SearchApi.searchPosts() - Start');
+    console.log('Endpoint:', `${API_BASE_URL}/search/posts`);
 
     try {
       const token = localStorage.getItem('token');
@@ -54,9 +54,9 @@ class SearchApi {
 
       const endpoint = `${API_BASE_URL}/search/posts?${params.toString()}`;
 
-      console.log('📤 Request Method:', 'GET');
-      console.log('📤 Search Params:', searchParams);
-      console.log('📤 Translated Params:', params.toString());
+      console.log('Request Method:', 'GET');
+      console.log('Search Params:', searchParams);
+      console.log('Translated Params:', params.toString());
 
       const response = await fetch(endpoint, {
         method: 'GET',
@@ -86,7 +86,7 @@ class SearchApi {
         message: data.message || 'Posts searched successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -103,8 +103,8 @@ class SearchApi {
    * @param {string} searchParams.size - Group size filter ('small', 'medium', 'large', 'huge')
    */
   static async searchGroups(searchParams) {
-    console.log('🔧 SearchApi.searchGroups() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/search/groups`);
+    console.log('SearchApi.searchGroups() - Start');
+    console.log('Endpoint:', `${API_BASE_URL}/search/groups`);
 
     try {
       const token = localStorage.getItem('token');
@@ -137,9 +137,9 @@ class SearchApi {
 
       const endpoint = `${API_BASE_URL}/search/groups?${params.toString()}`;
 
-      console.log('📤 Request Method:', 'GET');
-      console.log('📤 Search Params:', searchParams);
-      console.log('📤 Translated Params:', params.toString());
+      console.log('Request Method:', 'GET');
+      console.log('Search Params:', searchParams);
+      console.log('Translated Params:', params.toString());
 
       const response = await fetch(endpoint, {
         method: 'GET',
@@ -169,7 +169,7 @@ class SearchApi {
         message: data.message || 'Groups searched successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,

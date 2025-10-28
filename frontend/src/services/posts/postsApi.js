@@ -7,8 +7,8 @@ import { API_BASE_URL } from '../config';
 class PostsApi {
   // Get all posts
   static async getPosts() {
-    console.log('🔧 PostsApi.getPosts() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/posts`);
+    console.log('PostsApi.getPosts() - Start');
+    console.log('Endpoint:', `${API_BASE_URL}/posts`);
 
     try {
       const token = localStorage.getItem('token');
@@ -37,7 +37,7 @@ class PostsApi {
         message: data.message || 'Posts fetched successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -48,8 +48,8 @@ class PostsApi {
 
   // Create a new post
   static async createPost(postData) {
-    console.log('🔧 PostsApi.createPost() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/posts`);
+    console.log('PostsApi.createPost() - Start');
+    console.log('Endpoint:', `${API_BASE_URL}/posts`);
 
     try {
       const token = localStorage.getItem('token');
@@ -58,8 +58,8 @@ class PostsApi {
         throw new Error('No token found. Please login again.');
       }
 
-      console.log('📤 Request Method:', 'POST');
-      console.log('📤 Post Data:', postData);
+      console.log('Request Method:', 'POST');
+      console.log('Post Data:', postData);
 
       const response = await fetch(`${API_BASE_URL}/posts`, {
         method: 'POST',
@@ -82,7 +82,7 @@ class PostsApi {
         message: data.message || 'Post created successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -93,8 +93,8 @@ class PostsApi {
 
   // Get posts by a specific user
   static async getUserPosts(userId) {
-    console.log('🔧 PostsApi.getUserPosts() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/posts/user/${userId}`);
+    console.log('PostsApi.getUserPosts() - Start');
+    console.log('Endpoint:', `${API_BASE_URL}/posts/user/${userId}`);
 
     try {
       const token = localStorage.getItem('token');
@@ -123,7 +123,7 @@ class PostsApi {
         message: data.message || 'User posts fetched successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -134,8 +134,8 @@ class PostsApi {
 
   // Get posts for a specific group
   static async getGroupPosts(groupId) {
-    console.log('🔧 PostsApi.getGroupPosts() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/posts/group/${groupId}`);
+    console.log('PostsApi.getGroupPosts() - Start');
+    console.log('Endpoint:', `${API_BASE_URL}/posts/group/${groupId}`);
 
     try {
       const token = localStorage.getItem('token');
@@ -164,7 +164,7 @@ class PostsApi {
         message: data.message || 'Group posts fetched successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -175,8 +175,8 @@ class PostsApi {
 
   // Update a post
   static async updatePost(postId, postData) {
-    console.log('🔧 PostsApi.updatePost() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/posts/${postId}`);
+    console.log('PostsApi.updatePost() - Start');
+    console.log('Endpoint:', `${API_BASE_URL}/posts/${postId}`);
 
     try {
       const token = localStorage.getItem('token');
@@ -206,7 +206,7 @@ class PostsApi {
         message: data.message || 'Post updated successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -217,8 +217,8 @@ class PostsApi {
 
   // Delete a post
   static async deletePost(postId) {
-    console.log('🔧 PostsApi.deletePost() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/posts/${postId}`);
+    console.log('PostsApi.deletePost() - Start');
+    console.log('Endpoint:', `${API_BASE_URL}/posts/${postId}`);
 
     try {
       const token = localStorage.getItem('token');
@@ -247,7 +247,7 @@ class PostsApi {
         message: data.message || 'Post deleted successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -258,8 +258,8 @@ class PostsApi {
 
   // Like or unlike a post (toggle)
   static async likePost(postId) {
-    console.log('🔧 PostsApi.likePost() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/posts/${postId}/like`);
+    console.log('PostsApi.likePost() - Start');
+    console.log('Endpoint:', `${API_BASE_URL}/posts/${postId}/like`);
 
     try {
       const token = localStorage.getItem('token');
@@ -288,7 +288,7 @@ class PostsApi {
         message: data.message || 'Post liked/unliked successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -299,8 +299,8 @@ class PostsApi {
 
   // Add a comment to a post
   static async addComment(postId, content) {
-    console.log('🔧 PostsApi.addComment() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/posts/${postId}/comment`);
+    console.log('PostsApi.addComment() - Start');
+    console.log('Endpoint:', `${API_BASE_URL}/posts/${postId}/comment`);
 
     try {
       const token = localStorage.getItem('token');
@@ -330,7 +330,7 @@ class PostsApi {
         message: data.message || 'Comment added successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -341,8 +341,8 @@ class PostsApi {
 
   // Get all comments for a post
   static async getComments(postId) {
-    console.log('🔧 PostsApi.getComments() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/posts/${postId}/comments`);
+    console.log('PostsApi.getComments() - Start');
+    console.log('Endpoint:', `${API_BASE_URL}/posts/${postId}/comments`);
 
     try {
       const token = localStorage.getItem('token');
@@ -371,7 +371,7 @@ class PostsApi {
         message: data.message || 'Comments fetched successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,

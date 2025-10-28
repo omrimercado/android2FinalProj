@@ -77,20 +77,15 @@ function Login({ onClose, onSwitchToRegister }) {
     }
   };
 
-  const handleGoogleSignIn = () => {
-    // TODO: Implement Google sign in
-    console.log('Google Sign In');
-  };
-
   return (
     <div className="login-overlay" onClick={onClose}>
       <div className="login-modal" onClick={(e) => e.stopPropagation()}>
         <button className="close-button" onClick={onClose}>×</button>
-        
+
         <h1 className="login-title">Sign in</h1>
-        
+
         {error && <div className="error-message" style={{color: 'red', marginBottom: '10px', textAlign: 'center'}}>{error}</div>}
-        
+
         <form className="login-form" onSubmit={handleLogin}>
           <div className="form-group">
             <input
@@ -130,19 +125,10 @@ function Login({ onClose, onSwitchToRegister }) {
           </button>
         </form>
 
-        <div className="divider">
-          <span className="divider-line"></span>
-        </div>
-
-        <button className="google-button" onClick={handleGoogleSignIn}>
-          <span className="google-icon">G</span>
-          SIGN IN WITH GOOGLE
-        </button>
-
         <div className="signup-link">
-          Don't have an account? 
-          <button 
-            className="signup-button" 
+          Don't have an account?
+          <button
+            className="signup-button"
             onClick={onSwitchToRegister}
           >
             Sign up

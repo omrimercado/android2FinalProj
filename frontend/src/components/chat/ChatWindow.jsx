@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useDialog } from '../../contexts/DialogContext';
 import { ChatApiService } from '../../services';
 import { getAvatar } from '../../utils/helpers';
 import './ChatWindow.css';
 
 export default function ChatWindow({ user, targetUser, onClose }) {
+  const { showError } = useDialog();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [isConnected, setIsConnected] = useState(false);
@@ -141,7 +143,7 @@ export default function ChatWindow({ user, targetUser, onClose }) {
 
     // Check that connection is active
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
-      alert('No connection to server. Please try again later.');
+      showError('No connection to server. Please try again later.');
       return;
     }
 
