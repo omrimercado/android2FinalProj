@@ -72,31 +72,14 @@ export const useAuth = () => {
   const logout = async () => {
     setLoading(true);
     const token = localStorage.getItem('authToken');
-    
+
     if (token) {
       await ApiService.logout(token);
     }
-    
+
     localStorage.removeItem('authToken');
     setUser(null);
     setError(null);
-    setLoading(false);
-  };
-
-  // Forgot password function
-  const forgotPassword = async (email) => {
-    setLoading(true);
-    setError(null);
-
-    const result = await ApiService.forgotPassword(email);
-
-    if (result.success) {
-      return { success: true, message: result.message };
-    } else {
-      setError(result.error);
-      return { success: false, message: result.message, error: result.error };
-    }
-
     setLoading(false);
   };
 
@@ -107,7 +90,6 @@ export const useAuth = () => {
     login,
     register,
     logout,
-    forgotPassword,
     isAuthenticated: !!user
   };
 };

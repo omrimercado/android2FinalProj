@@ -35,6 +35,15 @@ const postSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    video: {
+      type: String,
+      default: null,
+    },
+    mediaType: {
+      type: String,
+      enum: ['image', 'video', null],
+      default: null,
+    },
     groupId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Group',

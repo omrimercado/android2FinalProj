@@ -7,21 +7,21 @@ import { API_BASE_URL } from '../config';
 const WS_BASE_URL = process.env.REACT_APP_WS_URL || 'ws://localhost:5000/chat';
 
 class ChatApi {
-  // קבלת כל השיחות של המשתמש
+  // Get all conversations for the user
   static async getConversations() {
-    console.log('🔧 ChatApi.getConversations() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/chat/conversations`);
-    
+    console.log('ChatApi.getConversations() - Start');
+    console.log('Endpoint:', `${API_BASE_URL}/chat/conversations`);
+
     try {
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         throw new Error('No token found. Please login again.');
       }
 
-      console.log('📤 Request Method:', 'GET');
-      console.log('🎫 Token:', token ? 'Found' : 'Not found');
-      
+      console.log('Request Method:', 'GET');
+      console.log('Token:', token ? 'Found' : 'Not found');
+
       const response = await fetch(`${API_BASE_URL}/chat/conversations`, {
         method: 'GET',
         headers: {
@@ -30,27 +30,27 @@ class ChatApi {
         }
       });
 
-      console.log('📥 Response Status:', response.status);
-      console.log('📥 Response OK:', response.ok);
+      console.log('Response Status:', response.status);
+      console.log('Response OK:', response.ok);
 
       const data = await response.json();
-      console.log('📥 Response Data:', data);
+      console.log('Response Data:', data);
 
       if (!response.ok) {
-        console.log('⚠️ Server returned error:', data.message || 'Failed to fetch conversations');
+        console.log('Server returned error:', data.message || 'Failed to fetch conversations');
         throw new Error(data.message || 'Failed to fetch conversations');
       }
 
-      console.log('✅ Get conversations API call successful');
-      
+      console.log('Get conversations API call successful');
+
       return {
         success: true,
         data: data.conversations || data.data || [],
         message: data.message || 'Conversations fetched successfully'
       };
     } catch (error) {
-      console.log('❌ Get conversations API call failed');
-      console.error('🔴 Error:', error);
+      console.log('Get conversations API call failed');
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -59,23 +59,23 @@ class ChatApi {
     }
   }
 
-  // קבלת שיחה ספציפית
+  // Get specific conversation
   static async getConversation(userId, targetUserId) {
-    console.log('🔧 ChatApi.getConversation() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/chat/conversation/${userId}/${targetUserId}`);
-    
+    console.log('ChatApi.getConversation() - Start');
+    console.log('Endpoint:', `${API_BASE_URL}/chat/conversation/${userId}/${targetUserId}`);
+
     try {
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         throw new Error('No token found. Please login again.');
       }
 
-      console.log('📤 Request Method:', 'GET');
-      console.log('📤 User ID:', userId);
-      console.log('📤 Target User ID:', targetUserId);
-      console.log('🎫 Token:', token ? 'Found' : 'Not found');
-      
+      console.log('Request Method:', 'GET');
+      console.log('User ID:', userId);
+      console.log('Target User ID:', targetUserId);
+      console.log('Token:', token ? 'Found' : 'Not found');
+
       const response = await fetch(`${API_BASE_URL}/chat/conversation/${userId}/${targetUserId}`, {
         method: 'GET',
         headers: {
@@ -84,27 +84,27 @@ class ChatApi {
         }
       });
 
-      console.log('📥 Response Status:', response.status);
-      console.log('📥 Response OK:', response.ok);
+      console.log('Response Status:', response.status);
+      console.log('Response OK:', response.ok);
 
       const data = await response.json();
-      console.log('📥 Response Data:', data);
+      console.log('Response Data:', data);
 
       if (!response.ok) {
-        console.log('⚠️ Server returned error:', data.message || 'Failed to fetch conversation');
+        console.log('Server returned error:', data.message || 'Failed to fetch conversation');
         throw new Error(data.message || 'Failed to fetch conversation');
       }
 
-      console.log('✅ Get conversation API call successful');
-      
+      console.log('Get conversation API call successful');
+
       return {
         success: true,
         data: data.messages || data.data || [],
         message: data.message || 'Conversation fetched successfully'
       };
     } catch (error) {
-      console.log('❌ Get conversation API call failed');
-      console.error('🔴 Error:', error);
+      console.log('Get conversation API call failed');
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -113,22 +113,22 @@ class ChatApi {
     }
   }
 
-  // סימון הודעות כנקראו
+  // Mark messages as read
   static async markAsRead(conversationId) {
-    console.log('🔧 ChatApi.markAsRead() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/chat/conversation/${conversationId}/read`);
-    
+    console.log('ChatApi.markAsRead() - Start');
+    console.log('Endpoint:', `${API_BASE_URL}/chat/conversation/${conversationId}/read`);
+
     try {
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         throw new Error('No token found. Please login again.');
       }
 
-      console.log('📤 Request Method:', 'PUT');
-      console.log('📤 Conversation ID:', conversationId);
-      console.log('🎫 Token:', token ? 'Found' : 'Not found');
-      
+      console.log('Request Method:', 'PUT');
+      console.log('Conversation ID:', conversationId);
+      console.log('Token:', token ? 'Found' : 'Not found');
+
       const response = await fetch(`${API_BASE_URL}/chat/conversation/${conversationId}/read`, {
         method: 'PUT',
         headers: {
@@ -137,27 +137,27 @@ class ChatApi {
         }
       });
 
-      console.log('📥 Response Status:', response.status);
-      console.log('📥 Response OK:', response.ok);
+      console.log('Response Status:', response.status);
+      console.log('Response OK:', response.ok);
 
       const data = await response.json();
-      console.log('📥 Response Data:', data);
+      console.log('Response Data:', data);
 
       if (!response.ok) {
-        console.log('⚠️ Server returned error:', data.message || 'Failed to mark as read');
+        console.log('Server returned error:', data.message || 'Failed to mark as read');
         throw new Error(data.message || 'Failed to mark as read');
       }
 
-      console.log('✅ Mark as read API call successful');
-      
+      console.log('Mark as read API call successful');
+
       return {
         success: true,
         data: data.data || data,
         message: data.message || 'Marked as read successfully'
       };
     } catch (error) {
-      console.log('❌ Mark as read API call failed');
-      console.error('🔴 Error:', error);
+      console.log('Mark as read API call failed');
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -166,22 +166,22 @@ class ChatApi {
     }
   }
 
-  // מחיקת שיחה
+  // Delete conversation
   static async deleteConversation(conversationId) {
-    console.log('🔧 ChatApi.deleteConversation() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/chat/conversation/${conversationId}`);
-    
+    console.log('ChatApi.deleteConversation() - Start');
+    console.log('Endpoint:', `${API_BASE_URL}/chat/conversation/${conversationId}`);
+
     try {
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         throw new Error('No token found. Please login again.');
       }
 
-      console.log('📤 Request Method:', 'DELETE');
-      console.log('📤 Conversation ID:', conversationId);
-      console.log('🎫 Token:', token ? 'Found' : 'Not found');
-      
+      console.log('Request Method:', 'DELETE');
+      console.log('Conversation ID:', conversationId);
+      console.log('Token:', token ? 'Found' : 'Not found');
+
       const response = await fetch(`${API_BASE_URL}/chat/conversation/${conversationId}`, {
         method: 'DELETE',
         headers: {
@@ -190,27 +190,27 @@ class ChatApi {
         }
       });
 
-      console.log('📥 Response Status:', response.status);
-      console.log('📥 Response OK:', response.ok);
+      console.log('Response Status:', response.status);
+      console.log('Response OK:', response.ok);
 
       const data = await response.json();
-      console.log('📥 Response Data:', data);
+      console.log('Response Data:', data);
 
       if (!response.ok) {
-        console.log('⚠️ Server returned error:', data.message || 'Failed to delete conversation');
+        console.log('Server returned error:', data.message || 'Failed to delete conversation');
         throw new Error(data.message || 'Failed to delete conversation');
       }
 
-      console.log('✅ Delete conversation API call successful');
-      
+      console.log('Delete conversation API call successful');
+
       return {
         success: true,
         data: data.data || data,
         message: data.message || 'Conversation deleted successfully'
       };
     } catch (error) {
-      console.log('❌ Delete conversation API call failed');
-      console.error('🔴 Error:', error);
+      console.log('Delete conversation API call failed');
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -219,22 +219,22 @@ class ChatApi {
     }
   }
 
-  // יצירת חיבור WebSocket
+  // Create WebSocket connection
   static createWebSocketConnection() {
-    console.log('🔧 ChatApi.createWebSocketConnection() - התחלה');
-    console.log('📍 WebSocket URL:', WS_BASE_URL);
-    
+    console.log('ChatApi.createWebSocketConnection() - Start');
+    console.log('WebSocket URL:', WS_BASE_URL);
+
     try {
       const ws = new WebSocket(WS_BASE_URL);
-      console.log('✅ WebSocket connection created');
+      console.log('WebSocket connection created');
       return ws;
     } catch (error) {
-      console.error('❌ Failed to create WebSocket connection:', error);
+      console.error('Failed to create WebSocket connection:', error);
       throw error;
     }
   }
 
-  // קבלת ה-WebSocket URL
+  // Get WebSocket URL
   static getWebSocketUrl() {
     return WS_BASE_URL;
   }

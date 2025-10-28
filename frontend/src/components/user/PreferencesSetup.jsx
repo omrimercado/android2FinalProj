@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useDialog } from '../../contexts/DialogContext';
 import './PreferencesSetup.css';
 
 const AVAILABLE_INTERESTS = [
@@ -23,6 +24,7 @@ const AVAILABLE_INTERESTS = [
 ];
 
 export default function PreferencesSetup({ user, onComplete, onSkip }) {
+  const { showWarning } = useDialog();
   const [selectedInterests, setSelectedInterests] = useState([]);
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -36,7 +38,7 @@ export default function PreferencesSetup({ user, onComplete, onSkip }) {
 
   const handleContinue = () => {
     if (selectedInterests.length === 0) {
-      alert('Please select at least one interest to continue');
+      showWarning('Please select at least one interest to continue');
       return;
     }
     

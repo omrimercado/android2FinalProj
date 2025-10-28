@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useDialog } from '../../contexts/DialogContext';
 import ApiService from '../../services/api';
 import './ChangeImage.css';
 
 export default function ChangeImage({ onClose, currentImage, onSave }) {
+  const { showError } = useDialog();
   const [selectedImage, setSelectedImage] = useState(currentImage);
   const [previewUrl, setPreviewUrl] = useState(currentImage);
   const [loading, setLoading] = useState(false);
@@ -90,13 +92,13 @@ export default function ChangeImage({ onClose, currentImage, onSave }) {
     if (file) {
       // בדיקה שזה קובץ תמונה
       if (!file.type.startsWith('image/')) {
-        alert('אנא בחר קובץ תמונה בלבד');
+        showError('אנא בחר קובץ תמונה בלבד');
         return;
       }
 
       // בדיקת גודל הקובץ (מקסימום 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert('התמונה גדולה מדי. אנא בחר תמונה עד 5MB');
+        showError('התמונה גדולה מדי. אנא בחר תמונה עד 5MB');
         return;
       }
 

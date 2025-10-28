@@ -35,7 +35,6 @@ class LangGraphService {
       model: process.env.OLLAMA_MODEL || 'llama3.2',
       temperature: parseFloat(process.env.AI_TEMPERATURE) || 0.7,
     });
-    console.log(`Using Ollama model: ${process.env.OLLAMA_MODEL || 'llama3.2'}`);
 
     this.graph = this.buildGraph();
   }
@@ -96,7 +95,6 @@ class LangGraphService {
         }
       };
     } catch (error) {
-      console.error('Error in analyzeTopic:', error);
       return {
         ...state,
         error: `Topic analysis failed: ${error.message}`,

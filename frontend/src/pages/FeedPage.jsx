@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useDialog } from '../contexts/DialogContext';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import SearchBar from '../components/layout/SearchBar';
@@ -9,6 +10,7 @@ import { getAvatar } from '../utils/helpers';
 import './FeedPage.css';
 
 export default function FeedPage({ user, currentPage, onNavigate, onLogout }) {
+  const { showError } = useDialog();
   const [posts, setPosts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedChatUser, setSelectedChatUser] = useState(null);
@@ -178,7 +180,7 @@ export default function FeedPage({ user, currentPage, onNavigate, onLogout }) {
       }
     } catch (err) {
       console.error('Error adding comment:', err);
-      alert('Failed to add comment. Please try again.');
+      showError('Failed to add comment. Please try again.');
     }
   };
 
@@ -301,6 +303,14 @@ export default function FeedPage({ user, currentPage, onNavigate, onLogout }) {
                       <div className="post-content">
                         <p>{post.content}</p>
                         {post.image && <img src={post.image} alt="Post" className="post-image" />}
+                        {post.video && (
+                          <video controls className="post-video">
+                            <source src={post.video} type="video/mp4" />
+                            <source src={post.video} type="video/webm" />
+                            <source src={post.video} type="video/ogg" />
+                            Your browser doesn't support the video tag.
+                          </video>
+                        )}
                       </div>
                       <div className="post-actions">
                         <button

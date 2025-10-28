@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useDialog } from '../../contexts/DialogContext';
 import './NewPost.css';
 import { getAvatar } from '../../utils/helpers';
 import ApiService from '../../services/api';
 import AIPostModal from './AIPostModal';
 
 function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onPostUpdated = null, onCancelEdit = null, groupId = null, myGroups = [] }) {
+  const { showError } = useDialog();
   const [postContent, setPostContent] = useState(editMode && postToEdit ? postToEdit.content : '');
   const [imageUrl, setImageUrl] = useState(editMode && postToEdit ? postToEdit.image || '' : '');
   const [videoUrl, setVideoUrl] = useState('');
@@ -35,6 +37,11 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
       // Only include image field if there's an actual image URL
       if (imageUrl) {
         postData.image = imageUrl;
+      }
+
+      // Only include video field if there's an actual video URL
+      if (videoUrl) {
+        postData.video = videoUrl;
       }
 
       // Include groupId if selected
@@ -99,22 +106,29 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
     if (file) {
       // Check if it's an image file
       if (!file.type.startsWith('image/')) {
-        alert('Please select an image file only (JPG, PNG, GIF, etc.)');
+        showError('Please select an image file only (JPG, PNG, GIF, etc.)');
         return;
       }
 
       // Check file size (max 10MB for image)
       if (file.size > 10 * 1024 * 1024) {
-        alert('Image file is too large. Please select an image up to 10MB');
+        showError('Image file is too large. Please select an image up to 10MB');
         return;
       }
 
-      // Create local URL for preview
-      const imageURL = URL.createObjectURL(file);
-      setImageUrl(imageURL);
-      setVideoUrl(''); // Clear video if image is selected
-      setMediaType('image');
-      setShowMediaInput(false);
+      // Convert to base64 for backend
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result;
+        setImageUrl(base64String);
+        setVideoUrl(''); // Clear video if image is selected
+        setMediaType('image');
+        setShowMediaInput(false);
+      };
+      reader.onerror = () => {
+        showError('Failed to read image file');
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -128,40 +142,39 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
     if (file) {
       // Check if it's a video file
       if (!file.type.startsWith('video/')) {
-        alert('Please select a video file only (MP4, WebM, etc.)');
+        showError('Please select a video file only (MP4, WebM, etc.)');
         return;
       }
 
       // Check file size (max 50MB for video)
       if (file.size > 50 * 1024 * 1024) {
-        alert('Video file is too large. Please select a video up to 50MB');
+        showError('Video file is too large. Please select a video up to 50MB');
         return;
       }
 
-      // Create local URL for preview
-      const videoURL = URL.createObjectURL(file);
-      setVideoUrl(videoURL);
-      setImageUrl(''); // Clear image if video is selected
-      setMediaType('video');
-      setShowMediaInput(false);
+      // Convert to base64 for backend
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result;
+        setVideoUrl(base64String);
+        setImageUrl(''); // Clear image if video is selected
+        setMediaType('video');
+        setShowMediaInput(false);
+      };
+      reader.onerror = () => {
+        showError('Failed to read video file');
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const handleRemoveMedia = () => {
-    // Revoke object URLs to prevent memory leaks
-    if (videoUrl && videoUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(videoUrl);
-    }
-    if (imageUrl && imageUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(imageUrl);
-    }
-    
     // Reset file inputs
     const imageInput = document.getElementById('image-file-input');
     const videoInput = document.getElementById('video-file-input');
     if (imageInput) imageInput.value = '';
     if (videoInput) videoInput.value = '';
-    
+
     setImageUrl('');
     setVideoUrl('');
     setShowMediaInput(false);
@@ -217,6 +230,10 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
 
       if (imageUrl) {
         postData.image = imageUrl;
+      }
+
+      if (videoUrl) {
+        postData.video = videoUrl;
       }
 
       // Include groupId if selected

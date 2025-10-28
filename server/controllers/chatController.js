@@ -6,7 +6,7 @@ export const getConversation = async (req, res) => {
     const { userId, targetUserId } = req.params;
 
     if (req.user.id !== userId) {
-      return res.status(403).json({ message: 'אין הרשאה לצפות בשיחה זו' });
+      return res.status(403).json({ message: 'Unauthorized to view this conversation' });
     }
 
     const conversationId = Message.getConversationId(userId, targetUserId);
@@ -29,10 +29,9 @@ export const getConversation = async (req, res) => {
       }))
     });
   } catch (error) {
-    console.error('Error fetching conversation:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'שגיאה בטעינת השיחה' 
+      message: 'Error loading conversation'
     });
   }
 };
@@ -107,10 +106,9 @@ export const getUserConversations = async (req, res) => {
       conversations
     });
   } catch (error) {
-    console.error('Error fetching conversations:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'שגיאה בטעינת השיחות' 
+      message: 'Error loading conversations'
     });
   }
 };
@@ -133,13 +131,12 @@ export const markAsRead = async (req, res) => {
 
     res.json({
       success: true,
-      message: 'ההודעות סומנו כנקראו'
+      message: 'Messages marked as read'
     });
   } catch (error) {
-    console.error('Error marking as read:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'שגיאה בעדכון סטטוס ההודעות' 
+      message: 'Error updating message status'
     });
   }
 };
@@ -152,16 +149,16 @@ export const deleteConversation = async (req, res) => {
     const message = await Message.findOne({ conversationId });
     
     if (!message) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         success: false,
-        message: 'השיחה לא נמצאה' 
+        message: 'Conversation not found'
       });
     }
 
     if (message.senderId.toString() !== userId && message.receiverId.toString() !== userId) {
-      return res.status(403).json({ 
+      return res.status(403).json({
         success: false,
-        message: 'אין הרשאה למחוק שיחה זו' 
+        message: 'Unauthorized to delete this conversation'
       });
     }
 
@@ -169,13 +166,12 @@ export const deleteConversation = async (req, res) => {
 
     res.json({
       success: true,
-      message: 'השיחה נמחקה בהצלחה'
+      message: 'Conversation deleted successfully'
     });
   } catch (error) {
-    console.error('Error deleting conversation:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'שגיאה במחיקת השיחה' 
+      message: 'Error deleting conversation'
     });
   }
 };

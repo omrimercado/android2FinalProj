@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDialog } from '../../contexts/DialogContext';
 import './Register.css';
 import ApiService from '../../services/api';
 import PreferencesSetup from '../user/PreferencesSetup';
 
 function Register({ onClose, onSwitchToLogin }) {
   const navigate = useNavigate();
+  const { showSuccess } = useDialog();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -88,10 +90,6 @@ function Register({ onClose, onSwitchToLogin }) {
     }
   };
 
-  const handleGoogleSignUp = () => {
-    // TODO: Implement Google sign up
-    console.log('Google Sign Up');
-  };
 
   const handlePreferencesComplete = async (updatedUser) => {
     console.log('✅ Preferences completed!', updatedUser);
@@ -110,14 +108,14 @@ function Register({ onClose, onSwitchToLogin }) {
       // Continue anyway - preferences are already saved in localStorage
     }
     
-    alert('נרשמת בהצלחה! 🎉');
+    showSuccess('נרשמת בהצלחה! 🎉', 'ברוכים הבאים');
     onClose();
     window.location.href = '/feed';
   };
 
   const handlePreferencesSkip = () => {
     console.log('⏭️ Preferences skipped');
-    alert('נרשמת בהצלחה!');
+    showSuccess('נרשמת בהצלחה!', 'ברוכים הבאים');
     onClose();
     window.location.href = '/feed';
   };
@@ -204,15 +202,6 @@ function Register({ onClose, onSwitchToLogin }) {
             {loading ? 'נרשם...' : 'SIGN UP'}
           </button>
         </form>
-
-        <div className="divider">
-          <span className="divider-line"></span>
-        </div>
-
-        <button className="google-button" onClick={handleGoogleSignUp}>
-          <span className="google-icon">G</span>
-          SIGN UP WITH GOOGLE
-        </button>
 
         <div className="login-link">
           Already have an account? 

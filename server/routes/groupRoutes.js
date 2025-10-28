@@ -31,7 +31,6 @@ router.get('/admin/requests', getAdminGroupsWithRequests);
 router.post('/:groupId/requests/:userId/approve', approveJoinRequest);
 router.delete('/:groupId/requests/:userId/reject', rejectJoinRequest);
 
-// Admin-only endpoints
 router.put('/:groupId', validateGroupUpdate, updateGroup);
 router.delete('/:groupId', deleteGroup);
 router.get('/:groupId/members', getGroupMembers);
