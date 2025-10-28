@@ -67,17 +67,14 @@ export const validateLogin = [
   },
 ];
 
-// Helper function to validate base64 media
 const validateBase64Media = (value, mediaType) => {
-  if (!value) return true; // Optional field
+  if (!value) return true;
 
-  // Check if it's a base64 string
   const base64Regex = /^data:(image|video)\/(jpeg|jpg|png|gif|webp|mp4|webm|ogg);base64,/;
   if (!base64Regex.test(value)) {
     throw new Error(`${mediaType} must be a valid base64 encoded string`);
   }
 
-  // Extract the MIME type
   const mimeMatch = value.match(/^data:(image|video)\/(jpeg|jpg|png|gif|webp|mp4|webm|ogg)/);
   if (!mimeMatch) {
     throw new Error(`${mediaType} has invalid MIME type`);
@@ -85,17 +82,14 @@ const validateBase64Media = (value, mediaType) => {
 
   const [, type, format] = mimeMatch;
 
-  // Validate image formats
   if (mediaType === 'Image' && type !== 'image') {
     throw new Error('Image field must contain an image file');
   }
 
-  // Validate video formats
   if (mediaType === 'Video' && type !== 'video') {
     throw new Error('Video field must contain a video file');
   }
 
-  // Check file size (base64 is ~33% larger than original)
   const base64Data = value.split(',')[1];
   const sizeInBytes = (base64Data.length * 3) / 4;
   const sizeInMB = sizeInBytes / (1024 * 1024);
@@ -137,7 +131,6 @@ export const validatePost = [
       });
     }
 
-    // Ensure only one media type is provided
     if (req.body.image && req.body.video) {
       return res.status(400).json({
         success: false,
@@ -206,7 +199,6 @@ export const validatePostUpdate = [
       });
     }
 
-    // Ensure only one media type is provided
     if (req.body.image && req.body.video) {
       return res.status(400).json({
         success: false,

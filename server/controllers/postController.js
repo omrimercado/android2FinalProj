@@ -26,7 +26,6 @@ export const createPost = async (req, res, next) => {
       }
     }
 
-    // Determine media type
     let mediaType = null;
     if (image) mediaType = 'image';
     if (video) mediaType = 'video';
@@ -258,15 +257,14 @@ export const updatePost = async (req, res, next) => {
       post.content = content;
     }
 
-    // Update media fields
     if (image !== undefined) {
       post.image = image;
-      post.video = null; // Clear video if image is set
+      post.video = null;
       post.mediaType = image ? 'image' : null;
     }
     if (video !== undefined) {
       post.video = video;
-      post.image = null; // Clear image if video is set
+      post.image = null;
       post.mediaType = video ? 'video' : null;
     }
 
