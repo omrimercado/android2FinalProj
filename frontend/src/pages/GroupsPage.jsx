@@ -725,6 +725,7 @@ function EditGroupModal({ group, onClose, onUpdate }) {
 
 // Manage Group Members Modal Component
 function ManageGroupMembersModal({ group, onClose, onMemberRemoved }) {
+  const { showConfirm } = useDialog();
   const [members, setMembers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
