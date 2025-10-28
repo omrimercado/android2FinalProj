@@ -82,10 +82,6 @@ function SearchBar({
           </div>
         )}
 
-        <button type="submit" className="search-button">
-          Search
-        </button>
-
         {showAdvancedSearch && (
           <button
             type="button"
