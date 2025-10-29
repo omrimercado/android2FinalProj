@@ -17,11 +17,15 @@ export default function AdvancedPostSearch({ onSearch, onClose }) {
   const fetchMyGroups = async () => {
     try {
       const result = await ApiService.getMyGroups();
-      if (result.success) {
-        setMyGroups(result.data || []);
+      
+      if (result.success && result.data && Array.isArray(result.data.groups)) {
+        setMyGroups(result.data.groups);
+      } else {
+        setMyGroups([]);
       }
     } catch (error) {
       console.error('Error fetching groups:', error);
+      setMyGroups([]);
     }
   };
 
@@ -106,8 +110,8 @@ export default function AdvancedPostSearch({ onSearch, onClose }) {
             >
               <option value="">Choose a group...</option>
               {myGroups.map(group => (
-                <option key={group.group_id || group.id} value={group.group_id || group.id}>
-                  {group.group_name || group.name}
+                <option key={group._id || group.id} value={group._id || group.id}>
+                  {group.name}
                 </option>
               ))}
             </select>

@@ -84,9 +84,14 @@ class GroupsApi {
         throw new Error(data.message || 'Failed to fetch my groups');
       }
       
+      // Handle nested data structure from server
+      const groups = data.data?.groups || data.groups || data.data || [];
+      
       return {
         success: true,
-        data: data.groups || data.data || [],
+        data: {
+          groups: Array.isArray(groups) ? groups : []
+        },
         message: data.message || 'Groups fetched successfully'
       };
     } catch (error) {
@@ -125,9 +130,14 @@ class GroupsApi {
         throw new Error(data.message || 'Failed to fetch suggested groups');
       }
       
+      // Handle nested data structure from server
+      const groups = data.data?.groups || data.groups || data.data || [];
+      
       return {
         success: true,
-        data: data.groups || data.data || [],
+        data: {
+          groups: Array.isArray(groups) ? groups : []
+        },
         message: data.message || 'Suggested groups fetched successfully'
       };
     } catch (error) {

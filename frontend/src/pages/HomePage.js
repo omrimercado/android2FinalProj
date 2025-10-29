@@ -20,10 +20,7 @@ function HomePage({ onLoginSuccess }) {
     setShowLogin(true);
   };
 
-  const handleSearch = (searchTerm, filterType) => {
-    console.log('Search:', searchTerm, filterType);
-    // TODO: Implement search logic
-  };
+  
 
   return (
     <div className="homepage">
@@ -35,7 +32,7 @@ function HomePage({ onLoginSuccess }) {
         <div className="hero-section">
           <div className="logo-container">
             <div className="hero-logo">~</div>
-            <h1 className="hero-title">Welcome to MyApp</h1>
+            <h1 className="hero-title">Welcome to Stay Tuned</h1>
           </div>
           
           <p className="hero-subtitle">

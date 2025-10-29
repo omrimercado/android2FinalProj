@@ -7,6 +7,29 @@ export const createPost = async (req, res, next) => {
     const { content, image, video, groupId } = req.body;
     const userId = req.user._id;
 
+    // Validate media size before processing
+    // MongoDB has a 16MB document size limit, so we need to be conservative
+    const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB for base64 encoded image
+    const MAX_VIDEO_SIZE = 8 * 1024 * 1024; // 8MB for base64 encoded video
+
+    if (image && image.length > MAX_IMAGE_SIZE) {
+      const sizeMB = (image.length / (1024 * 1024)).toFixed(2);
+      return res.status(413).json({
+        success: false,
+        message: 'Image file is too large',
+        error: `Image size (${sizeMB}MB) exceeds maximum allowed size (${MAX_IMAGE_SIZE / (1024 * 1024)}MB). Please upload a smaller image.`,
+      });
+    }
+
+    if (video && video.length > MAX_VIDEO_SIZE) {
+      const sizeMB = (video.length / (1024 * 1024)).toFixed(2);
+      return res.status(413).json({
+        success: false,
+        message: 'Video file is too large',
+        error: `Video size (${sizeMB}MB) exceeds maximum allowed size (${MAX_VIDEO_SIZE / (1024 * 1024)}MB). Please upload a smaller video.`,
+      });
+    }
+
     if (groupId) {
       const group = await Group.findById(groupId);
       if (!group) {
@@ -234,6 +257,29 @@ export const updatePost = async (req, res, next) => {
     const { postId } = req.params;
     const { content, image, video } = req.body;
     const userId = req.user._id;
+
+    // Validate media size before processing
+    // MongoDB has a 16MB document size limit, so we need to be conservative
+    const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB for base64 encoded image
+    const MAX_VIDEO_SIZE = 8 * 1024 * 1024; // 8MB for base64 encoded video
+
+    if (image && image.length > MAX_IMAGE_SIZE) {
+      const sizeMB = (image.length / (1024 * 1024)).toFixed(2);
+      return res.status(413).json({
+        success: false,
+        message: 'Image file is too large',
+        error: `Image size (${sizeMB}MB) exceeds maximum allowed size (${MAX_IMAGE_SIZE / (1024 * 1024)}MB). Please upload a smaller image.`,
+      });
+    }
+
+    if (video && video.length > MAX_VIDEO_SIZE) {
+      const sizeMB = (video.length / (1024 * 1024)).toFixed(2);
+      return res.status(413).json({
+        success: false,
+        message: 'Video file is too large',
+        error: `Video size (${sizeMB}MB) exceeds maximum allowed size (${MAX_VIDEO_SIZE / (1024 * 1024)}MB). Please upload a smaller video.`,
+      });
+    }
 
     const post = await Post.findById(postId);
 

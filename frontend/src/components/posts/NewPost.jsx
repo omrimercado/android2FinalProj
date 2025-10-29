@@ -106,13 +106,17 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
     if (file) {
       // Check if it's an image file
       if (!file.type.startsWith('image/')) {
-        showError('Please select an image file only (JPG, PNG, GIF, etc.)');
+        showError('אנא בחר קובץ תמונה בלבד (JPG, PNG, GIF, וכו\')');
         return;
       }
 
-      // Check file size (max 10MB for image)
-      if (file.size > 10 * 1024 * 1024) {
-        showError('Image file is too large. Please select an image up to 10MB');
+      // Check file size (max 3MB for image due to base64 encoding and MongoDB 16MB limit)
+      const maxSizeMB = 3;
+      const maxSizeBytes = maxSizeMB * 1024 * 1024;
+      
+      if (file.size > maxSizeBytes) {
+        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        showError(`קובץ התמונה גדול מדי (${fileSizeMB}MB). אנא בחר תמונה עד ${maxSizeMB}MB`);
         return;
       }
 
@@ -120,13 +124,23 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result;
+        
+        // Additional check for base64 string size (MongoDB has 16MB document limit)
+        const base64SizeMB = (base64String.length / (1024 * 1024)).toFixed(2);
+        if (base64String.length > 5 * 1024 * 1024) {
+          showError(`הקובץ המקודד גדול מדי (${base64SizeMB}MB). אנא בחר תמונה קטנה יותר או דחוס אותה`);
+          // Reset file input
+          event.target.value = '';
+          return;
+        }
+        
         setImageUrl(base64String);
         setVideoUrl(''); // Clear video if image is selected
         setMediaType('image');
         setShowMediaInput(false);
       };
       reader.onerror = () => {
-        showError('Failed to read image file');
+        showError('כשלון בקריאת קובץ התמונה');
       };
       reader.readAsDataURL(file);
     }
@@ -142,13 +156,18 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
     if (file) {
       // Check if it's a video file
       if (!file.type.startsWith('video/')) {
-        showError('Please select a video file only (MP4, WebM, etc.)');
+        showError('אנא בחר קובץ וידאו בלבד (MP4, WebM, וכו\')');
         return;
       }
 
-      // Check file size (max 50MB for video)
-      if (file.size > 50 * 1024 * 1024) {
-        showError('Video file is too large. Please select a video up to 50MB');
+      // Check file size (max 6MB for video due to base64 encoding and MongoDB 16MB limit)
+      // Base64 encoding increases size by ~33%, so 6MB file becomes ~8MB
+      const maxSizeMB = 6;
+      const maxSizeBytes = maxSizeMB * 1024 * 1024;
+      
+      if (file.size > maxSizeBytes) {
+        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        showError(`קובץ הוידאו גדול מדי (${fileSizeMB}MB). אנא בחר וידאו עד ${maxSizeMB}MB או דחוס אותו`);
         return;
       }
 
@@ -156,13 +175,23 @@ function NewPost({ user, onPostCreated, editMode = false, postToEdit = null, onP
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result;
+        
+        // Additional check for base64 string size (MongoDB has 16MB document limit)
+        const base64SizeMB = (base64String.length / (1024 * 1024)).toFixed(2);
+        if (base64String.length > 8 * 1024 * 1024) {
+          showError(`הקובץ המקודד גדול מדי (${base64SizeMB}MB). אנא בחר וידאו קטן יותר או דחוס אותו`);
+          // Reset file input
+          event.target.value = '';
+          return;
+        }
+        
         setVideoUrl(base64String);
         setImageUrl(''); // Clear image if video is selected
         setMediaType('video');
         setShowMediaInput(false);
       };
       reader.onerror = () => {
-        showError('Failed to read video file');
+        showError('כשלון בקריאת קובץ הוידאו');
       };
       reader.readAsDataURL(file);
     }

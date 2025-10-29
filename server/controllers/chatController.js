@@ -1,5 +1,6 @@
 import Message from '../models/Message.js';
 import { User } from '../models/User.js';
+import mongoose from 'mongoose';
 
 export const getConversation = async (req, res) => {
   try {
@@ -38,14 +39,17 @@ export const getConversation = async (req, res) => {
 
 export const getUserConversations = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user._id || req.user.id;
+    const userIdObj = new mongoose.Types.ObjectId(userId);
+    
+    console.log('📊 getUserConversations - userId:', userId);
 
     const messages = await Message.aggregate([
       {
         $match: {
           $or: [
-            { senderId: userId },
-            { receiverId: userId }
+            { senderId: userIdObj },
+            { receiverId: userIdObj }
           ]
         }
       },
@@ -61,7 +65,7 @@ export const getUserConversations = async (req, res) => {
               $cond: [
                 { 
                   $and: [
-                    { $eq: ['$receiverId', userId] },
+                    { $eq: ['$receiverId', userIdObj] },
                     { $eq: ['$isRead', false] }
                   ]
                 },
@@ -73,6 +77,8 @@ export const getUserConversations = async (req, res) => {
         }
       }
     ]);
+    
+    console.log('📊 Found conversations:', messages.length);
 
     const conversations = await Promise.all(
       messages.map(async (conv) => {
@@ -82,6 +88,11 @@ export const getUserConversations = async (req, res) => {
           : msg.senderId;
         
         const otherUser = await User.findById(otherUserId).select('name email avatar');
+        
+        if (!otherUser) {
+          console.warn('⚠️ Other user not found:', otherUserId);
+          return null;
+        }
         
         return {
           conversationId: conv._id,
@@ -101,14 +112,21 @@ export const getUserConversations = async (req, res) => {
       })
     );
 
+    // Filter out null values
+    const validConversations = conversations.filter(conv => conv !== null);
+    
+    console.log('✅ Returning conversations:', validConversations.length);
+
     res.json({
       success: true,
-      conversations
+      conversations: validConversations
     });
   } catch (error) {
+    console.error('❌ Error in getUserConversations:', error);
     res.status(500).json({
       success: false,
-      message: 'Error loading conversations'
+      message: 'Error loading conversations',
+      error: error.message
     });
   }
 };

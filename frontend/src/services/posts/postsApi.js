@@ -55,38 +55,81 @@ class PostsApi {
       const token = localStorage.getItem('token');
 
       if (!token) {
-        throw new Error('No token found. Please login again.');
+        throw new Error('אנא התחבר מחדש למערכת');
       }
 
       console.log('Request Method:', 'POST');
-      console.log('Post Data:', postData);
+      console.log('Post Data size:', JSON.stringify(postData).length, 'bytes');
 
-      const response = await fetch(`${API_BASE_URL}/posts`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(postData)
-      });
+      let response;
+      try {
+        response = await fetch(`${API_BASE_URL}/posts`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(postData)
+        });
+      } catch (fetchError) {
+        console.error('Fetch error:', fetchError);
+        throw new Error('בעיית תקשורת עם השרת. ייתכן שהפוסט גדול מדי');
+      }
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        console.error('Parse error:', parseError);
+        throw new Error('התגובה מהשרת אינה תקינה');
+      }
 
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to create post');
+        // Handle specific error cases
+        if (response.status === 413) {
+          throw new Error('הפוסט גדול מדי. אנא הקטן את גודל המדיה');
+        } else if (response.status === 400) {
+          throw new Error(data.message || 'נתונים לא תקינים. אנא בדוק את התוכן');
+        } else if (response.status === 500) {
+          // Check for specific server errors
+          if (data.message && data.message.includes('offset')) {
+            throw new Error('קובץ המדיה גדול מדי. MongoDB מגביל מסמכים ל-16MB. אנא בחר קובץ קטן יותר (תמונה: עד 3MB, וידאו: עד 6MB)');
+          }
+          throw new Error(data.message || 'שגיאת שרת. אנא נסה שנית');
+        }
+        throw new Error(data.message || 'כשלון ביצירת הפוסט');
       }
 
       return {
         success: true,
         data: data.data || data,
-        message: data.message || 'Post created successfully'
+        message: data.message || 'הפוסט נוצר בהצלחה'
       };
     } catch (error) {
       console.error('Error:', error);
+      
+      // If it's already a formatted error message, use it
+      if (error.message && error.message.includes('אנא') || error.message.includes('בעיית')) {
+        return {
+          success: false,
+          error: error.message,
+          message: error.message
+        };
+      }
+      
+      // Handle specific error patterns
+      if (error.message.includes('offset')) {
+        return {
+          success: false,
+          error: error.message,
+          message: 'קובץ המדיה גדול מדי. MongoDB מגביל מסמכים ל-16MB. אנא בחר קובץ קטן יותר (תמונה: עד 3MB, וידאו: עד 6MB)'
+        };
+      }
+      
       return {
         success: false,
         error: error.message,
-        message: 'Failed to create post'
+        message: 'כשלון ביצירת הפוסט. אנא נסה שנית'
       };
     }
   }

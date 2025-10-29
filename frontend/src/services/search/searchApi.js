@@ -58,18 +58,36 @@ class SearchApi {
       console.log('Search Params:', searchParams);
       console.log('Translated Params:', params.toString());
 
-      const response = await fetch(endpoint, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      let response;
+      try {
+        response = await fetch(endpoint, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      } catch (fetchError) {
+        throw new Error('בעיית תקשורת עם השרת. אנא בדוק את החיבור לאינטרנט');
+      }
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        throw new Error('התגובה מהשרת אינה תקינה');
+      }
 
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to search posts');
+        // Handle specific HTTP status codes
+        if (response.status === 401) {
+          throw new Error('אין הרשאה. אנא התחבר מחדש');
+        } else if (response.status === 404) {
+          throw new Error('לא נמצאו פוסטים התואמים את החיפוש');
+        } else if (response.status === 500) {
+          throw new Error('שגיאת שרת. אנא נסה שנית מאוחר יותר');
+        }
+        throw new Error(data.message || 'שגיאה בחיפוש פוסטים');
       }
 
       // Backend returns data.data.results, handle both formats
@@ -87,10 +105,12 @@ class SearchApi {
       };
     } catch (error) {
       console.error('Error:', error);
+      
+      // Error message is already formatted from above
       return {
         success: false,
         error: error.message,
-        message: 'Failed to search posts'
+        message: error.message || 'שגיאה בחיפוש פוסטים'
       };
     }
   }
@@ -103,9 +123,6 @@ class SearchApi {
    * @param {string} searchParams.size - Group size filter ('small', 'medium', 'large', 'huge')
    */
   static async searchGroups(searchParams) {
-    console.log('SearchApi.searchGroups() - Start');
-    console.log('Endpoint:', `${API_BASE_URL}/search/groups`);
-
     try {
       const token = localStorage.getItem('token');
 
@@ -137,22 +154,36 @@ class SearchApi {
 
       const endpoint = `${API_BASE_URL}/search/groups?${params.toString()}`;
 
-      console.log('Request Method:', 'GET');
-      console.log('Search Params:', searchParams);
-      console.log('Translated Params:', params.toString());
+      let response;
+      try {
+        response = await fetch(endpoint, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      } catch (fetchError) {
+        throw new Error('בעיית תקשורת עם השרת. אנא בדוק את החיבור לאינטרנט');
+      }
 
-      const response = await fetch(endpoint, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        throw new Error('התגובה מהשרת אינה תקינה');
+      }
 
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to search groups');
+        // Handle specific HTTP status codes
+        if (response.status === 401) {
+          throw new Error('אין הרשאה. אנא התחבר מחדש');
+        } else if (response.status === 404) {
+          throw new Error('לא נמצאו קבוצות התואמות את החיפוש');
+        } else if (response.status === 500) {
+          throw new Error('שגיאת שרת. אנא נסה שנית מאוחר יותר');
+        }
+        throw new Error(data.message || 'שגיאה בחיפוש קבוצות');
       }
 
       // Backend returns data.data.results, handle both formats
@@ -170,10 +201,12 @@ class SearchApi {
       };
     } catch (error) {
       console.error('Error:', error);
+      
+      // Error message is already formatted from above
       return {
         success: false,
         error: error.message,
-        message: 'Failed to search groups'
+        message: error.message || 'שגיאה בחיפוש קבוצות'
       };
     }
   }

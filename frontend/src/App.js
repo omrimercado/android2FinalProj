@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage';
 import FeedPage from './pages/FeedPage';
 import MyProfilePage from './pages/MyProfilePage';
 import GroupsPage from './pages/GroupsPage';
+import MessagesPage from './pages/MessagesPage';
 import StatisticsPage from './pages/StatisticsPage';
 import useInactivityTimeout from './hooks/useInactivityTimeout';
 import './App.css';
@@ -131,6 +132,21 @@ function App() {
                 <GroupsPage 
                   user={user} 
                   currentPage="groups"
+                  onNavigate={() => {}}
+                  onLogout={handleLogout}
+                />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            } 
+          />
+          <Route 
+            path="/messages" 
+            element={
+              isLoggedIn ? (
+                <MessagesPage 
+                  user={user} 
+                  currentPage="messages"
                   onNavigate={() => {}}
                   onLogout={handleLogout}
                 />

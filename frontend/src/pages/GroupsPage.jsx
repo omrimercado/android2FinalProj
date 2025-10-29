@@ -114,6 +114,7 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
       setLoading(true);
       try {
         const result = await ApiService.searchGroups(searchParams);
+        
         if (result.success) {
           const groups = result.data || [];
           
@@ -132,8 +133,6 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
           // Show results in suggested groups section
           setSuggestedGroups(formattedGroups);
           setSearchTerm(''); // Clear simple search term
-        } else {
-          console.error('Failed to search groups:', result.message);
         }
       } catch (error) {
         console.error('Error searching groups:', error);

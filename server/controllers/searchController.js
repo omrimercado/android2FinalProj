@@ -72,27 +72,44 @@ export const searchGroups = async (req, res, next) => {
     const { q, page = 1, limit = 10, tags } = req.query;
     const userId = req.user._id;
 
-    if (!q || q.trim().length === 0) {
+    // At least one search criterion is required (q or tags)
+    if ((!q || q.trim().length === 0) && !tags) {
       return res.status(400).json({
         success: false,
-        message: 'Search query is required',
-        error: 'Please provide a search term',
+        message: 'Search query or tags are required',
+        error: 'Please provide a search term or select a category',
       });
     }
 
-    const searchTerm = q.trim();
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const maxLimit = Math.min(parseInt(limit), 50);
 
+    // Build search query
+    const searchConditions = [];
+    
+    // Add text search if q is provided
+    if (q && q.trim().length > 0) {
+      const searchTerm = q.trim();
+      searchConditions.push({
+        $or: [
+          { name: { $regex: searchTerm, $options: 'i' } },
+          { description: { $regex: searchTerm, $options: 'i' } },
+          { tags: { $in: [new RegExp(searchTerm, 'i')] } },
+        ],
+      });
+    }
+    
+    // Add tags filter if provided
+    if (tags) {
+      const tagArray = tags.split(',').map((tag) => tag.trim());
+      searchConditions.push({
+        tags: { $in: tagArray },
+      });
+    }
+
     const searchQuery = {
       $and: [
-        {
-          $or: [
-            { name: { $regex: searchTerm, $options: 'i' } },
-            { description: { $regex: searchTerm, $options: 'i' } },
-            { tags: { $in: [new RegExp(searchTerm, 'i')] } },
-          ],
-        },
+        ...searchConditions,
         {
           $or: [
             { isPrivate: false },
@@ -101,13 +118,6 @@ export const searchGroups = async (req, res, next) => {
         },
       ],
     };
-
-    if (tags) {
-      const tagArray = tags.split(',').map((tag) => tag.trim());
-      searchQuery.$and.push({
-        tags: { $in: tagArray },
-      });
-    }
 
     const totalResults = await Group.countDocuments(searchQuery);
 

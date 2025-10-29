@@ -45,7 +45,7 @@ class ChatApi {
 
       return {
         success: true,
-        data: data.conversations || data.data || [],
+        data: data.conversations || [],
         message: data.message || 'Conversations fetched successfully'
       };
     } catch (error) {

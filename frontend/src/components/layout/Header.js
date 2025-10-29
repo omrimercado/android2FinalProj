@@ -19,6 +19,8 @@ function Header({ currentPage, onNavigate, onLogout, isLoggedIn = false, user = 
       navigate('/profile');
     } else if (page === 'groups') {
       navigate('/groups');
+    } else if (page === 'messages') {
+      navigate('/messages');
     } else if (page === 'statistics') {
       navigate('/statistics');
     }
@@ -33,7 +35,7 @@ function Header({ currentPage, onNavigate, onLogout, isLoggedIn = false, user = 
         {/* Logo */}
         <div className="header-logo">
           <div className="logo-icon">~</div>
-          <span className="logo-text">MyApp</span>
+          <span className="logo-text">Stay Tuned</span>
         </div>
         
         {/* Navigation Menu - Only show when logged in */}
@@ -52,6 +54,13 @@ function Header({ currentPage, onNavigate, onLogout, isLoggedIn = false, user = 
                 onClick={() => handleNavigate('groups')}
               >
                 Groups
+              </button>
+              
+              <button 
+                className={`nav-link ${currentPage === 'messages' ? 'active' : ''}`}
+                onClick={() => handleNavigate('messages')}
+              >
+                💬 Messages
               </button>
               
               <button 

@@ -29,6 +29,180 @@ A modern full-stack social platform with React frontend and Node.js/Express/Mong
 - **Form Validation** - Client-side and server-side validation
 - **Docker Support** - Full Docker containerization for all services
 
+## 🏗️ System Architecture
+
+**Stay Tuned** follows a modern microservices architecture with containerized components working together seamlessly.
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                         CLIENT LAYER                                 │
+│  ┌──────────────────────────────────────────────────────────────┐  │
+│  │  Frontend (React) - Port 3000                                 │  │
+│  │  • React 18 with Hooks & Context API                          │  │
+│  │  • Modern UI/UX with CSS3 animations                          │  │
+│  │  • WebSocket client for real-time chat                        │  │
+│  │  • REST API client for data operations                        │  │
+│  └──────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────┘
+                                    ↕
+                        HTTP REST API / WebSocket
+                                    ↕
+┌─────────────────────────────────────────────────────────────────────┐
+│                      APPLICATION LAYER                               │
+│  ┌──────────────────────────────────────────────────────────────┐  │
+│  │  Backend (Node.js + Express) - Port 3001                      │  │
+│  │  • Express.js RESTful API                                     │  │
+│  │  • WebSocket server (ws) for real-time messaging              │  │
+│  │  • JWT authentication & authorization                         │  │
+│  │  • MVC architecture (Models, Controllers, Routes)             │  │
+│  │  • Middleware for validation & error handling                 │  │
+│  └──────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────┘
+                                    ↕
+                              Mongoose ODM
+                                    ↕
+┌─────────────────────────────────────────────────────────────────────┐
+│                         DATA LAYER                                   │
+│  ┌──────────────────────────────────────────────────────────────┐  │
+│  │  MongoDB - Port 27017                                         │  │
+│  │  • NoSQL document database                                    │  │
+│  │  • Collections: users, posts, groups, messages                │  │
+│  │  • Indexes for optimized queries                              │  │
+│  │  • Data persistence and replication                           │  │
+│  └──────────────────────────────────────────────────────────────┘  │
+│                                                                       │
+│  ┌──────────────────────────────────────────────────────────────┐  │
+│  │  Mongo Express - Port 8081                                    │  │
+│  │  • Web-based MongoDB admin interface                          │  │
+│  │  • Database visualization and management                      │  │
+│  │  • Query execution and data manipulation                      │  │
+│  └──────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────┘
+                                    ↕
+                          Ollama API Integration
+                                    ↕
+┌─────────────────────────────────────────────────────────────────────┐
+│                          AI LAYER                                    │
+│  ┌──────────────────────────────────────────────────────────────┐  │
+│  │  Ollama - Port 11434                                          │  │
+│  │  • Local LLM (Large Language Model) server                    │  │
+│  │  • AI-powered content generation                              │  │
+│  │  • Natural language processing                                │  │
+│  │  • Post suggestions and text enhancement                      │  │
+│  └──────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### 🔧 Service Components
+
+#### 1. **Frontend - React Application** 🎨
+- **Technology:** React 18, JavaScript ES6+, CSS3
+- **Port:** `3000`
+- **Purpose:** User interface and client-side logic
+- **Key Features:**
+  - Single Page Application (SPA) with React Router
+  - Real-time updates via WebSocket connection
+  - Responsive design for all devices
+  - State management with Context API and Hooks
+  - Service layer for API communication
+- **Docker Image:** `node:18-alpine`
+
+#### 2. **Backend - Node.js Server** 🚀
+- **Technology:** Node.js, Express.js, WebSocket (ws)
+- **Port:** `3001`
+- **Purpose:** Business logic, API endpoints, and real-time communication
+- **Key Features:**
+  - RESTful API with Express.js
+  - WebSocket server for real-time chat
+  - JWT-based authentication
+  - MVC architecture pattern
+  - Middleware for validation and error handling
+  - Integration with MongoDB and Ollama
+- **Docker Image:** `node:18-alpine`
+- **API Endpoints:**
+  - `/api/auth` - Authentication (login, register)
+  - `/api/posts` - Post management
+  - `/api/groups` - Group operations
+  - `/api/chat` - Chat and messaging
+  - `/api/search` - Advanced search
+  - `/api/ai` - AI-powered features
+  - `/api/statistics` - Analytics and stats
+
+#### 3. **MongoDB - Database** 💾
+- **Technology:** MongoDB 7.0 (NoSQL)
+- **Port:** `27017`
+- **Purpose:** Primary data storage
+- **Key Features:**
+  - Document-based storage
+  - Flexible schema design
+  - High performance and scalability
+  - Automatic indexing
+- **Collections:**
+  - `users` - User accounts and profiles
+  - `posts` - Social media posts
+  - `groups` - Community groups
+  - `messages` - Chat messages and history
+- **Docker Image:** `mongo:7.0`
+- **Data Persistence:** Volume mounted to `./data/mongodb`
+
+#### 4. **Mongo Express - Database Admin** 🗄️
+- **Technology:** Mongo Express (Node.js web app)
+- **Port:** `8081`
+- **Purpose:** Database management interface
+- **Key Features:**
+  - Visual database browser
+  - Execute queries directly
+  - View and edit documents
+  - Database statistics and monitoring
+  - User-friendly admin panel
+- **Docker Image:** `mongo-express:latest`
+- **Credentials:** 
+  - Username: `admin`
+  - Password: `pass` (change in production!)
+
+#### 5. **Ollama - AI/LLM Service** 🤖
+- **Technology:** Ollama (Local LLM server)
+- **Port:** `11434`
+- **Purpose:** AI-powered content generation and enhancement
+- **Key Features:**
+  - Local Large Language Model
+  - AI post generation and suggestions
+  - Content enhancement and refinement
+  - Natural language processing
+  - Privacy-focused (runs locally)
+- **Docker Image:** `ollama/ollama:latest`
+- **Models:** Configurable (llama2, mistral, etc.)
+- **Integration:** Backend connects via REST API
+
+### 🔄 Data Flow
+
+1. **User Action** → Frontend captures user interaction
+2. **API Request** → Frontend sends HTTP request to Backend
+3. **Authentication** → Backend validates JWT token
+4. **Business Logic** → Backend processes request (may call Ollama for AI features)
+5. **Database Operation** → Backend queries/updates MongoDB
+6. **Response** → Backend sends response to Frontend
+7. **UI Update** → Frontend updates interface
+8. **Real-time Sync** → WebSocket broadcasts updates to connected clients
+
+### 🔐 Security Architecture
+
+- **Authentication:** JWT tokens with secure signing
+- **Authorization:** Role-based access control
+- **Data Validation:** Client-side and server-side validation
+- **Password Security:** bcrypt hashing with salt
+- **CORS:** Configured for secure cross-origin requests
+- **Environment Variables:** Sensitive data stored securely
+- **Database Security:** MongoDB authentication enabled
+- **WebSocket Security:** Token-based connection authentication
+
+### 📡 Communication Protocols
+
+- **REST API:** JSON over HTTP/HTTPS
+- **WebSocket:** Real-time bidirectional communication
+- **MongoDB Protocol:** Mongoose ODM for data operations
+- **Ollama API:** HTTP REST API for AI features
+
 ## 📁 Project Structure
 
 ```
