@@ -4,7 +4,6 @@ import {
   login,
   verifyToken,
   logout,
-  forgotPassword,
   updatePreferences,
   updateAvatar,
 } from '../controllers/authController.js';
@@ -18,7 +17,6 @@ const router = express.Router();
 
 router.post('/register', validateRegister, register);
 router.post('/login', validateLogin, login);
-router.post('/forgot-password', forgotPassword);
 
 router.post('/verify-token', protect, verifyToken);
 router.post('/logout', protect, logout);

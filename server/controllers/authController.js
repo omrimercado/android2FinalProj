@@ -119,29 +119,6 @@ export const logout = async (req, res, next) => {
   }
 };
 
-export const forgotPassword = async (req, res, next) => {
-  try {
-    const { email } = req.body;
-
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'Failed to send reset email',
-        error: 'Email not found',
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: 'Password reset email sent',
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
 export const updatePreferences = async (req, res, next) => {
   try {
     const { interests } = req.body;
