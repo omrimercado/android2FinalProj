@@ -21,56 +21,55 @@ function Login({ onClose, onSwitchToRegister }) {
     setError('');
 
     try {
-      console.log('📤 שולח בקשת התחברות לשרת...');
-      console.log('🌐 URL:', 'http://localhost:3001/api/auth/login');
-      console.log('📦 Body:', JSON.stringify({ email, password: '***' }));
+      console.log('Sending login request to server...');
+      console.log('URL:', 'http://localhost:3001/api/auth/login');
+      console.log('Body:', JSON.stringify({ email, password: '***' }));
       
       // שליחת בקשת התחברות לשרת
       const response = await ApiService.login(email, password);
       
-      console.log('📥 תגובה מהשרת התקבלה:', response);
+      console.log('Response from server:', response);
 
       if (response.success) {
-        console.log('✅ התחברות הצליחה!');
-        console.log('📦 Response.data:', response.data);
-        console.log('🎫 Token:', response.data.token);
-        console.log('👤 User:', response.data.user);
+        console.log('Login successful!');
+        console.log('Response.data:', response.data);
+        console.log('Token:', response.data.token);
+        console.log('User:', response.data.user);
         
         // בדיקה שיש token
         if (!response.data.token) {
-          console.error('❌ אין token בתגובה!');
-          setError('שגיאה: לא התקבל token מהשרת');
+          console.error('No token in response!');
+          setError('Error: No token received from server');
           return;
         }
         
         // שמירת הטוקן ב-localStorage
         localStorage.setItem('token', response.data.token);
-        console.log('💾 Token נשמר ב-localStorage');
-        console.log('🔍 בדיקה: localStorage.getItem("token"):', localStorage.getItem('token'));
+        console.log('Token saved in localStorage');
+        console.log('Check: localStorage.getItem("token"):', localStorage.getItem('token'));
         
         // שמירת פרטי המשתמש
         if (response.data.user) {
           localStorage.setItem('user', JSON.stringify(response.data.user));
-          console.log('💾 פרטי משתמש נשמרו ב-localStorage');
-          console.log('🔍 בדיקה: localStorage.getItem("user"):', localStorage.getItem('user'));
+          console.log('User details saved in localStorage');
+          console.log('Check: localStorage.getItem("user"):', localStorage.getItem('user'));
         }
 
         
         
-        // ניווט לעמוד Feed עם רענון
-        console.log('🔄 מנווט לעמוד Feed...');
+       
         window.location.href = '/feed';
       } else {
-        console.log('❌ התחברות נכשלה');
-        console.log('⚠️ שגיאה:', response.error);
-        setError(response.error || 'התחברות נכשלה');
+        console.log('Login failed');
+        console.log('Error:', response.error);
+        setError(response.error || 'Login failed');
       }
     } catch (err) {
-      console.log('💥 שגיאה בתהליך ההתחברות:');
+      console.log('Error in login process:');
       console.error('Error details:', err);
       console.error('Error message:', err.message);
       console.error('Error stack:', err.stack);
-      setError('שגיאה בהתחברות. אנא נסה שוב.');
+      setError('Error in login. Please try again.');
     } finally {
       setLoading(false);
       console.log('=== סיום תהליך התחברות ===');

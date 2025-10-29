@@ -7,14 +7,14 @@ import { API_BASE_URL } from '../config';
 class AuthApi {
   // Login API
   static async login(email, password) {
-    console.log('🔧 AuthApi.login() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/auth/login`);
+    console.log('AuthApi.login() - start');
+    console.log('Endpoint:', `${API_BASE_URL}/auth/login`);
     
     try {
       const requestBody = { email, password };
-      console.log('📤 Request Method:', 'POST');
-      console.log('📤 Request Headers:', { 'Content-Type': 'application/json' });
-      console.log('📤 Request Body:', { email, password: '***' });
+      console.log('Request Method:', 'POST');
+      console.log('Request Headers:', { 'Content-Type': 'application/json' });
+      console.log('Request Body:', { email, password: '***' });
       
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
@@ -24,18 +24,18 @@ class AuthApi {
         body: JSON.stringify(requestBody)
       });
 
-      console.log('📥 Response Status:', response.status);
-      console.log('📥 Response OK:', response.ok);
+      console.log('Response Status:', response.status);
+      console.log('Response OK:', response.ok);
 
       const data = await response.json();
-      console.log('📥 Response Data:', data);
+      console.log('Response Data:', data);
 
       if (!response.ok) {
-        console.log('⚠️ Server returned error:', data.message || 'Login failed');
+        console.log('Server returned error:', data.message || 'Login failed');
         throw new Error(data.message || 'Login failed');
       }
 
-      console.log('✅ Login API call successful');
+      console.log('Login API call successful');
       
       if (data.success && data.data) {
         return {
@@ -51,8 +51,8 @@ class AuthApi {
         message: 'Login successful'
       };
     } catch (error) {
-      console.log('❌ Login API call failed');
-      console.error('🔴 Error:', error);
+      console.log('Login API call failed');
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -63,12 +63,12 @@ class AuthApi {
 
   // Register API
   static async register(userData) {
-    console.log('🔧 AuthApi.register() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/auth/register`);
+    console.log('AuthApi.register() - start');
+    console.log('Endpoint:', `${API_BASE_URL}/auth/register`);
     
     try {
-      console.log('📤 Request Method:', 'POST');
-      console.log('📤 Request Body:', { ...userData, password: '***' });
+      console.log('Request Method:', 'POST');
+      console.log('Request Body:', { ...userData, password: '***' });
       
       const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
@@ -78,18 +78,18 @@ class AuthApi {
         body: JSON.stringify(userData)
       });
 
-      console.log('📥 Response Status:', response.status);
-      console.log('📥 Response OK:', response.ok);
+      console.log('Response Status:', response.status);
+      console.log('Response OK:', response.ok);
 
       const data = await response.json();
-      console.log('📥 Response Data:', data);
+      console.log('Response Data:', data);
 
       if (!response.ok) {
-        console.log('⚠️ Server returned error:', data.message || 'Registration failed');
+        console.log('Server returned error:', data.message || 'Registration failed');
         throw new Error(data.message || 'Registration failed');
       }
 
-      console.log('✅ Register API call successful');
+      console.log('Register API call successful');
       
       if (data.success && data.data) {
         return {
@@ -105,8 +105,8 @@ class AuthApi {
         message: 'Registration successful'
       };
     } catch (error) {
-      console.log('❌ Register API call failed');
-      console.error('🔴 Error:', error);
+      console.log('Register API call failed');
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -179,8 +179,8 @@ class AuthApi {
 
   // Update Avatar API
   static async updateAvatar(avatarUrl) {
-    console.log('🔧 AuthApi.updateAvatar() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/auth/update-avatar`);
+    console.log('AuthApi.updateAvatar() - start');
+    console.log(' Endpoint:', `${API_BASE_URL}/auth/update-avatar`);
     
     try {
       const token = localStorage.getItem('token');
@@ -189,8 +189,8 @@ class AuthApi {
         throw new Error('No token found. Please login again.');
       }
 
-      console.log('📤 Request Method:', 'PUT');
-      console.log('📤 Avatar URL:', avatarUrl);
+      console.log(' Request Method:', 'PUT');
+      console.log(' Avatar URL:', avatarUrl);
       
       const response = await fetch(`${API_BASE_URL}/auth/update-avatar`, {
         method: 'PUT',
@@ -201,16 +201,16 @@ class AuthApi {
         body: JSON.stringify({ avatarUrl })
       });
 
-      console.log('📥 Response Status:', response.status);
+      console.log(' Response Status:', response.status);
 
       const data = await response.json();
-      console.log('📥 Response Data:', data);
+      console.log(' Response Data:', data);
 
       if (!response.ok) {
         throw new Error(data.message || 'Update avatar failed');
       }
 
-      console.log('✅ Update avatar API call successful');
+      console.log(' Update avatar API call successful');
       
       if (data.success && data.data) {
         return {
@@ -226,8 +226,8 @@ class AuthApi {
         message: 'Avatar updated successfully'
       };
     } catch (error) {
-      console.log('❌ Update avatar API call failed');
-      console.error('🔴 Error:', error);
+      console.log(' Update avatar API call failed');
+      console.error(' Error:', error);
       return {
         success: false,
         error: error.message,
@@ -238,8 +238,8 @@ class AuthApi {
 
   // Update user preferences (interests)
   static async updateUserPreferences(interests) {
-    console.log('🔧 AuthApi.updateUserPreferences() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/auth/preferences`);
+  console.log('AuthApi.updateUserPreferences() - start');
+    console.log('Endpoint:', `${API_BASE_URL}/auth/preferences`);
 
     try {
       const token = localStorage.getItem('token');
@@ -248,8 +248,8 @@ class AuthApi {
         throw new Error('No token found. Please login again.');
       }
 
-      console.log('📤 Request Method:', 'PUT');
-      console.log('📤 Interests:', interests);
+      console.log(' Request Method:', 'PUT');
+      console.log(' Interests:', interests);
 
       const response = await fetch(`${API_BASE_URL}/auth/preferences`, {
         method: 'PUT',
@@ -260,16 +260,16 @@ class AuthApi {
         body: JSON.stringify({ interests })
       });
 
-      console.log('📥 Response Status:', response.status);
+      console.log('Response Status:', response.status);
 
       const data = await response.json();
-      console.log('📥 Response Data:', data);
+      console.log('Response Data:', data);
 
       if (!response.ok) {
         throw new Error(data.message || 'Update preferences failed');
       }
 
-      console.log('✅ Update preferences API call successful');
+      console.log('Update preferences API call successful');
 
       if (data.success && data.data) {
         return {
@@ -285,8 +285,8 @@ class AuthApi {
         message: 'Preferences updated successfully'
       };
     } catch (error) {
-      console.log('❌ Update preferences API call failed');
-      console.error('🔴 Error:', error);
+      console.log(' Update preferences API call failed');
+      console.error(' Error:', error);
       return {
         success: false,
         error: error.message,

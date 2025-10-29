@@ -62,7 +62,7 @@ export default function NewGroup({ user, onClose, onGroupCreated }) {
       });
 
       if (result.success) {
-        console.log('✅ Group created successfully:', result.data);
+        console.log('Group created successfully:', result.data);
         if (onGroupCreated) {
           onGroupCreated(result.data);
         }

@@ -18,7 +18,7 @@ function App() {
 
   // Handle automatic logout on inactivity
   const handleInactivityTimeout = () => {
-    console.log('⏱️ Inactivity timeout - Auto logout');
+    console.log('Inactivity timeout - Auto logout');
     setShowTimeoutWarning(true);
     
     // Show warning for 3 seconds before logging out
@@ -44,25 +44,25 @@ function App() {
   );
 
   useEffect(() => {
-    console.log('🔄 App.js - useEffect התחיל');
+    console.log('App.js - useEffect start');
     // בדיקה אם המשתמש מחובר
     const token = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
     
-    console.log('🔍 Token from localStorage:', token);
-    console.log('🔍 User from localStorage:', savedUser);
-    
+    console.log('Token from localStorage:', token);
+    console.log('User from localStorage:', savedUser);
+
     if (token && savedUser) {
-      console.log('✅ משתמש מחובר - מעדכן state');
+      console.log('User is logged in - updating state');
       setIsLoggedIn(true);
       setUser(JSON.parse(savedUser));
     } else {
-      console.log('❌ משתמש לא מחובר');
+      console.log('User is not logged in');
     }
   }, []);
 
   const handleLogout = () => {
-    console.log('👋 Logging out user');
+    console.log('Logging out user');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.removeItem('lastActivityTime'); // Clean up activity tracking
@@ -70,7 +70,7 @@ function App() {
     setUser(null);
   };
 
-  console.log('🎨 App.js render - isLoggedIn:', isLoggedIn, 'user:', user);
+  console.log('App.js render - isLoggedIn:', isLoggedIn, 'user:', user);
 
   return (
     <DialogProvider>

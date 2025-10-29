@@ -52,38 +52,38 @@ function Register({ onClose, onSwitchToLogin }) {
       const response = await ApiService.register(userData);
 
       if (response.success) {
-        console.log('✅ הרשמה הצליחה!');
-        console.log('📦 Response.data:', response.data);
-        console.log('🎫 Token:', response.data.token);
-        console.log('👤 User:', response.data.user);
+        console.log('Registration successful!');
+        console.log('Response.data:', response.data);
+        console.log('Token:', response.data.token);
+        console.log('User:', response.data.user);
         
         // בדיקה שיש token
         if (!response.data.token) {
-          console.error('❌ אין token בתגובה!');
-          setError('שגיאה: לא התקבל token מהשרת');
+          console.error('No token in response!');
+          setError('Error: No token received from server');
           return;
         }
         
         // שמירת הטוקן ב-localStorage
         localStorage.setItem('token', response.data.token);
-        console.log('💾 Token נשמר ב-localStorage');
-        console.log('🔍 בדיקה: localStorage.getItem("token"):', localStorage.getItem('token'));
+        console.log('Token saved in localStorage');
+        console.log('Check: localStorage.getItem("token"):', localStorage.getItem('token'));
         
         // שמירת פרטי המשתמש
         if (response.data.user) {
           localStorage.setItem('user', JSON.stringify(response.data.user));
-          console.log('💾 פרטי משתמש נשמרו ב-localStorage');
-          console.log('🔍 בדיקה: localStorage.getItem("user"):', localStorage.getItem('user'));
+          console.log('User details saved in localStorage');
+          console.log('Check: localStorage.getItem("user"):', localStorage.getItem('user'));
           
           // Show preferences setup instead of navigating immediately
           setRegisteredUser(response.data.user);
           setShowPreferences(true);
         }
       } else {
-        setError(response.error || 'הרשמה נכשלה');
+        setError(response.error || 'Registration failed');
       }
     } catch (err) {
-      setError('שגיאה בהרשמה. אנא נסה שוב.');
+      setError('Error in registration. Please try again.');
       console.error('Register error:', err);
     } finally {
       setLoading(false);
@@ -92,30 +92,30 @@ function Register({ onClose, onSwitchToLogin }) {
 
 
   const handlePreferencesComplete = async (updatedUser) => {
-    console.log('✅ Preferences completed!', updatedUser);
+    console.log('Preferences completed!', updatedUser);
     
     try {
       // Update user preferences in the backend
       const response = await ApiService.updateUserPreferences(updatedUser.interests);
       
       if (response.success) {
-        console.log('✅ Preferences saved to server');
+        console.log('Preferences saved to server');
       } else {
-        console.warn('⚠️ Failed to save preferences to server, but continuing...');
+        console.warn('Failed to save preferences to server, but continuing...');
       }
     } catch (error) {
-      console.error('❌ Error saving preferences:', error);
+      console.error('Error saving preferences:', error);
       // Continue anyway - preferences are already saved in localStorage
     }
     
-    showSuccess('נרשמת בהצלחה! 🎉', 'ברוכים הבאים');
+    showSuccess('Registration successful!', 'Welcome');
     onClose();
     window.location.href = '/feed';
   };
 
   const handlePreferencesSkip = () => {
-    console.log('⏭️ Preferences skipped');
-    showSuccess('נרשמת בהצלחה!', 'ברוכים הבאים');
+    console.log('Preferences skipped');
+    showSuccess('Registration successful!', 'Welcome');
     onClose();
     window.location.href = '/feed';
   };

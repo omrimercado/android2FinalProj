@@ -128,21 +128,21 @@ export default function ChangeImage({ onClose, currentImage, onSave }) {
       if (canvas) {
         // Convert canvas to JPEG with high compression (quality 0.7 = 70%)
         finalImageUrl = canvas.toDataURL('image/jpeg', 0.7);
-        console.log('🎨 Image compressed - Filter:', selectedFilter);
-        console.log('📊 Original size:', previewUrl.length, 'bytes');
-        console.log('📊 Compressed size:', finalImageUrl.length, 'bytes');
-        console.log('📉 Size reduction:', Math.round((1 - finalImageUrl.length / previewUrl.length) * 100), '%');
+        console.log('Image compressed - Filter:', selectedFilter);
+        console.log('Original size:', previewUrl.length, 'bytes');
+        console.log('Compressed size:', finalImageUrl.length, 'bytes');
+        console.log('Size reduction:', Math.round((1 - finalImageUrl.length / previewUrl.length) * 100), '%');
       } else {
         finalImageUrl = previewUrl;
       }
       
-      console.log('🖼️ Final URL:', finalImageUrl.substring(0, 50) + '...');
+      console.log('Final URL:', finalImageUrl.substring(0, 50) + '...');
       
       // שליחת ה-URL של התמונה לשרת
       const response = await ApiService.updateAvatar(finalImageUrl);
       
       if (response.success) {
-        console.log('✅ התמונה עודכנה בהצלחה');
+        console.log('התמונה עודכנה בהצלחה');
         
         // עדכון ה-user ב-localStorage
         const savedUser = JSON.parse(localStorage.getItem('user') || '{}');
@@ -155,7 +155,7 @@ export default function ChangeImage({ onClose, currentImage, onSave }) {
         // סגירת המודאל
         onClose();
       } else {
-        console.error('❌ שגיאה בעדכון התמונה:', response.error);
+        console.error('שגיאה בעדכון התמונה:', response.error);
         
         // Check if error is about file size
         if (response.error && response.error.toLowerCase().includes('too large')) {

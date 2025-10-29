@@ -7,8 +7,8 @@ import { API_BASE_URL } from '../config';
 class GroupsApi {
   // Create a new group
   static async createGroup(groupData) {
-    console.log('🔧 GroupsApi.createGroup() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/create`);
+    console.log('GroupsApi.createGroup() - start');
+    console.log('Endpoint:', `${API_BASE_URL}/groups/create`);
     
     try {
       const token = localStorage.getItem('token');
@@ -17,8 +17,8 @@ class GroupsApi {
         throw new Error('No token found. Please login again.');
       }
 
-      console.log('📤 Request Method:', 'POST');
-      console.log('📤 Group Data:', groupData);
+      console.log('Request Method:', 'POST');
+      console.log('Group Data:', groupData);
       
       const response = await fetch(`${API_BASE_URL}/groups/create`, {
         method: 'POST',
@@ -49,7 +49,7 @@ class GroupsApi {
         message: 'Group created successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -60,8 +60,8 @@ class GroupsApi {
 
   // Get all groups user belongs to
   static async getMyGroups() {
-    console.log('🔧 GroupsApi.getMyGroups() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/my`);
+    console.log('GroupsApi.getMyGroups() - start');
+    console.log('Endpoint:', `${API_BASE_URL}/groups/my`);
     
     try {
       const token = localStorage.getItem('token');
@@ -95,7 +95,7 @@ class GroupsApi {
         message: data.message || 'Groups fetched successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -106,8 +106,8 @@ class GroupsApi {
 
   // Get suggested groups
   static async getSuggestedGroups() {
-    console.log('🔧 GroupsApi.getSuggestedGroups() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/suggested`);
+    console.log('GroupsApi.getSuggestedGroups() - start');
+    console.log('Endpoint:', `${API_BASE_URL}/groups/suggested`);
     
     try {
       const token = localStorage.getItem('token');
@@ -141,7 +141,7 @@ class GroupsApi {
         message: data.message || 'Suggested groups fetched successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -152,8 +152,8 @@ class GroupsApi {
 
   // Join a group
   static async joinGroup(groupId) {
-    console.log('🔧 GroupsApi.joinGroup() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/${groupId}/join`);
+    console.log('GroupsApi.joinGroup() - start');
+    console.log('Endpoint:', `${API_BASE_URL}/groups/${groupId}/join`);
     
     try {
       const token = localStorage.getItem('token');
@@ -182,7 +182,7 @@ class GroupsApi {
         message: data.message || 'Joined group successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -193,8 +193,8 @@ class GroupsApi {
 
   // Leave a group
   static async leaveGroup(groupId) {
-    console.log('🔧 GroupsApi.leaveGroup() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/${groupId}/leave`);
+    console.log('GroupsApi.leaveGroup() - start');
+    console.log('Endpoint:', `${API_BASE_URL}/groups/${groupId}/leave`);
     
     try {
       const token = localStorage.getItem('token');
@@ -223,7 +223,7 @@ class GroupsApi {
         message: data.message || 'Left group successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -234,8 +234,8 @@ class GroupsApi {
 
   // Get all groups where user is admin with pending join requests
   static async getAdminGroupsWithRequests() {
-    console.log('🔧 GroupsApi.getAdminGroupsWithRequests() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/admin/requests`);
+    console.log('GroupsApi.getAdminGroupsWithRequests() - start');
+    console.log('Endpoint:', `${API_BASE_URL}/groups/admin/requests`);
     
     try {
       const token = localStorage.getItem('token');
@@ -272,7 +272,7 @@ class GroupsApi {
         message: 'Requests fetched successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -283,8 +283,8 @@ class GroupsApi {
 
   // Approve a join request
   static async approveGroupRequest(groupId, userId) {
-    console.log('🔧 GroupsApi.approveGroupRequest() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/${groupId}/requests/${userId}/approve`);
+    console.log('GroupsApi.approveGroupRequest() - start');
+    console.log('Endpoint:', `${API_BASE_URL}/groups/${groupId}/requests/${userId}/approve`);
     
     try {
       const token = localStorage.getItem('token');
@@ -321,7 +321,7 @@ class GroupsApi {
         message: 'Request approved successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -332,8 +332,8 @@ class GroupsApi {
 
   // Reject a join request
   static async rejectGroupRequest(groupId, userId) {
-    console.log('🔧 GroupsApi.rejectGroupRequest() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/${groupId}/requests/${userId}/reject`);
+    console.log('GroupsApi.rejectGroupRequest() - start');
+    console.log('Endpoint:', `${API_BASE_URL}/groups/${groupId}/requests/${userId}/reject`);
     
     try {
       const token = localStorage.getItem('token');
@@ -370,7 +370,7 @@ class GroupsApi {
         message: 'Request rejected successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -381,8 +381,8 @@ class GroupsApi {
 
   // Update a group (admin only)
   static async updateGroup(groupId, groupData) {
-    console.log('🔧 GroupsApi.updateGroup() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/${groupId}`);
+    console.log('GroupsApi.updateGroup() - start');
+    console.log('Endpoint:', `${API_BASE_URL}/groups/${groupId}`);
     
     try {
       const token = localStorage.getItem('token');
@@ -420,7 +420,7 @@ class GroupsApi {
         message: 'Group updated successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -431,8 +431,8 @@ class GroupsApi {
 
   // Delete a group (admin only)
   static async deleteGroup(groupId) {
-    console.log('🔧 GroupsApi.deleteGroup() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/${groupId}`);
+    console.log('GroupsApi.deleteGroup() - start');
+    console.log('Endpoint:', `${API_BASE_URL}/groups/${groupId}`);
     
     try {
       const token = localStorage.getItem('token');
@@ -461,7 +461,7 @@ class GroupsApi {
         message: data.message || 'Group deleted successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -472,8 +472,8 @@ class GroupsApi {
 
   // Remove a user from group (admin only)
   static async removeUserFromGroup(groupId, userId) {
-    console.log('🔧 GroupsApi.removeUserFromGroup() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/${groupId}/members/${userId}`);
+    console.log('GroupsApi.removeUserFromGroup() - start');
+    console.log('Endpoint:', `${API_BASE_URL}/groups/${groupId}/members/${userId}`);
     
     try {
       const token = localStorage.getItem('token');
@@ -502,7 +502,7 @@ class GroupsApi {
         message: data.message || 'User removed from group successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -513,8 +513,8 @@ class GroupsApi {
 
   // Get group members (admin only)
   static async getGroupMembers(groupId) {
-    console.log('🔧 GroupsApi.getGroupMembers() - התחלה');
-    console.log('📍 Endpoint:', `${API_BASE_URL}/groups/${groupId}/members`);
+    console.log('GroupsApi.getGroupMembers() - start');
+    console.log('Endpoint:', `${API_BASE_URL}/groups/${groupId}/members`);
     
     try {
       const token = localStorage.getItem('token');
@@ -543,7 +543,7 @@ class GroupsApi {
         message: data.message || 'Group members fetched successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,

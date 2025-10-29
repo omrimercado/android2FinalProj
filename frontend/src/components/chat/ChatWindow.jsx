@@ -28,11 +28,11 @@ export default function ChatWindow({ user, targetUser, onClose }) {
   useEffect(() => {
     // Connect to main server via ChatApiService
     const wsUrl = ChatApiService.getWebSocketUrl();
-    console.log('🔌 Attempting to connect to:', wsUrl);
+    console.log('Attempting to connect to:', wsUrl);
     const ws = ChatApiService.createWebSocketConnection();
 
     ws.onopen = () => {
-      console.log('✅ WebSocket Connected successfully!');
+      console.log('WebSocket Connected successfully!');
       setIsConnected(true);
 
       // Send join message with user details
@@ -42,7 +42,7 @@ export default function ChatWindow({ user, targetUser, onClose }) {
         targetUserId: targetUser.id,
         userName: user.name
       }));
-      console.log('📤 Sent join message for user:', user.name);
+      console.log('Sent join message for user:', user.name);
     };
 
     ws.onmessage = (event) => {
@@ -84,7 +84,7 @@ export default function ChatWindow({ user, targetUser, onClose }) {
           case 'user_status':
             // Update target user status
             if (data.userId === targetUser.id) {
-              console.log(`👤 Target user ${targetUser.name} is now: ${data.isOnline ? 'ONLINE 🟢' : 'OFFLINE ⚪'}`);
+              console.log(`Target user ${targetUser.name} is now: ${data.isOnline ? 'ONLINE' : 'OFFLINE'}`);
               setIsTargetOnline(data.isOnline);
             }
             break;
@@ -98,15 +98,15 @@ export default function ChatWindow({ user, targetUser, onClose }) {
     };
 
     ws.onerror = (error) => {
-      console.error('❌ WebSocket error:', error);
-      console.error('⚠️ Make sure the WebSocket server is running on ws://localhost:8080/chat');
+      console.error('WebSocket error:', error);
+      console.error('Make sure the WebSocket server is running on ws://localhost:8080/chat');
       setIsConnected(false);
     };
 
     ws.onclose = (event) => {
-      console.log('🔴 WebSocket Disconnected', event.code, event.reason);
+      console.log('WebSocket Disconnected', event.code, event.reason);
       if (!event.wasClean) {
-        console.error('⚠️ Connection closed unexpectedly. Is the server running?');
+        console.error('Connection closed unexpectedly. Is the server running?');
       }
       setIsConnected(false);
     };
@@ -156,7 +156,7 @@ export default function ChatWindow({ user, targetUser, onClose }) {
       timestamp: new Date().toISOString()
     };
 
-    console.log('📤 Sending message to', targetUser.name, '(online:', isTargetOnline, ')');
+    console.log('Sending message to', targetUser.name, '(online:', isTargetOnline, ')');
     wsRef.current.send(JSON.stringify(message));
     setNewMessage('');
   };

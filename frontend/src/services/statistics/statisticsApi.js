@@ -7,7 +7,7 @@ import { API_BASE_URL } from '../config';
 class StatisticsApi {
   // Get posts over time statistics
   static async getPostsOverTime() {
-    console.log('🔧 StatisticsApi.getPostsOverTime() - התחלה');
+    console.log('StatisticsApi.getPostsOverTime() - start');
     
     try {
       const token = localStorage.getItem('token');
@@ -36,7 +36,7 @@ class StatisticsApi {
         message: data.message || 'Data fetched successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -47,7 +47,7 @@ class StatisticsApi {
 
   // Get posts per group statistics
   static async getPostsPerGroup() {
-    console.log('🔧 StatisticsApi.getPostsPerGroup() - התחלה');
+    console.log('StatisticsApi.getPostsPerGroup() - start');
     
     try {
       const token = localStorage.getItem('token');
@@ -76,7 +76,7 @@ class StatisticsApi {
         message: data.message || 'Data fetched successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -87,7 +87,7 @@ class StatisticsApi {
 
   // Get popular groups statistics
   static async getPopularGroups() {
-    console.log('🔧 StatisticsApi.getPopularGroups() - התחלה');
+    console.log('StatisticsApi.getPopularGroups() - start');
     
     try {
       const token = localStorage.getItem('token');
@@ -116,7 +116,7 @@ class StatisticsApi {
         message: data.message || 'Data fetched successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,
@@ -127,7 +127,7 @@ class StatisticsApi {
 
   // Get general statistics
   static async getGeneralStats() {
-    console.log('🔧 StatisticsApi.getGeneralStats() - התחלה');
+    console.log('StatisticsApi.getGeneralStats() - start');
     
     try {
       const token = localStorage.getItem('token');
@@ -156,7 +156,7 @@ class StatisticsApi {
         message: data.message || 'Data fetched successfully'
       };
     } catch (error) {
-      console.error('🔴 Error:', error);
+      console.error('Error:', error);
       return {
         success: false,
         error: error.message,

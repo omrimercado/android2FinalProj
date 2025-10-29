@@ -76,7 +76,7 @@ export default function MessagesPage({ user, currentPage, onNavigate, onLogout }
 
       <div className="messages-container">
         <div className="messages-header">
-          <h1>💬 Messages</h1>
+          <h1>Messages</h1>
         </div>
 
         {isLoading ? (
@@ -85,7 +85,6 @@ export default function MessagesPage({ user, currentPage, onNavigate, onLogout }
           </div>
         ) : conversations.length === 0 ? (
           <div className="messages-empty">
-            <div className="empty-icon">💭</div>
             <h2>No messages yet</h2>
             <p>Start a conversation by clicking on a user's avatar in the feed</p>
           </div>

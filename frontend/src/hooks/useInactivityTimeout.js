@@ -25,11 +25,11 @@ export const useInactivityTimeout = (onTimeout, timeoutMinutes = 10) => {
     lastActivityTime.current = now;
     localStorage.setItem(STORAGE_KEY, now.toString());
 
-    console.log('⏰ Activity detected - timer reset');
+    console.log('Activity detected - timer reset');
 
     // Set new timer
     timeoutId.current = setTimeout(() => {
-      console.log('⏱️ Inactivity timeout reached - logging out');
+      console.log('Inactivity timeout reached - logging out');
       onTimeout();
     }, TIMEOUT_DURATION);
   }, [onTimeout, TIMEOUT_DURATION]);
@@ -42,7 +42,7 @@ export const useInactivityTimeout = (onTimeout, timeoutMinutes = 10) => {
       const timeSinceLastActivity = Date.now() - parseInt(lastActivity, 10);
       
       if (timeSinceLastActivity >= TIMEOUT_DURATION) {
-        console.log('⏱️ Session expired - last activity was', Math.round(timeSinceLastActivity / 60000), 'minutes ago');
+        console.log('Session expired - last activity was', Math.round(timeSinceLastActivity / 60000), 'minutes ago');
         onTimeout();
         return true;
       }

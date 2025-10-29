@@ -36,7 +36,7 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
 
       // Get user interests from user object
       const userInterests = user?.interests || [];
-      console.log('👤 User interests:', userInterests);
+      console.log('User interests:', userInterests);
 
       // Calculate match score for each group based on user interests
       const calculateMatchScore = (groupTags) => {
@@ -94,7 +94,7 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
           return b.membersCount - a.membersCount;
         });
 
-        console.log('✨ Suggested groups with scores:',
+        console.log('Suggested groups with scores:',
           availableGroups.map(g => ({ name: g.name, score: g.matchScore }))
         );
       }
@@ -180,7 +180,7 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
 
         if (status === 'member') {
           // Public group - user joined immediately
-          console.log('✅ Joined group successfully');
+          console.log('Joined group successfully');
 
           // Move from suggested to my groups
           const groupToJoin = suggestedGroups.find(g => g.id === groupId);
@@ -193,7 +193,7 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
           showSuccess('Successfully joined the group!');
         } else if (status === 'pending') {
           // Private group - request sent
-          console.log('📤 Join request sent');
+          console.log('Join request sent');
 
           // Remove from suggested groups (request pending)
           setSuggestedGroups(suggestedGroups.filter(g => g.id !== groupId));
@@ -224,7 +224,7 @@ export default function GroupsPage({ user, currentPage, onNavigate, onLogout }) 
       const result = await ApiService.leaveGroup(groupId);
 
       if (result.success) {
-        console.log('✅ Left group successfully');
+        console.log('Left group successfully');
 
         // Remove from my groups
         setMyGroups(myGroups.filter(g => g.id !== groupId));
